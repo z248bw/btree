@@ -164,6 +164,30 @@ public:
     }
 
 
+    Btree* find(int k, Btree* n = nullptr)
+    {
+        if (n == nullptr)
+        {
+            n = this;
+        }
+
+        if (std::binary_search(n->keys.begin(), n->keys.end(), k))
+        {
+            return n;
+        }
+
+        for (auto child : n->children)
+        {
+            auto result = find(k, child);
+            if (result != nullptr)
+            {
+                return result;
+            }
+        }
+
+        return nullptr;
+    }
+
     std::vector<int> get_keys()
     {
         return keys;

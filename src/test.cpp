@@ -86,3 +86,53 @@ TEST(Btree, grow) {
     ASSERT_EQ(1, Traversable::shallowest);
 }
 
+TEST(Btree, find_element_which_is_not_present) {
+    Btree t;
+    t.add(1);
+    t.add(2);
+    t.add(3);
+    t.find(4);
+    ASSERT_EQ(nullptr, t.find(4));
+
+    t.walk();
+    ASSERT_EQ(1, Traversable::deepest);
+    ASSERT_EQ(1, Traversable::shallowest);
+}
+
+TEST(Btree, find_element_in_root) {
+    Btree t;
+    t.add(1);
+    t.add(2);
+    t.add(3);
+    t.find(4);
+    ASSERT_EQ(2, t.find(2)->get_keys()[0]);
+
+    t.walk();
+    ASSERT_EQ(1, Traversable::deepest);
+    ASSERT_EQ(1, Traversable::shallowest);
+}
+
+TEST(Btree, find_element_in_left_leaf) {
+    Btree t;
+    t.add(1);
+    t.add(2);
+    t.add(3);
+    ASSERT_EQ(1, t.find(1)->get_keys()[0]);
+
+    t.walk();
+    ASSERT_EQ(1, Traversable::deepest);
+    ASSERT_EQ(1, Traversable::shallowest);
+}
+
+TEST(Btree, find_element_in_right_leaf) {
+    Btree t;
+    t.add(1);
+    t.add(2);
+    t.add(3);
+    ASSERT_EQ(3, t.find(3)->get_keys()[0]);
+
+    t.walk();
+    ASSERT_EQ(1, Traversable::deepest);
+    ASSERT_EQ(1, Traversable::shallowest);
+}
+
