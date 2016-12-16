@@ -17,15 +17,15 @@
 class Traversable
 {
 protected:
-    virtual Traversable* get_child(const int i) = 0;
-    virtual int max_branches_num() = 0;
+    virtual Traversable* get_child(const size_t i) = 0;
+    virtual size_t max_branches_num() = 0;
 
 public:
-    static int deepest;
-    static int shallowest;
+    static size_t deepest;
+    static size_t shallowest;
     virtual ~Traversable(){}
 
-    void walk(Traversable* t = nullptr, int depth = 0)
+    void walk(Traversable* t = nullptr, size_t depth = 0)
     {
         if (t == nullptr)
         {
@@ -33,7 +33,7 @@ public:
             t = this;
         }
 
-        int children_num = 0;
+        size_t children_num = 0;
         Traversable* next = t->get_child(children_num);
         while (next != nullptr)
         {
@@ -72,7 +72,7 @@ struct TraversableTree : public Traversable
 
     TraversableTree(): l(nullptr), r(nullptr) {}
 
-    Traversable* get_child(const int i)
+    Traversable* get_child(const size_t i)
     {
         if (i == 0)
         {
@@ -86,7 +86,7 @@ struct TraversableTree : public Traversable
         return nullptr;
     }
 
-    int max_branches_num()
+    size_t max_branches_num()
     {
         return 2;
     }
@@ -101,69 +101,53 @@ struct TraversableTree : public Traversable
 class Btree : public Traversable
 {
 private:
-    std::vector<int> keys;
-    std::vector<Btree*> children;
+    using Nodes = std::vector<Btree*>;
+    using Keys = std::vector<int>;
+
+    Btree* parent;
+    Keys keys;
+    Nodes children;
 
 public:
-    Btree() {}
+    Btree(Btree* parent = nullptr): parent(parent) {}
 
     Btree(int k)
     {
         keys.push_back(k);
     }
 
-    Btree(std::vector<int> keys, std::vector<Btree*> children):
+    Btree(Keys keys, Nodes children):
         keys(keys), children(children) {}
 
-    void add(int k)
+    virtual void add(int k)
     {
         auto n = find_node_for_key(this, k);
+        // element fits into the right node
         if (n->keys.size() < MAX_KEY_SIZE)
         {
             n->keys.push_back(k);
             std::sort(n->keys.begin(), n->keys.end());
         }
+        // n is root
+        else if (n->parent == nullptr)
+        {
+            auto left = new Btree(n->keys[0]);
+            auto median = n->keys[MAX_KEY_SIZE-1];
+            auto right = new Btree(k);
+            n->grow_tree(left, median, right);
+        }
+        // n is node
         else
         {
             auto left = new Btree(n->keys[0]);
+            auto median = n->keys[1];
             auto right = new Btree(k);
-            auto median = n->keys[MAX_KEY_SIZE-1];
-            n->keys.clear();
-            n->children.clear();
-            n->keys.push_back(median);
-            n->children.push_back(left);
-            n->children.push_back(right);
+            n->push_to_parent(left, median, right);
+            n->remove_node();
         }
     }
 
-    Btree* find_node_for_key(Btree* n, int k)
-    {
-        // start inorder walk of the tree
-        for (int i = 0; i < n->keys.size(); i++)
-        {
-            if (k < n->keys[i])
-            {
-                if (n->children.size() > 0)
-                {
-                    return find_node_for_key(n->children[i], k);
-                }
-
-                // In case the current node n is a leaf node because it does not have any children
-                return n;
-            }
-        }
-
-        if (n->children.size() > 0)
-        {
-            return find_node_for_key(n->children[n->children.size()-1], k);
-        }
-
-        // We are at the node containing the biggest element in the tree
-        // and k is even bigger than that
-        return n;
-    }
-
-    std::vector<int> dump(Btree* n = nullptr, std::vector<int> result = std::vector<int>())
+    Keys dump(Btree* n = nullptr, Keys result = Keys())
     {
         if (n == nullptr)
         {
@@ -172,7 +156,7 @@ public:
 
         if (n->children.size() > 0)
         {
-            for (int i = 0; i < n->keys.size(); i++)
+            for (size_t i = 0; i < n->keys.size(); i++)
             {
                 result = dump(n->children[i], result);
                 result.push_back(n->keys[i]);
@@ -215,9 +199,24 @@ public:
         return nullptr;
     }
 
-    std::vector<int> get_keys()
+    Keys get_keys()
     {
         return keys;
+    }
+
+    Traversable* get_child(const size_t i)
+    {
+        if (i < children.size())
+        {
+            return children[i];
+        }
+
+        return nullptr;
+    }
+
+    size_t max_branches_num()
+    {
+        return keys.size() + 1;
     }
 
     ~Btree()
@@ -228,20 +227,106 @@ public:
         }
     }
 
-    Traversable* get_child(const int i)
+private:
+
+    void grow_tree(Btree* left, int median, Btree* right)
+    {
+        keys.clear();
+        children.clear();
+        keys.push_back(median);
+        add_child(left);
+        add_child(right);
+    }
+
+    Btree* find_node_for_key(Btree* n, int k)
+    {
+        // start inorder walk of the tree
+        for (size_t i = 0; i < n->keys.size(); i++)
+        {
+            if (k < n->keys[i])
+            {
+                if (n->children.size() > 0)
+                {
+                    return find_node_for_key(n->children[i], k);
+                }
+
+                // In case the current node n is a leaf node because it does not have any children
+                return n;
+            }
+        }
+
+        if (n->children.size() > 0)
+        {
+            return find_node_for_key(n->children[n->children.size()-1], k);
+        }
+
+        // We are at the node containing the biggest element in the tree
+        // and k is even bigger than that
+        return n;
+    }
+
+    void remove_node()
+    {
+        children.clear();
+        delete this;
+    }
+
+    void push_to_parent(Btree* left, int k, Btree* right)
+    {
+        auto pos = parent->find_pos_of_key_in_keys(k);
+        parent->insert_key(pos, k);
+        parent->add_child(pos, left);
+        parent->add_child(pos+1, right);
+    }
+
+    void add_child(size_t i, Btree* child)
     {
         if (i < children.size())
         {
-            return children[i];
+            children[i] = child;
+        }
+        else
+        {
+            children.push_back(child);
         }
 
-        return nullptr;
+        child->parent = this;
     }
 
-    int max_branches_num()
+    void add_child(Btree* child)
     {
-        return keys.size() + 1;
+        children.push_back(child);
+        child->parent = this;
+    }
+
+    void insert_key(size_t i, int k)
+    {
+        if (i < keys.size())
+        {
+            keys.insert(keys.begin() + i, k);
+        }
+        else
+        {
+            keys.push_back(k);
+        }
+    }
+
+    size_t find_pos_of_key_in_keys(int k)
+    {
+        for (size_t i = 0; i < keys.size(); i++)
+        {
+            if (k < keys[i])
+            {
+                return i;
+            }
+        }
+
+        if (keys.size() < MAX_KEY_SIZE)
+        {
+            return keys.size();
+        }
+
+        return -1;
     }
 };
-
 #endif
