@@ -1,16 +1,28 @@
 #ifndef BTREE_H_
 #define BTREE_H_
 
-#define MAX_KEY_SIZE 3
+#include<vector>
+#include<algorithm>
+
+#define MAX_KEY_SIZE 2
 #define MAX_INT 99999
 
+// I want to be able to simply verify whether the tree is balanced.
+// A way to do is to find the deepest and the shallowest leaf and then check
+// if they are equal. I provide this functionality as a mixin because I need to
+// prove that the walk algorithm works correctly and for this I need to be able
+// to walk unbalanced trees as well.
+// Using a mixin like this is not cheating. The btree promises that the shallowest
+// and the deepest leaf's depth is equal, and thus it should provide a way to check that.
 class Traversable
 {
+protected:
+    virtual Traversable* get_child(const int i) = 0;
+    virtual int max_branches_num() = 0;
+
 public:
     static int deepest;
     static int shallowest;
-    virtual Traversable* get_child(const int i) = 0;
-    virtual int max_branches_num() = 0;
     virtual ~Traversable(){}
 
     void walk(Traversable* t = nullptr, int depth = 0)
@@ -34,7 +46,10 @@ public:
             deepest = depth;
         }
 
-        // it does not have all the children
+        // A node is a leaf in a btree if it does not have the maximum number
+        // of children. Altough the class's name is Traversable, I use this
+        // rule because I want to use it for btrees. The other implementations of this class
+        // sole purposes are to test that the walk algorithm works in the defined way
         if (children_num < t->max_branches_num() && depth < shallowest)
         {
             shallowest = depth;
