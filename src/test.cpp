@@ -136,3 +136,39 @@ TEST(Btree, find_element_in_right_leaf) {
     ASSERT_EQ(1, Traversable::shallowest);
 }
 
+TEST(Btree, dump) {
+    Btree t;
+    t.add(1);
+    t.add(2);
+    t.add(3);
+    auto result = t.dump();
+    ASSERT_EQ(1, result[0]);
+    ASSERT_EQ(2, result[1]);
+    ASSERT_EQ(3, result[2]);
+
+    t.walk();
+    ASSERT_EQ(1, Traversable::deepest);
+    ASSERT_EQ(1, Traversable::shallowest);
+}
+
+TEST(Btree, finds_place_of_new_element_in_the_tree) {
+    Btree t;
+    t.add(1);
+    t.add(2);
+    t.add(3);
+    t.add(4);
+
+    auto result = t.dump();
+    ASSERT_EQ(1, result[0]);
+    ASSERT_EQ(2, result[1]);
+    ASSERT_EQ(3, result[2]);
+    ASSERT_EQ(4, result[3]);
+
+    auto n = t.find(4);
+    ASSERT_EQ(3, n->get_keys()[0]);
+    ASSERT_EQ(4, n->get_keys()[1]);
+
+    t.walk();
+    ASSERT_EQ(1, Traversable::deepest);
+    ASSERT_EQ(1, Traversable::shallowest);
+}

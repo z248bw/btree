@@ -163,6 +163,33 @@ public:
         return n;
     }
 
+    std::vector<int> dump(Btree* n = nullptr, std::vector<int> result = std::vector<int>())
+    {
+        if (n == nullptr)
+        {
+            n = this;
+        }
+
+        if (n->children.size() > 0)
+        {
+            for (int i = 0; i < n->keys.size(); i++)
+            {
+                result = dump(n->children[i], result);
+                result.push_back(n->keys[i]);
+            }
+        }
+        else
+        {
+            result.insert(result.end(), n->keys.begin(), n->keys.end());
+        }
+
+        if (n->children.size() > 0)
+        {
+            result = dump(n->children[n->children.size()-1], result);
+        }
+
+        return result;
+    }
 
     Btree* find(int k, Btree* n = nullptr)
     {
