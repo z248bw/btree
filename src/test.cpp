@@ -50,3 +50,39 @@ TEST(Btree, only_root_deepest_and_shallowest_branches) {
     ASSERT_EQ(0, Traversable::shallowest);
 }
 
+TEST(Btree, add_elements_to_root) {
+    Btree t;
+    t.add(1);
+    t.add(2);
+    ASSERT_EQ(1, t.get_keys()[0]);
+    ASSERT_EQ(2, t.get_keys()[1]);
+
+    t.walk();
+    ASSERT_EQ(0, Traversable::deepest);
+    ASSERT_EQ(0, Traversable::shallowest);
+}
+
+TEST(Btree, elements_added_to_root_are_sorted) {
+    Btree t;
+    t.add(2);
+    t.add(1);
+    ASSERT_EQ(1, t.get_keys()[0]);
+    ASSERT_EQ(2, t.get_keys()[1]);
+
+    t.walk();
+    ASSERT_EQ(0, Traversable::deepest);
+    ASSERT_EQ(0, Traversable::shallowest);
+}
+
+TEST(Btree, grow) {
+    Btree t;
+    t.add(1);
+    t.add(2);
+    t.add(3);
+    ASSERT_EQ(2, t.get_keys()[0]);
+
+    t.walk();
+    ASSERT_EQ(1, Traversable::deepest);
+    ASSERT_EQ(1, Traversable::shallowest);
+}
+

@@ -105,6 +105,64 @@ private:
     std::vector<Btree*> children;
 
 public:
+    Btree() {}
+
+    Btree(int k)
+    {
+        keys.push_back(k);
+    }
+
+    Btree(std::vector<int> keys, std::vector<Btree*> children):
+        keys(keys), children(children) {}
+
+    void add(int k)
+    {
+        auto n = find_node_for_key(this, k);
+        if (n->keys.size() < MAX_KEY_SIZE)
+        {
+            n->keys.push_back(k);
+            std::sort(n->keys.begin(), n->keys.end());
+        }
+        else
+        {
+            auto left = new Btree(n->keys[0]);
+            auto right = new Btree(k);
+            auto median = n->keys[MAX_KEY_SIZE-1];
+            n->keys.clear();
+            n->children.clear();
+            n->keys.push_back(median);
+            n->children.push_back(left);
+            n->children.push_back(right);
+        }
+    }
+
+    Btree* find_node_for_key(Btree* n, int k)
+    {
+        // start inorder walk of the tree
+        for (int i = 0; i < n->keys.size(); i++)
+        {
+            if (k < n->keys[i])
+            {
+                if (n->children.size() > 0)
+                {
+                    return find_node_for_key(n->children[i], k);
+                }
+
+                // In case the current node n is a leaf node because it does not have any children
+                return n;
+            }
+        }
+
+        if (n->children.size() > 0)
+        {
+            return find_node_for_key(n->children[n->children.size()-1], k);
+        }
+
+        // We are at the node containing the biggest element in the tree
+        // and k is even bigger than that
+        return n;
+    }
+
 
     std::vector<int> get_keys()
     {
