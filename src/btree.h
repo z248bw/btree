@@ -101,23 +101,27 @@ struct TraversableTree : public Traversable
 class Btree : public Traversable
 {
 private:
-    int keys[MAX_KEY_SIZE];
-    int keys_len = 0;
-    Btree* children[MAX_KEY_SIZE-1];
-    int children_len = 0;
+    std::vector<int> keys;
+    std::vector<Btree*> children;
 
 public:
+
+    std::vector<int> get_keys()
+    {
+        return keys;
+    }
+
     ~Btree()
     {
-        for (int i = 0; i < children_len; i++)
+        for (auto child : children)
         {
-            delete children[i];
+            delete child;
         }
     }
 
     Traversable* get_child(const int i)
     {
-        if (i < children_len)
+        if (i < children.size())
         {
             return children[i];
         }
@@ -127,9 +131,8 @@ public:
 
     int max_branches_num()
     {
-        return MAX_KEY_SIZE-1;
+        return keys.size() + 1;
     }
-
 };
 
 #endif
