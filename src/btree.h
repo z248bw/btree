@@ -222,6 +222,11 @@ private:
 
         void set_left_child_for_key(int k, Btree* child)
         {
+            if (child == nullptr)
+            {
+                return;
+            }
+
             child->parent = owner;
 
             if (children.size() == 0)
@@ -236,6 +241,11 @@ private:
 
         void set_right_child_for_key(int k, Btree* child)
         {
+            if (child == nullptr)
+            {
+                return;
+            }
+
             child->parent = owner;
 
             auto i = get_pos_of_key(k)+1;
@@ -246,18 +256,18 @@ private:
                 return;
             }
 
-            children[get_pos_of_key(k)+1] = child;
+            children[i] = child;
         }
 
         Btree* get_left_child_of_key(int k)
         {
             auto i = get_pos_of_key(k);
-            if (children.size() < i)
+            if (children.size() == 0 || children.size() < i)
             {
                 return nullptr;
             }
 
-            return children[get_pos_of_key(k)];
+            return children[i];
         }
 
         Btree* get_right_child_of_key(int k)
@@ -330,6 +340,13 @@ public:
         keys.add(k);
     }
 
+    Btree(Btree* left, int median, Btree* right)
+    {
+        keys.insert(median);
+        keys.set_left_child_for_key(median, left);
+        keys.set_right_child_for_key(median, right);
+    }
+
     void add(int k)
     {
         auto n = get_node_for_key(k);
@@ -343,17 +360,42 @@ public:
             auto left = new Btree(n->keys.get(0));
             auto median = n->keys.get(1);
             auto right = new Btree(k);
-            // n is root
+            auto new_branch = new Btree(left, median, right);
+
             if (n->parent == nullptr)
             {
-                n->grow_tree(left, median, right);
+                n->keys.clear();
+                n->insert(new_branch);
             }
-            // n is node
             else
             {
-                n->push_to_parent(left, median, right);
-                n->remove_node();
+                n->upwards_add(new_branch);
             }
+        }
+    }
+
+    void upwards_add(Btree* k)
+    {
+        if (keys.size() < MAX_KEY_SIZE)
+        {
+            insert(k);
+        }
+        else if (parent == nullptr)
+        {
+            int left_key = keys.get(0);
+            auto left = new Btree(
+                keys.get_left_child_of_key(left_key),
+                left_key,
+                keys.get_right_child_of_key(left_key)
+            );
+            auto median = keys.get(1);
+            auto right = k;
+            keys.clear();
+            insert(new Btree(left, median, right));
+        }
+        else
+        {
+            push_to_parent(k);
         }
     }
 
@@ -411,14 +453,6 @@ public:
 
 private:
 
-    void grow_tree(Btree* left, int median, Btree* right)
-    {
-        keys.clear();
-        keys.add(median);
-        keys.set_left_child_for_key(median, left);
-        keys.set_right_child_for_key(median, right);
-    }
-
     Btree* get_node_for_key(int k)
     {
         auto n = find_node_for_key(k);
@@ -473,11 +507,26 @@ private:
         delete this;
     }
 
-    void push_to_parent(Btree* left, int k, Btree* right)
+    void insert(Btree* k)
     {
-        parent->keys.insert(k);
-        parent->keys.set_left_child_for_key(k, left);
-        parent->keys.set_right_child_for_key(k, right);
+        auto median = k->keys.get_first();
+        keys.insert(median);
+        keys.set_left_child_for_key(median, k->keys.get_left_child_of_key(median));
+        keys.set_right_child_for_key(median, k->keys.get_right_child_of_key(median));
+        k->keys.clear();
+        k->remove_node();
+    }
+
+    void push_to_parent(Btree* k)
+    {
+        if (parent->keys.size() < MAX_KEY_SIZE)
+        {
+            parent->insert(k);
+        }
+        else
+        {
+            parent->upwards_add(k);
+        }
     }
 };
 #endif
