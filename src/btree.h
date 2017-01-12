@@ -350,53 +350,70 @@ public:
     void add(int k)
     {
         auto n = get_node_for_key(k);
-        // element fits into the right node
         if (n->keys.size() < MAX_KEY_SIZE)
         {
             n->keys.add(k);
         }
         else
         {
-            auto left = new Btree(n->keys.get(0));
-            auto median = n->keys.get(1);
-            auto right = new Btree(k);
-            auto new_branch = new Btree(left, median, right);
-
-            if (n->parent == nullptr)
-            {
-                n->keys.clear();
-                n->insert(new_branch);
-            }
-            else
-            {
-                n->upwards_add(new_branch);
-            }
+            n->upwards_add(k);
         }
     }
 
-    void upwards_add(Btree* k)
+    void upwards_add(int k)
     {
-        if (keys.size() < MAX_KEY_SIZE)
+        auto left = new Btree(keys.get(0));
+        auto median = keys.get(1);
+        auto right = new Btree(k);
+
+        auto new_branch = new Btree(left, median, right);
+
+        if (parent == nullptr)
         {
-            insert(k);
-        }
-        else if (parent == nullptr)
-        {
-            int left_key = keys.get(0);
-            auto left = new Btree(
-                keys.get_left_child_of_key(left_key),
-                left_key,
-                keys.get_right_child_of_key(left_key)
-            );
-            auto median = keys.get(1);
-            auto right = k;
-            keys.clear();
-            insert(new Btree(left, median, right));
+            grow(new_branch);
         }
         else
         {
-            push_to_parent(k);
+            upwards_add(new_branch);
+            keys.clear();
+            remove_node();
         }
+    }
+
+    void grow(Btree* new_root)
+    {
+        keys.clear();
+        insert(new_root);
+    }
+
+    void upwards_add(Btree* branch)
+    {
+        if (keys.size() < MAX_KEY_SIZE)
+        {
+            insert(branch);
+        }
+        else if (parent == nullptr)
+        {
+            auto left = key_to_branch(0);
+            auto median = keys.get(1);
+            auto right = branch;
+
+            grow(new Btree(left, median, right));
+        }
+        else
+        {
+            parent->upwards_add(branch);
+        }
+    }
+
+    Btree* key_to_branch(int i)
+    {
+        int k = keys.get(i);
+        return new Btree(
+            keys.get_left_child_of_key(k),
+            k,
+            keys.get_right_child_of_key(k)
+        );
     }
 
     std::vector<int> dump(std::vector<int> result = std::vector<int>())
@@ -515,18 +532,6 @@ private:
         keys.set_right_child_for_key(median, k->keys.get_right_child_of_key(median));
         k->keys.clear();
         k->remove_node();
-    }
-
-    void push_to_parent(Btree* k)
-    {
-        if (parent->keys.size() < MAX_KEY_SIZE)
-        {
-            parent->insert(k);
-        }
-        else
-        {
-            parent->upwards_add(k);
-        }
     }
 };
 #endif
