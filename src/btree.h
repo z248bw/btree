@@ -360,7 +360,6 @@ public:
         }
     }
 
-
     std::vector<int> dump(std::vector<int> result = std::vector<int>())
     {
         if (!keys.is_leaf())
@@ -387,7 +386,6 @@ public:
             return keys.is_present(k);
         });
     }
-
 
     std::vector<int> get_keys()
     {
@@ -418,7 +416,6 @@ private:
         else
         {
             upwards_add(new_branch);
-            keys.clear();
             remove_node();
         }
     }
@@ -515,6 +512,7 @@ private:
 
     void remove_node()
     {
+        keys.clear();
         delete this;
     }
 
@@ -524,7 +522,6 @@ private:
         keys.insert(median);
         keys.set_left_child_for_key(median, k->keys.get_left_child_of_key(median));
         keys.set_right_child_for_key(median, k->keys.get_right_child_of_key(median));
-        k->keys.clear();
         k->remove_node();
     }
 };
