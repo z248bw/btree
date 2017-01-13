@@ -356,11 +356,54 @@ public:
         }
         else
         {
-            n->upwards_add(k);
+            n->start_upwards_add(k);
         }
     }
 
-    void upwards_add(int k)
+
+    std::vector<int> dump(std::vector<int> result = std::vector<int>())
+    {
+        if (!keys.is_leaf())
+        {
+            for (size_t i = 0; i < keys.size(); i++)
+            {
+                result = keys.get_left_child_of_key(keys.get(i))->dump(result);
+                result.push_back(keys.get(i));
+            }
+
+            result = keys.get_rightmost_child()->dump(result);
+        }
+        else
+        {
+            result.insert(result.end(), keys.begin(), keys.end());
+        }
+
+        return result;
+    }
+
+    Btree* find_node_with_key(int k)
+    {
+        return find(k, [k] (Keys keys) {
+            return keys.is_present(k);
+        });
+    }
+
+
+    std::vector<int> get_keys()
+    {
+        return keys.dump();
+    }
+
+    ~Btree()
+    {
+        for (auto it = keys.children_begin(); it != keys.children_end(); it++)
+        {
+            delete *it;
+        }
+    }
+
+private:
+    void start_upwards_add(int k)
     {
         auto left = new Btree(keys.get(0));
         auto median = keys.get(1);
@@ -416,36 +459,23 @@ public:
         );
     }
 
-    std::vector<int> dump(std::vector<int> result = std::vector<int>())
+    Btree* find_node_for_key(int k)
     {
-        if (!keys.is_leaf())
-        {
-            for (size_t i = 0; i < keys.size(); i++)
-            {
-                result = keys.get_left_child_of_key(keys.get(i))->dump(result);
-                result.push_back(keys.get(i));
-            }
-
-            result = keys.get_rightmost_child()->dump(result);
-        }
-        else
-        {
-            result.insert(result.end(), keys.begin(), keys.end());
-        }
-
-        return result;
+        return find(k, [k] (Keys keys) {
+            return keys.size() > 0 && keys.get_first() < k && k < keys.get_last();
+        });
     }
 
-    Btree* find(int k)
+    Btree* find(int k, std::function<bool(Keys)> is_the_right_node)
     {
-        if (keys.is_present(k))
+        if (is_the_right_node(keys))
         {
             return this;
         }
 
         for (auto it = keys.children_begin(); it != keys.children_end(); it++)
         {
-            auto result = (*it)->find(k);
+            auto result = (*it)->find(k, is_the_right_node);
             if (result != nullptr)
             {
                 return result;
@@ -454,21 +484,6 @@ public:
 
         return nullptr;
     }
-
-    std::vector<int> get_keys()
-    {
-        return keys.dump();
-    }
-
-    ~Btree()
-    {
-        for (auto it = keys.children_begin(); it != keys.children_end(); it++)
-        {
-            delete *it;
-        }
-    }
-
-private:
 
     Btree* get_node_for_key(int k)
     {
@@ -479,27 +494,6 @@ private:
         }
 
         return n;
-    }
-
-    // TODO: could be generalized look for find method
-    Btree* find_node_for_key(int k)
-    {
-        if (keys.size() > 0 && keys.get_first() < k && k < keys.get_last())
-        {
-            return this;
-        }
-
-        for (auto child = keys.children_begin(); child != keys.children_end(); child++)
-        {
-            auto result = (*child)->find_node_for_key(k);
-            if (result != nullptr)
-            {
-                return result;
-            }
-        }
-
-        // k is bigger than all other keys in the tree
-        return nullptr;
     }
 
     Btree* get_largest_child()
