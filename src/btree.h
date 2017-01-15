@@ -431,6 +431,8 @@ private:
         else
         {
             parent->upwards_add(new_branch);
+
+            remove_node();
         }
     }
 
