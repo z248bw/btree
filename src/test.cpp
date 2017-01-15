@@ -137,19 +137,26 @@ TEST(Btree, find_element_in_right_leaf) {
     ASSERT_EQ(1, Traversable::shallowest);
 }
 
-TEST(Btree, dump) {
+void incremental_test(int num_of_elems)
+{
     Btree t;
-    t.add(1);
-    t.add(2);
-    t.add(3);
+    for (int i = 0; i < num_of_elems; i++)
+    {
+        t.add(i);
+    }
+
     auto result = t.dump();
-    ASSERT_EQ(1, result[0]);
-    ASSERT_EQ(2, result[1]);
-    ASSERT_EQ(3, result[2]);
+    for (int i = 0; i < result.size(); i++)
+    {
+        ASSERT_EQ(i, result[i]);
+    }
 
     t.walk();
-    ASSERT_EQ(1, Traversable::deepest);
-    ASSERT_EQ(1, Traversable::shallowest);
+    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+}
+
+TEST(Btree, dump) {
+    incremental_test(3);
 }
 
 TEST(Btree, finds_place_of_new_element_in_the_tree) {
@@ -199,57 +206,9 @@ TEST(Btree, adding_new_element_moves_element_up_from_leaf) {
 }
 
 TEST(Btree, adding_new_element_moves_element_up_from_leaf_and_grows_tree) {
-    Btree t;
-    t.add(1);
-    t.add(2);
-    t.add(3);
-    t.add(4);
-    t.add(5);
-    t.add(6);
-    t.add(7);
-
-    auto result = t.dump();
-    ASSERT_EQ(1, result[0]);
-    ASSERT_EQ(2, result[1]);
-    ASSERT_EQ(3, result[2]);
-    ASSERT_EQ(4, result[3]);
-    ASSERT_EQ(5, result[4]);
-    ASSERT_EQ(6, result[5]);
-    ASSERT_EQ(7, result[6]);
-
-    t.walk();
-    ASSERT_EQ(2, Traversable::deepest);
-    ASSERT_EQ(2, Traversable::shallowest);
+    incremental_test(7);
 }
 
 TEST(Btree, big_tree) {
-    Btree t;
-    t.add(1);
-    t.add(2);
-    t.add(3);
-    t.add(4);
-    t.add(5);
-    t.add(6);
-    t.add(7);
-    t.add(8);
-    t.add(9);
-    t.add(10);
-    t.add(11);
-
-    auto result = t.dump();
-    ASSERT_EQ(1, result[0]);
-    ASSERT_EQ(2, result[1]);
-    ASSERT_EQ(3, result[2]);
-    ASSERT_EQ(4, result[3]);
-    ASSERT_EQ(5, result[4]);
-    ASSERT_EQ(6, result[5]);
-    ASSERT_EQ(7, result[6]);
-    ASSERT_EQ(8, result[7]);
-    ASSERT_EQ(9, result[8]);
-    ASSERT_EQ(10, result[9]);
-    ASSERT_EQ(11, result[10]);
-
-    t.walk();
-    ASSERT_EQ(2, Traversable::deepest);
-    ASSERT_EQ(2, Traversable::shallowest);
+    incremental_test(100);
 }
