@@ -91,8 +91,8 @@ TEST(Btree, find_element_which_is_not_present) {
     t.add(1);
     t.add(2);
     t.add(3);
-    t.find(4);
-    ASSERT_EQ(nullptr, t.find(4));
+    t.find_node_with_key(4);
+    ASSERT_EQ(nullptr, t.find_node_with_key(4));
 
     t.walk();
     ASSERT_EQ(1, Traversable::deepest);
@@ -104,8 +104,8 @@ TEST(Btree, find_element_in_root) {
     t.add(1);
     t.add(2);
     t.add(3);
-    t.find(4);
-    ASSERT_EQ(2, t.find(2)->get_keys()[0]);
+    t.find_node_with_key(4);
+    ASSERT_EQ(2, t.find_node_with_key(2)->get_keys()[0]);
 
     t.walk();
     ASSERT_EQ(1, Traversable::deepest);
@@ -117,7 +117,7 @@ TEST(Btree, find_element_in_left_leaf) {
     t.add(1);
     t.add(2);
     t.add(3);
-    ASSERT_EQ(1, t.find(1)->get_keys()[0]);
+    ASSERT_EQ(1, t.find_node_with_key(1)->get_keys()[0]);
 
     t.walk();
     ASSERT_EQ(1, Traversable::deepest);
@@ -129,26 +129,34 @@ TEST(Btree, find_element_in_right_leaf) {
     t.add(1);
     t.add(2);
     t.add(3);
-    ASSERT_EQ(3, t.find(3)->get_keys()[0]);
+    t.find_node_with_key(3)->get_keys();
+    ASSERT_EQ(3, t.find_node_with_key(3)->get_keys()[0]);
 
     t.walk();
     ASSERT_EQ(1, Traversable::deepest);
     ASSERT_EQ(1, Traversable::shallowest);
 }
 
-TEST(Btree, dump) {
+void incremental_test(int num_of_elems)
+{
     Btree t;
-    t.add(1);
-    t.add(2);
-    t.add(3);
+    for (int i = 0; i < num_of_elems; i++)
+    {
+        t.add(i);
+    }
+
     auto result = t.dump();
-    ASSERT_EQ(1, result[0]);
-    ASSERT_EQ(2, result[1]);
-    ASSERT_EQ(3, result[2]);
+    for (int i = 0; i < result.size(); i++)
+    {
+        ASSERT_EQ(i, result[i]);
+    }
 
     t.walk();
-    ASSERT_EQ(1, Traversable::deepest);
-    ASSERT_EQ(1, Traversable::shallowest);
+    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+}
+
+TEST(Btree, dump) {
+    incremental_test(3);
 }
 
 TEST(Btree, finds_place_of_new_element_in_the_tree) {
@@ -164,7 +172,7 @@ TEST(Btree, finds_place_of_new_element_in_the_tree) {
     ASSERT_EQ(3, result[2]);
     ASSERT_EQ(4, result[3]);
 
-    auto n = t.find(4);
+    auto n = t.find_node_with_key(4);
     ASSERT_EQ(3, n->get_keys()[0]);
     ASSERT_EQ(4, n->get_keys()[1]);
 
@@ -188,11 +196,19 @@ TEST(Btree, adding_new_element_moves_element_up_from_leaf) {
     ASSERT_EQ(4, result[3]);
     ASSERT_EQ(5, result[4]);
 
-    auto n = t.find(4);
+    auto n = t.find_node_with_key(4);
     ASSERT_EQ(2, n->get_keys()[0]);
     ASSERT_EQ(4, n->get_keys()[1]);
 
     t.walk();
     ASSERT_EQ(1, Traversable::deepest);
     ASSERT_EQ(1, Traversable::shallowest);
+}
+
+TEST(Btree, adding_new_element_moves_element_up_from_leaf_and_grows_tree) {
+    incremental_test(7);
+}
+
+TEST(Btree, big_tree) {
+    incremental_test(100);
 }
