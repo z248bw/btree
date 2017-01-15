@@ -418,22 +418,25 @@ private:
             return;
         }
 
-        auto left = key_to_branch(0);
-        auto median = keys.get(1);
-        auto right = branch;
-
-        auto new_branch = new Btree(left, median, right);
-
         if (parent == nullptr)
         {
-            grow(new_branch);
+            grow(separate_current_for_unfitting(branch));
         }
         else
         {
-            parent->upwards_add(new_branch);
+            parent->upwards_add(separate_current_for_unfitting(branch));
 
             remove_node();
         }
+    }
+
+    Btree* separate_current_for_unfitting(Btree* unfitting)
+    {
+        auto left = key_to_branch(0);
+        auto median = keys.get(1);
+        auto right = unfitting;
+
+        return new Btree(left, median, right);
     }
 
     Btree* key_to_branch(int i)
