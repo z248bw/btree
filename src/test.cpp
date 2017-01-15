@@ -213,18 +213,28 @@ TEST(Btree, big_tree) {
     incremental_test(100);
 }
 
-TEST(Btree, decrement_adding_grow) {
+void decremental_test(int num_of_elems)
+{
     Btree t;
-    t.add(3);
-    t.add(2);
-    t.add(1);
+    for (int i = num_of_elems; i > 0; i--)
+    {
+        t.add(i);
+    }
 
     auto result = t.dump();
-    ASSERT_EQ(1, result[0]);
-    ASSERT_EQ(2, result[1]);
-    ASSERT_EQ(3, result[2]);
+    for (int i = 0; i < result.size(); i++)
+    {
+        ASSERT_EQ(i+1, result[i]);
+    }
 
     t.walk();
-    ASSERT_EQ(1, Traversable::deepest);
-    ASSERT_EQ(1, Traversable::shallowest);
+    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+}
+
+TEST(Btree, decrement_adding_grow) {
+    decremental_test(3);
+}
+
+TEST(Btree, decrement_big_tree) {
+    decremental_test(4);
 }
