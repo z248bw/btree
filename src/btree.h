@@ -398,7 +398,7 @@ private:
         }
         else
         {
-            upwards_add(new_branch);
+            parent->upwards_add(new_branch);
             remove_node();
         }
     }
@@ -414,18 +414,23 @@ private:
         if (keys.size() < MAX_KEY_SIZE)
         {
             insert(branch);
-        }
-        else if (parent == nullptr)
-        {
-            auto left = key_to_branch(0);
-            auto median = keys.get(1);
-            auto right = branch;
 
-            grow(new Btree(left, median, right));
+            return;
+        }
+
+        auto left = key_to_branch(0);
+        auto median = keys.get(1);
+        auto right = branch;
+
+        auto new_branch = new Btree(left, median, right);
+
+        if (parent == nullptr)
+        {
+            grow(new_branch);
         }
         else
         {
-            parent->upwards_add(branch);
+            parent->upwards_add(new_branch);
         }
     }
 

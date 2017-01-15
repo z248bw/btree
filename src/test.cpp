@@ -233,6 +233,8 @@ TEST(Btree, big_tree) {
     t.add(7);
     t.add(8);
     t.add(9);
+    t.add(10);
+    t.add(11);
 
     auto result = t.dump();
     ASSERT_EQ(1, result[0]);
@@ -244,6 +246,8 @@ TEST(Btree, big_tree) {
     ASSERT_EQ(7, result[6]);
     ASSERT_EQ(8, result[7]);
     ASSERT_EQ(9, result[8]);
+    ASSERT_EQ(10, result[9]);
+    ASSERT_EQ(11, result[10]);
 
     t.walk();
     ASSERT_EQ(2, Traversable::deepest);
