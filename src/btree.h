@@ -142,23 +142,6 @@ private:
             std::sort(keys.begin(), keys.end());
         }
 
-        void set(size_t i, int k)
-        {
-            if (i < keys.size())
-            {
-                keys[i] = k;
-            }
-            else
-            {
-                add(k);
-            }
-        }
-
-        void insert(int k)
-        {
-            keys.insert(keys.begin() + get_pos_of_key(k), k);
-        }
-
         bool is_present(int k)
         {
             if (std::binary_search(keys.begin(), keys.end(), k))
@@ -342,7 +325,7 @@ public:
 
     Btree(Btree* left, int median, Btree* right)
     {
-        keys.insert(median);
+        keys.add(median);
         keys.set_left_child_for_key(median, left);
         keys.set_right_child_for_key(median, right);
     }
@@ -519,7 +502,7 @@ private:
     void insert(Btree* k)
     {
         auto median = k->keys.get_first();
-        keys.insert(median);
+        keys.add(median);
         keys.set_left_child_for_key(median, k->keys.get_left_child_of_key(median));
         keys.set_right_child_for_key(median, k->keys.get_right_child_of_key(median));
         k->remove_node();
