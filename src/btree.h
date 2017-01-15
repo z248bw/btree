@@ -318,12 +318,12 @@ public:
         keys = Keys(this);
     }
 
-    Btree(int k)
+    Btree(int k): Btree()
     {
         keys.add(k);
     }
 
-    Btree(Btree* left, int median, Btree* right)
+    Btree(Btree* left, int median, Btree* right): Btree()
     {
         keys.add(median);
         keys.set_left_child_for_key(median, left);
