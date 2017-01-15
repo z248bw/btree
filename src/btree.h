@@ -152,6 +152,15 @@ private:
             return false;
         }
 
+        int get_median_with_new_key(int k)
+        {
+            std::vector<int> tmp(keys);
+            tmp.push_back(k);
+            std::sort(tmp.begin(), tmp.end());
+
+            return tmp[1];
+        }
+
         int get_first()
         {
             return keys[0];
@@ -386,19 +395,13 @@ public:
 private:
     void start_upwards_add(int k)
     {
-        auto left = new Btree(keys.get(0));
-        auto median = keys.get(1);
-        auto right = new Btree(k);
-
-        auto new_branch = new Btree(left, median, right);
-
         if (parent == nullptr)
         {
-            grow(new_branch);
+            grow(seperate_current_for_unfitting(new Btree(k)));
         }
         else
         {
-            parent->upwards_add(new_branch);
+            parent->upwards_add(seperate_current_for_unfitting(new Btree(k)));
             remove_node();
         }
     }
@@ -420,21 +423,47 @@ private:
 
         if (parent == nullptr)
         {
-            grow(separate_current_for_unfitting(branch));
+            grow(seperate_current_for_unfitting(branch));
         }
         else
         {
-            parent->upwards_add(separate_current_for_unfitting(branch));
+            parent->upwards_add(seperate_current_for_unfitting(branch));
 
             remove_node();
         }
     }
 
-    Btree* separate_current_for_unfitting(Btree* unfitting)
+    Btree* seperate_current_for_unfitting(Btree* unfitting)
     {
-        auto left = key_to_branch(0);
-        auto median = keys.get(1);
-        auto right = unfitting;
+        auto unfitting_key = unfitting->keys.get_first();
+        auto median = keys.get_median_with_new_key(unfitting_key);
+        Btree* left;
+        Btree* right;
+
+        if (median == unfitting_key)
+        {
+            left = key_to_branch(0);
+            right = key_to_branch(1);
+
+            // because key_to_branch always transforms a new branch wih 1 key
+            // the insertion to left and right will not be recursive
+            left->insert(unfitting->keys.get_left_child_of_key(unfitting_key));
+            right->insert(unfitting->keys.get_right_child_of_key(unfitting_key));
+        }
+        else
+        {
+
+            if (median < unfitting_key)
+            {
+                left = key_to_branch(0);
+                right = unfitting;
+            }
+            else
+            {
+                left = unfitting;
+                right = key_to_branch(1);
+            }
+        }
 
         return new Btree(left, median, right);
     }

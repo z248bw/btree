@@ -212,3 +212,19 @@ TEST(Btree, adding_new_element_moves_element_up_from_leaf_and_grows_tree) {
 TEST(Btree, big_tree) {
     incremental_test(100);
 }
+
+TEST(Btree, decrement_adding_grow) {
+    Btree t;
+    t.add(3);
+    t.add(2);
+    t.add(1);
+
+    auto result = t.dump();
+    ASSERT_EQ(1, result[0]);
+    ASSERT_EQ(2, result[1]);
+    ASSERT_EQ(3, result[2]);
+
+    t.walk();
+    ASSERT_EQ(1, Traversable::deepest);
+    ASSERT_EQ(1, Traversable::shallowest);
+}
