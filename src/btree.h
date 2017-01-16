@@ -341,7 +341,7 @@ public:
 
     void add(int k)
     {
-        auto n = get_node_for_key(k);
+        auto n = get_leaf_for_key(k);
         if (n->keys.size() < MAX_KEY_SIZE)
         {
             n->keys.add(k);
@@ -374,9 +374,21 @@ public:
 
     Btree* find_node_with_key(int k)
     {
-        return find(k, [k] (Keys keys) {
-            return keys.is_present(k);
-        });
+        if (keys.is_present(k))
+        {
+            return this;
+        }
+
+        for (auto it = keys.children_begin(); it != keys.children_end(); it++)
+        {
+            auto result = (*it)->find_node_with_key(k);
+            if (result != nullptr)
+            {
+                return result;
+            }
+        }
+
+        return nullptr;
     }
 
     std::vector<int> get_keys()
@@ -478,58 +490,30 @@ private:
         );
     }
 
-    Btree* find_node_for_key(int k)
+    Btree* get_leaf_for_key(int k)
     {
-        return find(k, [k] (Keys keys) {
-            return keys.size() > 0 && keys.get_first() < k && k < keys.get_last();
-        });
-    }
-
-    Btree* find(int k, std::function<bool(Keys)> is_the_right_node)
-    {
-        if (is_the_right_node(keys))
+        if (keys.is_leaf())
         {
             return this;
         }
 
-        for (auto it = keys.children_begin(); it != keys.children_end(); it++)
+        return select_branch_for_key(k)->get_leaf_for_key(k);
+    }
+
+    Btree* select_branch_for_key(int new_key)
+    {
+        auto ks = keys.dump();
+        Btree* branch_for_key = keys.get_left_child_of_key(keys.get_first());
+
+        for (auto key : ks)
         {
-            auto result = (*it)->find(k, is_the_right_node);
-            if (result != nullptr)
+            if (key < new_key)
             {
-                return result;
+                branch_for_key = keys.get_right_child_of_key(key);
             }
         }
 
-        return nullptr;
-    }
-
-    Btree* get_node_for_key(int k)
-    {
-        auto n = find_node_for_key(k);
-        if (n == nullptr)
-        {
-            return get_largest_child();
-        }
-
-        return n;
-    }
-
-    Btree* get_largest_child()
-    {
-        // if current is the root without any keys
-        if (keys.size() == 0)
-        {
-            return this;
-        }
-
-        auto largest_child = keys.get_right_child_of_key(keys.get_last());
-        if (largest_child == nullptr)
-        {
-            return this;
-        }
-
-        return largest_child->get_largest_child();
+        return branch_for_key;
     }
 
     void remove_node()

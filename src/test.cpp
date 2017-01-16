@@ -235,6 +235,6 @@ TEST(Btree, decrement_adding_grow) {
     decremental_test(3);
 }
 
-TEST(Btree, decrement_big_tree) {
+TEST(Btree, decrement_find_node) {
     decremental_test(4);
 }
