@@ -122,6 +122,21 @@ public:
 class Btree : public Traversable
 {
 private:
+    struct Key
+    {
+        int value;
+        Btree* left;
+        Btree* right;
+
+        Key(int v): value(v), left(nullptr), right(nullptr) {}
+        Key(int v, Btree* left, Btree* right): value(v), left(left), right(right) {}
+
+        operator int() const
+        {
+            return value;
+        }
+    };
+
     class Keys
     {
     private:
@@ -131,15 +146,17 @@ private:
 
     public:
         Keys(Btree* owner): owner(owner) {}
-        int get(size_t i)
+
+        Key get_key(size_t i)
         {
-            return keys[i];
+            return Key(keys[i], get_child(i), get_child(i+1));
         }
 
-        void add(int k)
+        void add(Key k)
         {
-            keys.push_back(k);
-            std::sort(keys.begin(), keys.end());
+            auto pos = get_pos_of_key(k);
+            keys.insert(keys.begin() + pos, k);
+            set_children_of_key(k);
         }
 
         bool is_present(int k)
@@ -161,14 +178,16 @@ private:
             return tmp[1];
         }
 
-        int get_first()
+        Key get_first_key()
         {
-            return keys[0];
+            return Key(keys[0], get_child(0), get_child(1));
         }
 
-        int get_last()
+        Key get_last_key()
         {
-            return keys[keys.size()-1];
+            auto last_index = keys.size()-1;
+
+            return Key(keys[last_index], get_child(last_index), get_child(last_index + 1));
         }
 
         std::vector<int>::iterator begin()
@@ -212,59 +231,6 @@ private:
             return children.end();
         }
 
-        void set_children_of_key(int k, Btree* left, Btree* right)
-        {
-            if (left == nullptr || right == nullptr)
-            {
-                return;
-            }
-
-            left->parent = owner;
-            right->parent = owner;
-
-            size_t pos = get_pos_of_key(k);
-            size_t children_size = children.size();
-
-            if (children_size == 0)
-            {
-                children.push_back(left);
-            }
-            else
-            {
-                children[pos] = left;
-            }
-
-            if (children_size < pos + 2)
-            {
-                children.push_back(right);
-            }
-            else
-            {
-                children[pos + 1] = right;
-            }
-        }
-
-        Btree* get_left_child_of_key(int k)
-        {
-            auto i = get_pos_of_key(k);
-            if (children.size() == 0 || children.size() < i)
-            {
-                return nullptr;
-            }
-
-            return children[i];
-        }
-
-        Btree* get_right_child_of_key(int k)
-        {
-            auto i = get_pos_of_key(k)+1;
-            if (children.size() < i)
-            {
-                return nullptr;
-            }
-
-            return children[i];
-        }
 
         Btree* get_rightmost_child()
         {
@@ -290,6 +256,48 @@ private:
             //TODO
             // should never happern
             return -1;
+        }
+
+        Btree* get_child(size_t i)
+        {
+            if (children.size() < i+1)
+            {
+                return nullptr;
+            }
+
+            return children[i];
+        }
+
+        void set_children_of_key(Key k)
+        {
+            if (k.left == nullptr || k.right == nullptr)
+            {
+                return;
+            }
+
+            k.left->parent = owner;
+            k.right->parent = owner;
+
+            size_t pos = get_pos_of_key(k.value);
+            size_t children_size = children.size();
+
+            if (children_size == 0)
+            {
+                children.push_back(k.left);
+            }
+            else
+            {
+                children[pos] = k.left;
+            }
+
+            if (children_size < pos + 2)
+            {
+                children.push_back(k.right);
+            }
+            else
+            {
+                children[pos + 1] = k.right;
+            }
         }
 
     };
@@ -324,13 +332,12 @@ public:
 
     Btree(int k): Btree()
     {
-        keys.add(k);
+        keys.add(Key(k));
     }
 
-    Btree(Btree* left, int median, Btree* right): Btree()
+    Btree(Key k): Btree()
     {
-        keys.add(median);
-        keys.set_children_of_key(median, left, right);
+        keys.add(k);
     }
 
     void add(int k)
@@ -338,7 +345,7 @@ public:
         auto n = get_leaf_for_key(k);
         if (n->keys.size() < MAX_KEY_SIZE)
         {
-            n->keys.add(k);
+            n->keys.add(Key(k));
         }
         else
         {
@@ -352,8 +359,9 @@ public:
         {
             for (size_t i = 0; i < keys.size(); i++)
             {
-                result = keys.get_left_child_of_key(keys.get(i))->dump(result);
-                result.push_back(keys.get(i));
+                Key k = keys.get_key(i);
+                result = k.left->dump(result);
+                result.push_back(k.value);
             }
 
             result = keys.get_rightmost_child()->dump(result);
@@ -428,47 +436,34 @@ private:
 
     Btree* seperate_current_for_unfitting(Btree* unfitting)
     {
-        auto unfitting_key = unfitting->keys.get_first();
-        auto median = keys.get_median_with_new_key(unfitting_key);
-        Btree* left;
-        Btree* right;
+        auto unfitting_key = unfitting->keys.get_first_key();
+        auto median = keys.get_median_with_new_key(unfitting_key.value);
+        Key seperated(median);
 
-        if (median == unfitting_key)
+        if (median == unfitting_key.value)
         {
-            left = key_to_branch(0);
-            right = key_to_branch(1);
+            seperated.left = new Btree(keys.get_key(0));
+            seperated.right = new Btree(keys.get_key(1));
 
-            // because key_to_branch always transforms a new branch wih 1 key
-            // the insertion to left and right will not be recursive
-            left->insert(unfitting->keys.get_left_child_of_key(unfitting_key));
-            right->insert(unfitting->keys.get_right_child_of_key(unfitting_key));
+            seperated.left->insert(unfitting_key.left);
+            seperated.right->insert(unfitting_key.right);
         }
         else
         {
 
-            if (median < unfitting_key)
+            if (median < unfitting_key.value)
             {
-                left = key_to_branch(0);
-                right = unfitting;
+                seperated.left = new Btree(keys.get_key(0));
+                seperated.right = unfitting;
             }
             else
             {
-                left = unfitting;
-                right = key_to_branch(1);
+                seperated.left = unfitting;
+                seperated.right = new Btree(keys.get_key(1));
             }
         }
 
-        return new Btree(left, median, right);
-    }
-
-    Btree* key_to_branch(int i)
-    {
-        int k = keys.get(i);
-        return new Btree(
-            keys.get_left_child_of_key(k),
-            k,
-            keys.get_right_child_of_key(k)
-        );
+        return new Btree(seperated);
     }
 
     Btree* get_leaf_for_key(int k)
@@ -483,14 +478,14 @@ private:
 
     Btree* select_branch_for_key(int new_key)
     {
-        auto ks = keys.dump();
-        Btree* branch_for_key = keys.get_left_child_of_key(keys.get_first());
+        Btree* branch_for_key = keys.get_first_key().left;
 
-        for (auto key : ks)
+        for (size_t i = 0; i < keys.size(); i++)
         {
-            if (key < new_key)
+            auto key = keys.get_key(i);
+            if (key.value < new_key)
             {
-                branch_for_key = keys.get_right_child_of_key(key);
+                branch_for_key = key.right;
             }
         }
 
@@ -505,11 +500,7 @@ private:
 
     void insert(Btree* k)
     {
-        auto median = k->keys.get_first();
-        keys.add(median);
-        auto left = k->keys.get_left_child_of_key(median);
-        auto right = k->keys.get_right_child_of_key(median);
-        keys.set_children_of_key(median, left, right);
+        keys.add(k->keys.get_first_key());
         k->remove_node();
     }
 };
