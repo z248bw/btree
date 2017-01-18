@@ -422,13 +422,15 @@ private:
             return;
         }
 
+        branch = seperate_current_for_unfitting(branch);
+
         if (parent == nullptr)
         {
-            grow(seperate_current_for_unfitting(branch));
+            grow(branch);
         }
         else
         {
-            parent->upwards_add(seperate_current_for_unfitting(branch));
+            parent->upwards_add(branch);
 
             remove_node();
         }
