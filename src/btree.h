@@ -122,14 +122,14 @@ public:
 class Btree : public Traversable
 {
 private:
-    struct Key
+    struct Branch
     {
         int value;
         Btree* left;
         Btree* right;
 
-        Key(int v): value(v), left(nullptr), right(nullptr) {}
-        Key(int v, Btree* left, Btree* right): value(v), left(left), right(right) {}
+        Branch(int v): value(v), left(nullptr), right(nullptr) {}
+        Branch(int v, Btree* left, Btree* right): value(v), left(left), right(right) {}
 
         operator int() const
         {
@@ -147,12 +147,12 @@ private:
     public:
         Keys(Btree* owner): owner(owner) {}
 
-        Key get_key(size_t i)
+        Branch get_branch(size_t i)
         {
-            return Key(keys[i], get_child(i), get_child(i+1));
+            return Branch(keys[i], get_child(i), get_child(i+1));
         }
 
-        void add(Key k)
+        void add(Branch k)
         {
             auto pos = get_pos_of_key(k);
             keys.insert(keys.begin() + pos, k);
@@ -178,16 +178,16 @@ private:
             return tmp[1];
         }
 
-        Key get_first_key()
+        Branch get_first_branch()
         {
-            return Key(keys[0], get_child(0), get_child(1));
+            return Branch(keys[0], get_child(0), get_child(1));
         }
 
-        Key get_last_key()
+        Branch get_last_branch()
         {
             auto last_index = keys.size()-1;
 
-            return Key(keys[last_index], get_child(last_index), get_child(last_index + 1));
+            return Branch(keys[last_index], get_child(last_index), get_child(last_index + 1));
         }
 
         std::vector<int>::iterator begin()
@@ -268,7 +268,7 @@ private:
             return children[i];
         }
 
-        void set_children_of_key(Key k)
+        void set_children_of_key(Branch k)
         {
             if (k.left == nullptr || k.right == nullptr)
             {
@@ -332,10 +332,10 @@ public:
 
     Btree(int k): Btree()
     {
-        keys.add(Key(k));
+        keys.add(Branch(k));
     }
 
-    Btree(Key k): Btree()
+    Btree(Branch k): Btree()
     {
         keys.add(k);
     }
@@ -345,7 +345,7 @@ public:
         auto n = get_leaf_for_key(k);
         if (n->keys.size() < MAX_KEY_SIZE)
         {
-            n->keys.add(Key(k));
+            n->keys.add(Branch(k));
         }
         else
         {
@@ -359,7 +359,7 @@ public:
         {
             for (size_t i = 0; i < keys.size(); i++)
             {
-                Key k = keys.get_key(i);
+                Branch k = keys.get_branch(i);
                 result = k.left->dump(result);
                 result.push_back(k.value);
             }
@@ -436,30 +436,30 @@ private:
 
     Btree* seperate_current_for_unfitting(Btree* unfitting)
     {
-        auto unfitting_key = unfitting->keys.get_first_key();
-        auto median = keys.get_median_with_new_key(unfitting_key.value);
-        Key seperated(median);
+        auto unfitting_branch = unfitting->keys.get_first_branch();
+        auto median = keys.get_median_with_new_key(unfitting_branch.value);
+        Branch seperated(median);
 
-        if (median == unfitting_key.value)
+        if (median == unfitting_branch.value)
         {
-            seperated.left = new Btree(keys.get_key(0));
-            seperated.right = new Btree(keys.get_key(1));
+            seperated.left = new Btree(keys.get_branch(0));
+            seperated.right = new Btree(keys.get_branch(1));
 
-            seperated.left->insert(unfitting_key.left);
-            seperated.right->insert(unfitting_key.right);
+            seperated.left->insert(unfitting_branch.left);
+            seperated.right->insert(unfitting_branch.right);
         }
         else
         {
 
-            if (median < unfitting_key.value)
+            if (median < unfitting_branch.value)
             {
-                seperated.left = new Btree(keys.get_key(0));
+                seperated.left = new Btree(keys.get_branch(0));
                 seperated.right = unfitting;
             }
             else
             {
                 seperated.left = unfitting;
-                seperated.right = new Btree(keys.get_key(1));
+                seperated.right = new Btree(keys.get_branch(1));
             }
         }
 
@@ -478,11 +478,11 @@ private:
 
     Btree* select_branch_for_key(int new_key)
     {
-        Btree* branch_for_key = keys.get_first_key().left;
+        Btree* branch_for_key = keys.get_first_branch().left;
 
         for (size_t i = 0; i < keys.size(); i++)
         {
-            auto key = keys.get_key(i);
+            auto key = keys.get_branch(i);
             if (key.value < new_key)
             {
                 branch_for_key = key.right;
@@ -500,7 +500,7 @@ private:
 
     void insert(Btree* k)
     {
-        keys.add(k->keys.get_first_key());
+        keys.add(k->keys.get_first_branch());
         k->remove_node();
     }
 };
