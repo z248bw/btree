@@ -246,3 +246,19 @@ TEST(Btree, decrement_upwards_add) {
 TEST(Btree, decrement_big_tree) {
     decremental_test(100);
 }
+
+TEST(Btree, mixed_grow) {
+    Btree t;
+    t.add(1);
+    t.add(20);
+    t.add(2);
+
+    auto result = t.dump();
+
+    ASSERT_EQ(1, result[0]);
+    ASSERT_EQ(2, result[1]);
+    ASSERT_EQ(20, result[2]);
+
+    t.walk();
+    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+}

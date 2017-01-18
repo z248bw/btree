@@ -5,6 +5,7 @@
 #include<iterator>
 #include<algorithm>
 #include<functional>
+#include<assert.h>
 
 #define MAX_KEY_SIZE 2
 #define MAX_INT 99999
@@ -129,6 +130,19 @@ private:
         Btree* right;
 
         Branch(int v): value(v), left(nullptr), right(nullptr) {}
+
+        // TODO
+        // there must be a better way to achieve this
+        Branch(Btree* b)
+        {
+            assert(b->keys.size() == 1);
+
+            auto branch = b->keys.get_branch(0);
+            value = branch.value;
+            left = branch.left;
+            right = branch.right;
+        }
+
         Branch(int v, Btree* left, Btree* right): value(v), left(left), right(right) {}
 
         operator int() const
@@ -369,7 +383,7 @@ public:
         }
         else
         {
-            n->upwards_add(new Btree(k));
+            n->upwards_add(Branch(k));
         }
     }
 
@@ -453,7 +467,7 @@ private:
         return branch_for_key;
     }
 
-    void upwards_add(Btree* branch)
+    void upwards_add(Branch branch)
     {
         if (keys.size() < MAX_KEY_SIZE)
         {
@@ -476,45 +490,43 @@ private:
         }
     }
 
-    void insert(Btree* k)
+    void insert(Branch k)
     {
-        keys.add(k->keys.get_first_branch());
-        k->remove_node();
+        keys.add(k);
     }
 
-    Btree* seperate_current_for_unfitting(Btree* unfitting)
+    Branch seperate_current_for_unfitting(Branch unfitting)
     {
-        auto unfitting_branch = unfitting->keys.get_first_branch();
-        auto median = keys.get_median_with_new_key(unfitting_branch.value);
+        auto median = keys.get_median_with_new_key(unfitting.value);
         Branch seperated(median);
 
-        if (median == unfitting_branch.value)
+        if (median == unfitting.value)
         {
+            // TODO extract to method
             seperated.left = new Btree(keys.get_branch(0));
             seperated.right = new Btree(keys.get_branch(1));
 
-            seperated.left->insert(unfitting_branch.left);
-            seperated.right->insert(unfitting_branch.right);
+            if (unfitting.left != nullptr && unfitting.right != nullptr)
+            {
+                seperated.left->insert(Branch(unfitting.left));
+                seperated.right->insert(Branch(unfitting.right));
+            }
+        }
+        else if (median < unfitting.value)
+        {
+            seperated.left = new Btree(keys.get_branch(0));
+            seperated.right = new Btree(unfitting);
         }
         else
         {
-
-            if (median < unfitting_branch.value)
-            {
-                seperated.left = new Btree(keys.get_branch(0));
-                seperated.right = unfitting;
-            }
-            else
-            {
-                seperated.left = unfitting;
-                seperated.right = new Btree(keys.get_branch(1));
-            }
+            seperated.left = new Btree(unfitting);
+            seperated.right = new Btree(keys.get_branch(1));
         }
 
-        return new Btree(seperated);
+        return seperated;
     }
 
-    void grow(Btree* new_root)
+    void grow(Branch new_root)
     {
         keys.clear();
         insert(new_root);
