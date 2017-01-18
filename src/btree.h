@@ -407,10 +407,30 @@ public:
     }
 
 private:
-    void grow(Btree* new_root)
+    Btree* get_leaf_for_key(int k)
     {
-        keys.clear();
-        insert(new_root);
+        if (keys.is_leaf())
+        {
+            return this;
+        }
+
+        return select_branch_for_key(k)->get_leaf_for_key(k);
+    }
+
+    Btree* select_branch_for_key(int new_key)
+    {
+        Btree* branch_for_key = keys.get_first_branch().left;
+
+        for (size_t i = 0; i < keys.size(); i++)
+        {
+            auto key = keys.get_branch(i);
+            if (key.value < new_key)
+            {
+                branch_for_key = key.right;
+            }
+        }
+
+        return branch_for_key;
     }
 
     void upwards_add(Btree* branch)
@@ -434,6 +454,12 @@ private:
 
             remove_node();
         }
+    }
+
+    void insert(Btree* k)
+    {
+        keys.add(k->keys.get_first_branch());
+        k->remove_node();
     }
 
     Btree* seperate_current_for_unfitting(Btree* unfitting)
@@ -468,30 +494,10 @@ private:
         return new Btree(seperated);
     }
 
-    Btree* get_leaf_for_key(int k)
+    void grow(Btree* new_root)
     {
-        if (keys.is_leaf())
-        {
-            return this;
-        }
-
-        return select_branch_for_key(k)->get_leaf_for_key(k);
-    }
-
-    Btree* select_branch_for_key(int new_key)
-    {
-        Btree* branch_for_key = keys.get_first_branch().left;
-
-        for (size_t i = 0; i < keys.size(); i++)
-        {
-            auto key = keys.get_branch(i);
-            if (key.value < new_key)
-            {
-                branch_for_key = key.right;
-            }
-        }
-
-        return branch_for_key;
+        keys.clear();
+        insert(new_root);
     }
 
     void remove_node()
@@ -500,10 +506,5 @@ private:
         delete this;
     }
 
-    void insert(Btree* k)
-    {
-        keys.add(k->keys.get_first_branch());
-        k->remove_node();
-    }
 };
 #endif
