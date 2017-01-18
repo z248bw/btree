@@ -238,3 +238,7 @@ TEST(Btree, decrement_adding_grow) {
 TEST(Btree, decrement_find_node) {
     decremental_test(4);
 }
+
+TEST(Btree, decrement_upwards_add) {
+    decremental_test(5);
+}

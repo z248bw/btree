@@ -156,7 +156,15 @@ private:
         {
             auto pos = get_pos_of_key(k);
             keys.insert(keys.begin() + pos, k);
-            set_children_of_key(k);
+
+            if (pos+1 < keys.size())
+            {
+                insert_children(pos, k);
+            }
+            else
+            {
+                set_children(pos, k);
+            }
         }
 
         bool is_present(int k)
@@ -268,7 +276,7 @@ private:
             return children[i];
         }
 
-        void set_children_of_key(Branch k)
+        void set_children(size_t pos, Branch k)
         {
             if (k.left == nullptr || k.right == nullptr)
             {
@@ -278,7 +286,6 @@ private:
             k.left->parent = owner;
             k.right->parent = owner;
 
-            size_t pos = get_pos_of_key(k.value);
             size_t children_size = children.size();
 
             if (children_size == 0)
@@ -300,6 +307,19 @@ private:
             }
         }
 
+        void insert_children(size_t pos, Branch k)
+        {
+            if (k.left == nullptr || k.right == nullptr)
+            {
+                return;
+            }
+
+            k.left->parent = owner;
+            k.right->parent = owner;
+
+            children.insert(children.begin() + pos, k.left);
+            children[pos+1] = k.right;
+        }
     };
 
     Btree* parent = nullptr;
@@ -325,7 +345,7 @@ protected:
     }
 
 public:
-    Btree(Btree* parent = nullptr): parent(parent)
+    Btree()
     {
         keys = Keys(this);
     }
