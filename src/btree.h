@@ -130,19 +130,6 @@ private:
         Btree* right;
 
         Branch(int v): value(v), left(nullptr), right(nullptr) {}
-
-        // TODO
-        // there must be a better way to achieve this
-        Branch(Btree* b)
-        {
-            assert(b->keys.size() == 1);
-
-            auto branch = b->keys.get_branch(0);
-            value = branch.value;
-            left = branch.left;
-            right = branch.right;
-        }
-
         Branch(int v, Btree* left, Btree* right): value(v), left(left), right(right) {}
 
         operator int() const
@@ -502,15 +489,8 @@ private:
 
         if (median == unfitting.value)
         {
-            // TODO extract to method
             seperated.left = new Btree(keys.get_branch(0));
             seperated.right = new Btree(keys.get_branch(1));
-
-            if (unfitting.left != nullptr && unfitting.right != nullptr)
-            {
-                seperated.left->insert(Branch(unfitting.left));
-                seperated.right->insert(Branch(unfitting.right));
-            }
         }
         else if (median < unfitting.value)
         {
