@@ -266,14 +266,9 @@ private:
                 }
             }
 
-            if (keys.size() < MAX_KEY_SIZE)
-            {
-                return keys.size();
-            }
+            assert(keys.size() < MAX_KEY_SIZE);
 
-            //TODO
-            // should never happern
-            return -1;
+            return keys.size();
         }
 
         Btree* get_child(size_t i)
@@ -505,15 +500,10 @@ private:
             {
                 left_branch.right = unfitting.left;
                 right_branch.left = unfitting.right;
+            }
 
-                seperated.left = new Btree(left_branch);
-                seperated.right = new Btree(right_branch);
-            }
-            else
-            {
-                seperated.left = new Btree(left_branch);
-                seperated.right = new Btree(right_branch);
-            }
+            seperated.left = new Btree(left_branch);
+            seperated.right = new Btree(right_branch);
         }
         else if (median < unfitting.value)
         {
