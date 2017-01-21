@@ -131,6 +131,15 @@ private:
 
         Branch(int v): value(v), left(nullptr), right(nullptr) {}
         Branch(int v, Btree* left, Btree* right): value(v), left(left), right(right) {}
+        Branch(Btree* b)
+        {
+            assert(b->keys.size() == 1);
+
+            auto branch = b->keys.get_branch(0);
+            value = branch.value;
+            left = branch.left;
+            right = branch.right;
+        }
 
         operator int() const
         {
@@ -463,15 +472,15 @@ private:
             return;
         }
 
-        branch = seperate_current_for_unfitting(branch);
+        auto seperated = seperate_current_for_unfitting(branch);
 
         if (parent == nullptr)
         {
-            grow(branch);
+            grow(seperated);
         }
         else
         {
-            parent->upwards_add(branch);
+            parent->upwards_add(seperated);
 
             remove_node();
         }
@@ -489,8 +498,22 @@ private:
 
         if (median == unfitting.value)
         {
-            seperated.left = new Btree(keys.get_branch(0));
-            seperated.right = new Btree(keys.get_branch(1));
+            auto left_branch = keys.get_branch(0);
+            auto right_branch = keys.get_branch(1);
+
+            if (unfitting.left != nullptr && unfitting.right != nullptr)
+            {
+                left_branch.right = unfitting.left;
+                right_branch.left = unfitting.right;
+
+                seperated.left = new Btree(left_branch);
+                seperated.right = new Btree(right_branch);
+            }
+            else
+            {
+                seperated.left = new Btree(left_branch);
+                seperated.right = new Btree(right_branch);
+            }
         }
         else if (median < unfitting.value)
         {

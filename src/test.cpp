@@ -263,11 +263,53 @@ TEST(Btree, mixed_grow) {
     ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
 }
 
-TEST(Btree, mixed_1_here_1_there_big) {
+TEST(Btree, mixed_find) {
     Btree t;
     t.add(1);
     t.add(20);
     t.add(2);
+    t.add(19);
+
+    auto result = t.dump();
+
+    ASSERT_EQ(1, result[0]);
+    ASSERT_EQ(2, result[1]);
+    ASSERT_EQ(19, result[2]);
+    ASSERT_EQ(20, result[3]);
+
+    t.walk();
+    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+}
+
+TEST(Btree, mixed_recursive_grow) {
+    Btree t;
+    t.add(1);
+    t.add(20);
+    t.add(2);
+    t.add(19);
+    t.add(3);
+    t.add(18);
+    t.add(4);
+
+    auto result = t.dump();
+
+    ASSERT_EQ(1, result[0]);
+    ASSERT_EQ(2, result[1]);
+    ASSERT_EQ(3, result[2]);
+    ASSERT_EQ(4, result[3]);
+    ASSERT_EQ(18, result[4]);
+    ASSERT_EQ(19, result[5]);
+    ASSERT_EQ(20, result[6]);
+
+    t.walk();
+    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+}
+
+//TEST(Btree, mixed_1_here_1_there_big) {
+    //Btree t;
+    //t.add(1);
+    //t.add(20);
+    //t.add(2);
     //t.add(19);
     //t.add(3);
     //t.add(18);
@@ -278,10 +320,10 @@ TEST(Btree, mixed_1_here_1_there_big) {
     //t.add(6);
     //t.add(15);
 
-    auto result = t.dump();
+    //auto result = t.dump();
 
-    ASSERT_EQ(1, result[0]);
-    ASSERT_EQ(2, result[1]);
+    //ASSERT_EQ(1, result[0]);
+    //ASSERT_EQ(2, result[1]);
     //ASSERT_EQ(3, result[2]);
     //ASSERT_EQ(4, result[3]);
     //ASSERT_EQ(5, result[4]);
@@ -293,6 +335,6 @@ TEST(Btree, mixed_1_here_1_there_big) {
     //ASSERT_EQ(19, result[10]);
     //ASSERT_EQ(20, result[11]);
 
-    t.walk();
-    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
-}
+    //t.walk();
+    //ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+//}
