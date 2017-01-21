@@ -477,7 +477,7 @@ private:
         {
             parent->upwards_add(seperated);
 
-            remove_node();
+            remove_self();
         }
     }
 
@@ -525,7 +525,7 @@ private:
         insert(new_root);
     }
 
-    void remove_node()
+    void remove_self()
     {
         keys.clear();
         delete this;
