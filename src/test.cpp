@@ -457,7 +457,7 @@ TEST(Btree, random_big) {
 }
 
 TEST(Btree, preorder_walk) {
-    Btree<2> t = tree_with_incremental_elements(7);
+    Btree<2> t = tree_with_incremental_elements(9);
 
     std::vector<int> result;
     t.preorder_walk([&result] (int k) {
@@ -469,12 +469,14 @@ TEST(Btree, preorder_walk) {
     ASSERT_EQ(0, result[2]);
     ASSERT_EQ(2, result[3]);
     ASSERT_EQ(5, result[4]);
-    ASSERT_EQ(4, result[5]);
-    ASSERT_EQ(6, result[6]);
+    ASSERT_EQ(7, result[5]);
+    ASSERT_EQ(4, result[6]);
+    ASSERT_EQ(6, result[7]);
+    ASSERT_EQ(8, result[8]);
 }
 
 TEST(Btree, postorder_walk) {
-    Btree<2> t = tree_with_incremental_elements(7);
+    Btree<2> t = tree_with_incremental_elements(9);
 
     std::vector<int> result;
     t.postorder_walk([&result] (int k) {
@@ -486,6 +488,8 @@ TEST(Btree, postorder_walk) {
     ASSERT_EQ(1, result[2]);
     ASSERT_EQ(4, result[3]);
     ASSERT_EQ(6, result[4]);
-    ASSERT_EQ(5, result[5]);
-    ASSERT_EQ(3, result[6]);
+    ASSERT_EQ(8, result[5]);
+    ASSERT_EQ(5, result[6]);
+    ASSERT_EQ(7, result[7]);
+    ASSERT_EQ(3, result[8]);
 }

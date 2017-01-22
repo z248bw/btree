@@ -398,18 +398,12 @@ public:
     {
         for (size_t i = 0; i < keys.size(); i++)
         {
-            Branch b = keys.get_branch(i);
-            on_visit(b);
-
-            if (!keys.is_leaf())
-            {
-                b.left->preorder_walk(on_visit);
-            }
+            on_visit(keys.get_branch(i).value);
         }
 
-        if (!keys.is_leaf())
+        for (auto it = keys.children_begin(); it != keys.children_end(); it++)
         {
-            keys.get_rightmost_child()->preorder_walk(on_visit);
+            (*it)->preorder_walk(on_visit);
         }
     }
 
