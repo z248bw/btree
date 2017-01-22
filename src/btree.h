@@ -116,6 +116,7 @@ public:
     }
 };
 
+template <size_t degree>
 class Btree : public Traversable
 {
 private:
@@ -240,12 +241,12 @@ private:
             return children.size() == 0;
         }
 
-        std::vector<Btree*>::iterator children_begin()
+        typename std::vector<Btree*>::iterator children_begin()
         {
             return children.begin();
         }
 
-        std::vector<Btree*>::iterator children_end()
+        typename std::vector<Btree*>::iterator children_end()
         {
             return children.end();
         }
@@ -267,7 +268,7 @@ private:
                 }
             }
 
-            assert(keys.size() < MAX_KEY_SIZE);
+            assert(keys.size() < degree);
 
             return keys.size();
         }
@@ -361,7 +362,7 @@ public:
     void add(int k)
     {
         auto n = get_leaf_for_key(k);
-        if (n->keys.size() < MAX_KEY_SIZE)
+        if (n->keys.size() < degree)
         {
             n->keys.add(Branch(k));
         }
@@ -459,7 +460,7 @@ private:
 
     void upwards_add(Branch branch)
     {
-        if (keys.size() < MAX_KEY_SIZE)
+        if (keys.size() < degree)
         {
             insert(branch);
 

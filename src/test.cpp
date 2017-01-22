@@ -47,14 +47,14 @@ TEST(TraversableTree, 2_node_here_1_there) {
 }
 
 TEST(Btree, only_root_deepest_and_shallowest_branches) {
-    Btree t;
+    Btree<2> t;
     t.walk();
     ASSERT_EQ(0, Traversable::deepest);
     ASSERT_EQ(0, Traversable::shallowest);
 }
 
 TEST(Btree, add_elements_to_root) {
-    Btree t;
+    Btree<2> t;
     t.add(1);
     t.add(2);
     ASSERT_EQ(1, t.get_keys()[0]);
@@ -66,7 +66,7 @@ TEST(Btree, add_elements_to_root) {
 }
 
 TEST(Btree, elements_added_to_root_are_sorted) {
-    Btree t;
+    Btree<2> t;
     t.add(2);
     t.add(1);
     ASSERT_EQ(1, t.get_keys()[0]);
@@ -78,7 +78,7 @@ TEST(Btree, elements_added_to_root_are_sorted) {
 }
 
 TEST(Btree, grow) {
-    Btree t;
+    Btree<2> t;
     t.add(1);
     t.add(2);
     t.add(3);
@@ -90,7 +90,7 @@ TEST(Btree, grow) {
 }
 
 TEST(Btree, find_element_which_is_not_present) {
-    Btree t;
+    Btree<2> t;
     t.add(1);
     t.add(2);
     t.add(3);
@@ -103,7 +103,7 @@ TEST(Btree, find_element_which_is_not_present) {
 }
 
 TEST(Btree, find_element_in_root) {
-    Btree t;
+    Btree<2> t;
     t.add(1);
     t.add(2);
     t.add(3);
@@ -116,7 +116,7 @@ TEST(Btree, find_element_in_root) {
 }
 
 TEST(Btree, find_element_in_left_leaf) {
-    Btree t;
+    Btree<2> t;
     t.add(1);
     t.add(2);
     t.add(3);
@@ -128,7 +128,7 @@ TEST(Btree, find_element_in_left_leaf) {
 }
 
 TEST(Btree, find_element_in_right_leaf) {
-    Btree t;
+    Btree<2> t;
     t.add(1);
     t.add(2);
     t.add(3);
@@ -142,7 +142,7 @@ TEST(Btree, find_element_in_right_leaf) {
 
 void incremental_test(size_t num_of_elems)
 {
-    Btree t;
+    Btree<2> t;
     for (size_t i = 0; i < num_of_elems; i++)
     {
         t.add(i);
@@ -163,7 +163,7 @@ TEST(Btree, dump) {
 }
 
 TEST(Btree, finds_place_of_new_element_in_the_tree) {
-    Btree t;
+    Btree<2> t;
     t.add(1);
     t.add(2);
     t.add(3);
@@ -185,7 +185,7 @@ TEST(Btree, finds_place_of_new_element_in_the_tree) {
 }
 
 TEST(Btree, adding_new_element_moves_element_up_from_leaf) {
-    Btree t;
+    Btree<2> t;
     t.add(1);
     t.add(2);
     t.add(3);
@@ -218,7 +218,7 @@ TEST(Btree, big_tree) {
 
 void decremental_test(size_t num_of_elems)
 {
-    Btree t;
+    Btree<2> t;
     for (size_t i = num_of_elems; i > 0; i--)
     {
         t.add(i);
@@ -251,7 +251,7 @@ TEST(Btree, decrement_big_tree) {
 }
 
 TEST(Btree, mixed_grow) {
-    Btree t;
+    Btree<2> t;
     t.add(1);
     t.add(20);
     t.add(2);
@@ -267,7 +267,7 @@ TEST(Btree, mixed_grow) {
 }
 
 TEST(Btree, mixed_find) {
-    Btree t;
+    Btree<2> t;
     t.add(1);
     t.add(20);
     t.add(2);
@@ -285,7 +285,7 @@ TEST(Btree, mixed_find) {
 }
 
 TEST(Btree, mixed_recursive_grow) {
-    Btree t;
+    Btree<2> t;
     t.add(1);
     t.add(20);
     t.add(2);
@@ -312,7 +312,7 @@ void test_mixed(size_t n)
 {
     auto top = 2 * n + 10;
 
-    Btree t;
+    Btree<2> t;
     for (size_t i = 0; i < n; i++)
     {
         t.add(i);
@@ -338,7 +338,7 @@ TEST(Btree, mixed_big) {
 }
 
 TEST(Btree, full_grow) {
-    Btree t;
+    Btree<2> t;
     t.add(1);
     t.add(101);
     t.add(1001);
@@ -367,15 +367,8 @@ void test_random(size_t n)
         s.insert(std::rand() % 100);
     }
 
-    std::ofstream file;
-    file.open("random_input");
-    for (int i : s)
-    {
-        file << i << "\n";
-    }
-    file.close();
 
-    Btree t;
+    Btree<2> t;
     for (int i : s)
     {
         t.add(i);
@@ -412,7 +405,7 @@ void test_from_file(std::string filename)
 {
     std::vector<int> inputs = input_from_file(filename);
 
-    Btree t;
+    Btree<2> t;
     for (int i : inputs)
     {
         t.add(i);
@@ -429,7 +422,7 @@ void test_from_file(std::string filename)
 }
 
 TEST(Btree, duplicate_key_root) {
-    Btree t;
+    Btree<2> t;
     t.add(0);
     ASSERT_THROW(t.add(0), invalid_key_exception);
 }
