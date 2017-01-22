@@ -140,13 +140,20 @@ TEST(Btree, find_element_in_right_leaf) {
     ASSERT_EQ(1, Traversable::shallowest);
 }
 
-void incremental_test(size_t num_of_elems)
+Btree<2> tree_with_incremental_elements(size_t num_of_elems)
 {
     Btree<2> t;
     for (size_t i = 0; i < num_of_elems; i++)
     {
         t.add(i);
     }
+
+    return t;
+}
+
+void incremental_test(size_t num_of_elems)
+{
+    Btree<2> t = tree_with_incremental_elements(num_of_elems);
 
     auto result = t.dump();
     for (size_t i = 0; i < result.size(); i++)
@@ -425,6 +432,24 @@ TEST(Btree, duplicate_key_root) {
     Btree<2> t;
     t.add(0);
     ASSERT_THROW(t.add(0), invalid_key_exception);
+}
+
+TEST(Btree, duplicate_key_in_leaf) {
+    Btree<2> t = tree_with_incremental_elements(9);
+
+    ASSERT_THROW(t.add(1), invalid_key_exception);
+}
+
+TEST(Btree, duplicate_key_in_node) {
+    Btree<2> t = tree_with_incremental_elements(9);
+
+    ASSERT_THROW(t.add(5), invalid_key_exception);
+}
+
+TEST(Btree, duplicate_key_in_root_recursive) {
+    Btree<2> t = tree_with_incremental_elements(9);
+
+    ASSERT_THROW(t.add(3), invalid_key_exception);
 }
 
 TEST(Btree, random_big) {
