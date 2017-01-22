@@ -19,7 +19,6 @@
 class Traversable
 {
 protected:
-    virtual void on_children(std::function<void(Traversable*)> on_child) = 0;
     virtual bool is_leaf() = 0;
     virtual std::vector<Traversable*> get_children() = 0;
 
@@ -40,10 +39,6 @@ public:
         {
              child->walk(depth+1);
         }
-
-        //on_children([t, depth] (Traversable* child) {
-             //t->walk(child, depth+1);
-        //});
 
         if (depth > deepest)
         {
@@ -85,19 +80,6 @@ protected:
         }
 
         return vector;
-    }
-
-    virtual void on_children(std::function<void(Traversable*)> on_child) override
-    {
-        if (l != nullptr)
-        {
-            on_child(l);
-        }
-
-        if (r != nullptr)
-        {
-            on_child(r);
-        }
     }
 
     virtual bool is_leaf() override
@@ -350,14 +332,6 @@ private:
     Keys keys = nullptr;
 
 protected:
-    virtual void on_children(std::function<void(Traversable*)> on_child) override
-    {
-        for (auto it = keys.children_begin(); it != keys.children_end(); it++)
-        {
-            on_child(*it);
-        }
-    }
-
     virtual bool is_leaf() override
     {
         return keys.is_leaf();
