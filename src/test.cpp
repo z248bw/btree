@@ -455,3 +455,37 @@ TEST(Btree, duplicate_key_in_root_recursive) {
 TEST(Btree, random_big) {
     test_random(100);
 }
+
+TEST(Btree, preorder_walk) {
+    Btree<2> t = tree_with_incremental_elements(7);
+
+    std::vector<int> result;
+    t.preorder_walk([&result] (int k) {
+        result.push_back(k);
+    });
+
+    ASSERT_EQ(3, result[0]);
+    ASSERT_EQ(1, result[1]);
+    ASSERT_EQ(0, result[2]);
+    ASSERT_EQ(2, result[3]);
+    ASSERT_EQ(5, result[4]);
+    ASSERT_EQ(4, result[5]);
+    ASSERT_EQ(6, result[6]);
+}
+
+TEST(Btree, postorder_walk) {
+    Btree<2> t = tree_with_incremental_elements(7);
+
+    std::vector<int> result;
+    t.postorder_walk([&result] (int k) {
+        result.push_back(k);
+    });
+
+    ASSERT_EQ(0, result[0]);
+    ASSERT_EQ(2, result[1]);
+    ASSERT_EQ(1, result[2]);
+    ASSERT_EQ(4, result[3]);
+    ASSERT_EQ(6, result[4]);
+    ASSERT_EQ(5, result[5]);
+    ASSERT_EQ(3, result[6]);
+}

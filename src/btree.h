@@ -372,23 +372,66 @@ public:
         }
     }
 
-    std::vector<int> dump(std::vector<int> result = std::vector<int>())
+    void inorder_walk(std::function<void(int)> on_visit)
     {
         if (!keys.is_leaf())
         {
             for (size_t i = 0; i < keys.size(); i++)
             {
                 Branch k = keys.get_branch(i);
-                result = k.left->dump(result);
-                result.push_back(k.value);
+                k.left->inorder_walk(on_visit);
+                on_visit(k.value);
             }
 
-            result = keys.get_rightmost_child()->dump(result);
+            keys.get_rightmost_child()->inorder_walk(on_visit);
         }
         else
         {
-            result.insert(result.end(), keys.begin(), keys.end());
+            for (size_t i = 0; i < keys.size(); i++)
+            {
+                on_visit(keys.get_branch(i).value);
+            }
         }
+    }
+
+    void preorder_walk(std::function<void(int)> on_visit)
+    {
+        for (size_t i = 0; i < keys.size(); i++)
+        {
+            Branch b = keys.get_branch(i);
+            on_visit(b);
+
+            if (!keys.is_leaf())
+            {
+                b.left->preorder_walk(on_visit);
+            }
+        }
+
+        if (!keys.is_leaf())
+        {
+            keys.get_rightmost_child()->preorder_walk(on_visit);
+        }
+    }
+
+    void postorder_walk(std::function<void(int)> on_visit)
+    {
+        for (auto it = keys.children_begin(); it != keys.children_end(); it++)
+        {
+            (*it)->postorder_walk(on_visit);
+        }
+
+        for (size_t i = 0; i < keys.size(); i++)
+        {
+            on_visit(keys.get_branch(i).value);
+        }
+    }
+
+    std::vector<int> dump()
+    {
+        std::vector<int> result;
+        inorder_walk([&result] (int k) {
+            result.push_back(k);
+        });
 
         return result;
     }
