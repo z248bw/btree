@@ -120,6 +120,20 @@ public:
     }
 };
 
+class invalid_key_exception: public std::exception
+{
+public:
+    const char* message;
+
+    invalid_key_exception(const char* message):
+        std::exception(), message(message){}
+
+    virtual const char* what() const noexcept override
+    {
+        return message;
+    }
+};
+
 class Btree : public Traversable
 {
 private:
@@ -159,6 +173,11 @@ private:
 
         Branch get_branch(size_t i)
         {
+            if (is_leaf())
+            {
+                return Branch(keys[i]);
+            }
+
             return Branch(keys[i], get_child(i), get_child(i+1));
         }
 
@@ -434,6 +453,11 @@ public:
 private:
     Btree* get_leaf_for_key(int k)
     {
+        if (keys.is_present(k))
+        {
+            throw invalid_key_exception("key already exists");
+        }
+
         if (keys.is_leaf())
         {
             return this;
@@ -449,6 +473,7 @@ private:
         for (size_t i = 0; i < keys.size(); i++)
         {
             auto key = keys.get_branch(i);
+
             if (key.value < new_key)
             {
                 branch_for_key = key.right;

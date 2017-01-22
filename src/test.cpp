@@ -1,5 +1,8 @@
 #include "btree.h"
 #include "gtest/gtest.h"
+#include<iostream>
+#include<fstream>
+#include<unordered_set>
 
 
 TEST(Test, should_pass_if_two_strings_are_equal_by_value) {
@@ -332,4 +335,105 @@ void test_mixed(size_t n)
 
 TEST(Btree, mixed_big) {
     test_mixed(100);
+}
+
+TEST(Btree, full_grow) {
+    Btree t;
+    t.add(1);
+    t.add(101);
+    t.add(1001);
+    t.add(2);
+    t.add(1002);
+    t.add(102);
+
+    auto result = t.dump();
+    ASSERT_EQ(1, result[0]);
+    ASSERT_EQ(2, result[1]);
+    ASSERT_EQ(101, result[2]);
+    ASSERT_EQ(102, result[3]);
+    ASSERT_EQ(1001, result[4]);
+    ASSERT_EQ(1002, result[5]);
+
+    t.walk();
+    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+}
+
+void test_random(size_t n)
+{
+    std::unordered_set<int> s;
+    std::srand(std::time(0));
+    for (size_t i = 0; i < n; i++)
+    {
+        s.insert(std::rand() % 100);
+    }
+
+    std::ofstream file;
+    file.open("random_input");
+    for (int i : s)
+    {
+        file << i << "\n";
+    }
+    file.close();
+
+    Btree t;
+    for (int i : s)
+    {
+        t.add(i);
+    }
+
+    auto result = t.dump();
+    std::vector<int> inputs(s.begin(), s.end());
+    std::sort(inputs.begin(), inputs.end());
+    for (size_t i = 0; i < inputs.size(); i++)
+    {
+        ASSERT_EQ(inputs[i], result[i]);
+    }
+
+    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+}
+
+std::vector<int> input_from_file(std::string filename)
+{
+    std::vector<int> result;
+    std::ifstream file;
+    file.open(filename);
+    std::string line;
+    while(getline(file, line))
+    {
+        result.push_back(std::stoi(line));
+    }
+
+    file.close();
+
+    return result;
+}
+
+void test_from_file(std::string filename)
+{
+    std::vector<int> inputs = input_from_file(filename);
+
+    Btree t;
+    for (int i : inputs)
+    {
+        t.add(i);
+    }
+
+    std::sort(inputs.begin(), inputs.end());
+    auto result = t.dump();
+    for (size_t i = 0; i < inputs.size(); i++)
+    {
+        ASSERT_EQ(inputs[i], result[i]);
+    }
+
+    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+}
+
+TEST(Btree, duplicate_key_root) {
+    Btree t;
+    t.add(0);
+    ASSERT_THROW(t.add(0), invalid_key_exception);
+}
+
+TEST(Btree, random_big) {
+    test_random(100);
 }
