@@ -493,3 +493,31 @@ TEST(Btree, postorder_walk) {
     ASSERT_EQ(7, result[7]);
     ASSERT_EQ(3, result[8]);
 }
+
+Btree<4> incremental_even_tree_with_num_of_elems(size_t n)
+{
+    Btree<4> t;
+    for (size_t i = 0; i < n; i++)
+    {
+       t.add(i);
+    }
+
+    return t;
+}
+
+void test_incremental_with_even_degree_and_num_of_elems(size_t n)
+{
+    Btree<4> t = incremental_even_tree_with_num_of_elems(n);
+    auto result = t.dump();
+    for (size_t i = 0; i < n; i++)
+    {
+        ASSERT_EQ(i, result[i]);
+    }
+
+    t.walk();
+    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+}
+
+TEST(Btree, even_degree_root) {
+    test_incremental_with_even_degree_and_num_of_elems(4);
+}
