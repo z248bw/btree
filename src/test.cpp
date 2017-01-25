@@ -494,9 +494,9 @@ TEST(Btree, postorder_walk) {
     ASSERT_EQ(3, result[8]);
 }
 
-Btree<4> incremental_even_tree_with_num_of_elems(size_t n)
+Btree<3> incremental_even_tree_with_num_of_elems(size_t n)
 {
-    Btree<4> t;
+    Btree<3> t;
     for (size_t i = 0; i < n; i++)
     {
        t.add(i);
@@ -507,7 +507,7 @@ Btree<4> incremental_even_tree_with_num_of_elems(size_t n)
 
 void test_incremental_with_odd_degree_and_num_of_elems(size_t n)
 {
-    Btree<4> t = incremental_even_tree_with_num_of_elems(n);
+    Btree<3> t = incremental_even_tree_with_num_of_elems(n);
     auto result = t.dump();
     for (size_t i = 0; i < n; i++)
     {
@@ -522,7 +522,13 @@ TEST(Btree, odd_degree_root) {
     test_incremental_with_odd_degree_and_num_of_elems(3);
 }
 
-TEST(Btree, odd_degree_grow) {
+TEST(Btree, odd_degree_incremental_grow) {
+    test_incremental_with_odd_degree_and_num_of_elems(4);
+}
+
+TEST(Btree, odd_degree_incremental_big) {
+    test_incremental_with_odd_degree_and_num_of_elems(100);
+}
     Btree<3> t;
     t.add(1);
     t.add(2);

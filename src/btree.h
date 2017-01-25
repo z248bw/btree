@@ -322,7 +322,7 @@ private:
                 children.erase(children.begin());
             }
 
-            if ( pos + 3 > children.size())
+            if ( pos + 2 > children.size())
             {
                 children.erase(children.end() - 1);
             }
