@@ -529,19 +529,29 @@ TEST(Btree, odd_degree_incremental_grow) {
 TEST(Btree, odd_degree_incremental_big) {
     test_incremental_with_odd_degree_and_num_of_elems(100);
 }
+
+void odd_decremental_test(size_t num_of_elems)
+{
     Btree<3> t;
-    t.add(1);
-    t.add(2);
-    t.add(3);
-    t.add(4);
+    for (size_t i = num_of_elems; i > 0; i--)
+    {
+        t.add(i);
+    }
 
     auto result = t.dump();
-
-    ASSERT_EQ(1, result[0]);
-    ASSERT_EQ(2, result[1]);
-    ASSERT_EQ(3, result[2]);
-    ASSERT_EQ(4, result[3]);
+    for (size_t i = 0; i < result.size(); i++)
+    {
+        ASSERT_EQ(i+1, result[i]);
+    }
 
     t.walk();
     ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+}
+
+TEST(Btree, odd_degree_decremental_grow) {
+    odd_decremental_test(4);
+}
+
+TEST(Btree, odd_degree_decremental_big) {
+    odd_decremental_test(100);
 }
