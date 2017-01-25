@@ -505,7 +505,7 @@ Btree<4> incremental_even_tree_with_num_of_elems(size_t n)
     return t;
 }
 
-void test_incremental_with_even_degree_and_num_of_elems(size_t n)
+void test_incremental_with_odd_degree_and_num_of_elems(size_t n)
 {
     Btree<4> t = incremental_even_tree_with_num_of_elems(n);
     auto result = t.dump();
@@ -518,6 +518,24 @@ void test_incremental_with_even_degree_and_num_of_elems(size_t n)
     ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
 }
 
-TEST(Btree, even_degree_root) {
-    test_incremental_with_even_degree_and_num_of_elems(4);
+TEST(Btree, odd_degree_root) {
+    test_incremental_with_odd_degree_and_num_of_elems(3);
+}
+
+TEST(Btree, odd_degree_grow) {
+    Btree<3> t;
+    t.add(1);
+    t.add(2);
+    t.add(3);
+    t.add(4);
+
+    auto result = t.dump();
+
+    ASSERT_EQ(1, result[0]);
+    ASSERT_EQ(2, result[1]);
+    ASSERT_EQ(3, result[2]);
+    ASSERT_EQ(4, result[3]);
+
+    t.walk();
+    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
 }

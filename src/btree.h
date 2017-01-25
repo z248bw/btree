@@ -151,6 +151,15 @@ private:
         std::vector<int> keys;
         std::vector<Btree*> children;
 
+        Keys(Btree* owner, std::vector<int> keys): owner(owner), keys(keys) {}
+
+        Keys(Btree* owner, std::vector<int> keys, std::vector<Btree*> new_children): Keys(owner, keys)
+        {
+            assert(keys.size() + 1 == new_children.size());
+
+            children = new_children;
+        }
+
     public:
         Keys(Btree* owner): owner(owner) {}
 
@@ -251,10 +260,72 @@ private:
             return children.end();
         }
 
-
         Btree* get_rightmost_child()
         {
             return children[children.size()-1];
+        }
+
+        void set_owner(Btree* new_owner)
+        {
+            owner = new_owner;
+
+            for (Btree* child : children)
+            {
+                child->parent = owner;
+            }
+        }
+
+        Keys get_left_half_of_keys()
+        {
+            size_t half = keys.size() / 2;
+            auto left_keys = std::vector<int>(keys.begin(), keys.begin() + half);
+
+            if (is_leaf())
+            {
+                return Keys(owner, left_keys);
+            }
+
+            auto left_children = std::vector<Btree*>(children.begin(), children.begin() + half + 1);
+
+            return Keys(owner, left_keys, left_children);
+
+        }
+
+        Keys get_right_half_of_keys()
+        {
+            size_t half = keys.size() / 2;
+            auto right_keys = std::vector<int>(keys.begin() + half, keys.end());
+
+            if (is_leaf())
+            {
+                return Keys(owner, right_keys);
+            }
+
+            auto right_children = std::vector<Btree*>(children.begin() + half, children.end());
+
+            return Keys(owner, right_keys, right_children);
+        }
+
+        void remove(Branch b)
+        {
+            auto pos = get_pos_of_key(b.value);
+
+            keys.erase(keys.begin() + pos);
+
+            if (is_leaf())
+            {
+                return;
+            }
+
+            if ( pos == 0)
+            {
+                children.erase(children.begin());
+            }
+
+            if ( pos + 3 > children.size())
+            {
+                children.erase(children.end() - 1);
+            }
         }
 
     private:
@@ -357,6 +428,13 @@ public:
     Btree(Branch k): Btree()
     {
         keys.add(k);
+    }
+
+    Btree(Keys ks)
+    {
+        keys = ks;
+        // TODO: this is not really a nice solution
+        keys.set_owner(this);
     }
 
     void add(int k)
@@ -544,13 +622,25 @@ private:
         }
         else if (median < unfitting.value)
         {
-            seperated.left = new Btree(keys.get_branch(0));
-            seperated.right = new Btree(unfitting);
+            auto left_branch_keys = keys.get_left_half_of_keys();
+            auto right_branch_keys = keys.get_right_half_of_keys();
+
+            right_branch_keys.remove(median);
+            right_branch_keys.add(unfitting);
+
+            seperated.left = new Btree(left_branch_keys);
+            seperated.right = new Btree(right_branch_keys);
         }
         else
         {
-            seperated.left = new Btree(unfitting);
-            seperated.right = new Btree(keys.get_branch(1));
+            auto left_branch_keys = keys.get_left_half_of_keys();
+            auto right_branch_keys = keys.get_right_half_of_keys();
+
+            left_branch_keys.remove(median);
+            left_branch_keys.add(unfitting);
+
+            seperated.left = new Btree(left_branch_keys);
+            seperated.right = new Btree(right_branch_keys);
         }
 
         return seperated;
