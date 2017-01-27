@@ -161,6 +161,7 @@ private:
         }
 
     public:
+
         Keys(Btree* owner): owner(owner) {}
 
         Branch get_branch(size_t i)
@@ -328,6 +329,22 @@ private:
             }
         }
 
+        void drop_keys_less_than(int k)
+        {
+            auto pos = get_pos_of_key(k);
+            auto keys_to_be_removed = std::vector<int>(keys.begin(), keys.begin() + pos + 1);
+
+            remove(keys_to_be_removed);
+        }
+
+        void drop_keys_bigger_than(int k)
+        {
+            auto pos = get_pos_of_key(k);
+            auto keys_to_be_removed = std::vector<int>(keys.begin() + pos, keys.end());
+
+            remove(keys_to_be_removed);
+        }
+
     private:
         size_t get_pos_of_key(int k)
         {
@@ -397,6 +414,14 @@ private:
 
             children.insert(children.begin() + pos, k.left);
             children[pos+1] = k.right;
+        }
+
+        void remove(std::vector<int> keys_to_be_removed)
+        {
+            for (auto k : keys_to_be_removed)
+            {
+                remove(k);
+            }
         }
     };
 
@@ -608,17 +633,19 @@ private:
 
         if (median == unfitting.value)
         {
-            auto left_branch = keys.get_branch(0);
-            auto right_branch = keys.get_branch(1);
+            auto left_branch_keys = keys.get_left_half_of_keys();
+            auto right_branch_keys = keys.get_right_half_of_keys();
 
             if (unfitting.left != nullptr && unfitting.right != nullptr)
             {
-                left_branch.right = unfitting.left;
-                right_branch.left = unfitting.right;
+                left_branch_keys.drop_keys_bigger_than(median);
+                right_branch_keys.drop_keys_less_than(median);
+                //left_branch_keys.right = unfitting.left;
+                //right_branch_keys.left = unfitting.right;
             }
 
-            seperated.left = new Btree(left_branch);
-            seperated.right = new Btree(right_branch);
+            seperated.left = new Btree(left_branch_keys);
+            seperated.right = new Btree(right_branch_keys);
         }
         else if (median < unfitting.value)
         {

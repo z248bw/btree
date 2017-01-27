@@ -555,3 +555,36 @@ TEST(Btree, odd_degree_decremental_grow) {
 TEST(Btree, odd_degree_decremental_big) {
     odd_decremental_test(100);
 }
+
+void test_odd_mixed(size_t n)
+{
+    auto top = 2 * n + 10;
+
+    Btree<3> t;
+    for (size_t i = 0; i < n; i++)
+    {
+        t.add(i);
+        t.add(top - i);
+    }
+
+    auto result = t.dump();
+    for (size_t i = 0; i < n; i++)
+    {
+        ASSERT_EQ(i, result[i]);
+    }
+
+    for (size_t i = 0; i < n; i++)
+    {
+        ASSERT_EQ(i+n+10+1, result[i+n]);
+    }
+
+    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+}
+
+TEST(Btree, odd_degree_mixed_grow) {
+    test_odd_mixed(2);
+}
+
+TEST(Btree, odd_degree_mixed_recursive_grow) {
+    test_odd_mixed(5);
+}
