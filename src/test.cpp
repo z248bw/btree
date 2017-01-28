@@ -10,6 +10,284 @@ TEST(Test, should_pass_if_two_strings_are_equal_by_value) {
     ASSERT_STREQ("kaucsuk rece", s1);
 }
 
+std::vector<TestNode*> create_test_nodes(size_t n)
+{
+    std::vector<TestNode*> result;
+
+    for (size_t i = 0; i < n; i++)
+    {
+        result.push_back(new TestNode(i + 1));
+    }
+
+    return result;
+}
+
+void destroy_test_nodes(std::vector<TestNode*> nodes)
+{
+    for (TestNode* n : nodes)
+    {
+        delete n;
+    }
+}
+
+Keys<TestNode> create_keys(size_t n)
+{
+    Keys<TestNode> ks(n+1);
+    auto nodes = create_test_nodes(n + 1);
+
+    for (size_t i = 0; i < n; i++)
+    {
+        ks.add(Branch<TestNode>(i+1, nodes[i], nodes[i+1]));
+    }
+
+    return ks;
+}
+
+void destroy_keys(Keys<TestNode> ks)
+{
+    for (auto it = ks.children_begin(); it != ks.children_end(); it++)
+    {
+        delete *it;
+    }
+}
+
+TEST(Keys, store_branches_in_order) {
+    auto ks = create_keys(3);
+
+    auto b1 = ks.get_branch(0);
+    auto b2 = ks.get_branch(1);
+    auto b3 = ks.get_branch(2);
+
+    ASSERT_EQ(1, b1.value);
+    ASSERT_EQ(1, b1.left->id);
+    ASSERT_EQ(2, b1.right->id);
+    ASSERT_EQ(2, b2.value);
+    ASSERT_EQ(2, b2.left->id);
+    ASSERT_EQ(3, b2.right->id);
+    ASSERT_EQ(3, b3.value);
+    ASSERT_EQ(3, b3.left->id);
+    ASSERT_EQ(4, b3.right->id);
+
+    destroy_keys(ks);
+}
+
+TEST(Keys, is_present) {
+    Keys<TestNode> ks(4);
+
+    ks.add(3);
+    ks.add(5);
+    ks.add(2);
+    ks.add(1);
+    ks.add(4);
+
+    ASSERT_EQ(false, ks.is_present(6));
+    ASSERT_EQ(true, ks.is_present(3));
+    ASSERT_EQ(true, ks.is_present(1));
+    ASSERT_EQ(true, ks.is_present(5));
+}
+
+TEST(Keys, empty_get_median_with_new_key) {
+    Keys<TestNode> ks(4);
+
+    ASSERT_EQ(1, ks.get_median_with_new_key(1));
+}
+
+TEST(Keys, one_element_get_median_with_new_key) {
+    Keys<TestNode> ks(4);
+
+    ks.add(4);
+
+    ASSERT_EQ(1, ks.get_median_with_new_key(1));
+}
+
+TEST(Keys, two_elements_get_median_with_new_key) {
+    Keys<TestNode> ks(4);
+
+    ks.add(2);
+    ks.add(3);
+
+    ASSERT_EQ(2, ks.get_median_with_new_key(1));
+}
+
+TEST(Keys, three_elements_get_median_with_new_key) {
+    Keys<TestNode> ks(4);
+
+    ks.add(2);
+    ks.add(3);
+    ks.add(4);
+
+    ASSERT_EQ(2, ks.get_median_with_new_key(1));
+}
+
+TEST(Keys, even_get_left_half_of_keys) {
+    auto ks = create_keys(2);
+
+    auto half = ks.get_left_half_of_keys();
+
+    ASSERT_EQ(1, half.size());
+    ASSERT_EQ(1, half.get_branch(0));
+    ASSERT_EQ(1, half.get_branch(0).left->id);
+    ASSERT_EQ(2, half.get_branch(0).right->id);
+
+    destroy_keys(ks);
+}
+
+TEST(Keys, even_get_right_half_of_keys) {
+    auto ks = create_keys(2);
+
+    auto half = ks.get_right_half_of_keys();
+
+    ASSERT_EQ(1, half.size());
+    ASSERT_EQ(2, half.get_branch(0));
+    ASSERT_EQ(2, half.get_branch(0).left->id);
+    ASSERT_EQ(3, half.get_branch(0).right->id);
+
+    destroy_keys(ks);
+}
+
+TEST(Keys, odd_get_left_half_of_keys) {
+    auto ks = create_keys(3);
+
+    auto half = ks.get_left_half_of_keys();
+
+    ASSERT_EQ(1, half.size());
+    ASSERT_EQ(1, half.get_branch(0));
+    ASSERT_EQ(1, half.get_branch(0).left->id);
+    ASSERT_EQ(2, half.get_branch(0).right->id);
+
+    destroy_keys(ks);
+}
+
+TEST(Keys, odd_get_right_half_of_keys) {
+    auto ks = create_keys(3);
+
+    auto half = ks.get_right_half_of_keys();
+
+    ASSERT_EQ(2, half.size());
+    ASSERT_EQ(2, half.get_branch(0));
+    ASSERT_EQ(2, half.get_branch(0).left->id);
+    ASSERT_EQ(3, half.get_branch(0).right->id);
+    ASSERT_EQ(3, half.get_branch(1));
+    ASSERT_EQ(3, half.get_branch(1).left->id);
+    ASSERT_EQ(4, half.get_branch(1).right->id);
+
+    destroy_keys(ks);
+}
+
+TEST(Keys, remove_front_only_branch) {
+    auto ks = create_keys(1);
+
+    ks.remove_front();
+
+    ASSERT_EQ(0, ks.size());
+
+    destroy_keys(ks);
+}
+
+TEST(Keys, remove_front_multiple) {
+    auto ks = create_keys(2);
+
+    ks.remove_front();
+
+    ASSERT_EQ(1, ks.size());
+    ASSERT_EQ(2, ks.get_branch(0));
+    ASSERT_EQ(2, ks.get_branch(0).left->id);
+    ASSERT_EQ(3, ks.get_branch(0).right->id);
+
+    destroy_keys(ks);
+}
+
+TEST(Keys, remove_end_only_branch) {
+    auto ks = create_keys(1);
+
+    ks.remove_end();
+
+    ASSERT_EQ(0, ks.size());
+
+    destroy_keys(ks);
+}
+
+TEST(Keys, remove_end_multiple) {
+    auto ks = create_keys(2);
+
+    ks.remove_end();
+
+    ASSERT_EQ(1, ks.size());
+    ASSERT_EQ(1, ks.get_branch(0));
+    ASSERT_EQ(1, ks.get_branch(0).left->id);
+    ASSERT_EQ(2, ks.get_branch(0).right->id);
+
+    destroy_keys(ks);
+}
+
+TEST(Keys, drop_keys_less_than_only_one) {
+    auto ks = create_keys(1);
+
+    ks.drop_keys_less_than_including(1);
+
+    ASSERT_EQ(0, ks.size());
+
+    destroy_keys(ks);
+}
+
+TEST(Keys, drop_keys_less_than_with_multiple) {
+    auto ks = create_keys(4);
+
+    ks.drop_keys_less_than_including(2);
+    ASSERT_EQ(2, ks.size());
+    ASSERT_EQ(3, ks.get_branch(0));
+    ASSERT_EQ(3, ks.get_branch(0).left->id);
+    ASSERT_EQ(4, ks.get_branch(0).right->id);
+    ASSERT_EQ(4, ks.get_branch(1));
+    ASSERT_EQ(4, ks.get_branch(1).left->id);
+    ASSERT_EQ(5, ks.get_branch(1).right->id);
+
+    destroy_keys(ks);
+}
+
+TEST(Keys, drop_keys_less_than_to_empty_all) {
+    auto ks = create_keys(4);
+
+    ks.drop_keys_less_than_including(9);
+    ASSERT_EQ(0, ks.size());
+
+    destroy_keys(ks);
+}
+
+TEST(Keys, drop_keys_bigger_than_only_one) {
+    auto ks = create_keys(1);
+
+    ks.drop_keys_bigger_than_including(1);
+    ASSERT_EQ(0, ks.size());
+
+    destroy_keys(ks);
+}
+
+TEST(Keys, drop_keys_bigger_than_with_multiple) {
+    auto ks = create_keys(4);
+
+    ks.drop_keys_bigger_than_including(3);
+    ASSERT_EQ(2, ks.size());
+    ASSERT_EQ(1, ks.get_branch(0));
+    ASSERT_EQ(1, ks.get_branch(0).left->id);
+    ASSERT_EQ(2, ks.get_branch(0).right->id);
+    ASSERT_EQ(2, ks.get_branch(1));
+    ASSERT_EQ(2, ks.get_branch(1).left->id);
+    ASSERT_EQ(3, ks.get_branch(1).right->id);
+
+    destroy_keys(ks);
+}
+
+TEST(Keys, drop_keys_bigger_than_to_empty_all) {
+    auto ks = create_keys(4);
+
+    ks.drop_keys_bigger_than_including(-9);
+    ASSERT_EQ(0, ks.size());
+
+    destroy_keys(ks);
+}
+
+
 TEST(TraversableTree, no_children) {
     TraversableTree t;
     t.walk();

@@ -28,7 +28,7 @@ CPPFLAGS += -isystem $(GTEST_DIR)/include
 # set all compiler warnings on
 # pthread is probably needed by the gtest framework (link pthread lib as well)
 # use cpp11 standard
-CXXFLAGS += -g -Wall -Wextra -pthread -std=c++11
+CXXFLAGS += -Isrc -g -Wall -Wextra -pthread -std=c++11
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
@@ -82,9 +82,12 @@ gtest_main.a : gtest-all.o gtest_main.o
 btree.o : $(USER_DIR)/btree.cpp $(USER_DIR)/btree.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/btree.cpp
 
+keys.o : $(USER_DIR)/keys.cpp $(USER_DIR)/keys.h
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/keys.cpp
+
 test.o : $(USER_DIR)/test.cpp \
-                     $(USER_DIR)/btree.h $(GTEST_HEADERS)
+                     $(USER_DIR)/btree.h $(USER_DIR)/keys.h $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/test.cpp
 
-test : btree.o test.o gtest_main.a
+test : keys.o btree.o test.o gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
