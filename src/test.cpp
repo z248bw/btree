@@ -174,117 +174,75 @@ TEST(Keys, odd_get_right_half_of_keys) {
     destroy_keys(ks);
 }
 
-TEST(Keys, remove_front_only_branch) {
+TEST(Keys, change_first_to_for_keys_with_one_element) {
     auto ks = create_keys(1);
+    auto branch_to_be_replaced = ks.get_first_branch();
 
-    ks.remove_front();
-
-    ASSERT_EQ(0, ks.size());
-
-    destroy_keys(ks);
-}
-
-TEST(Keys, remove_front_multiple) {
-    auto ks = create_keys(2);
-
-    ks.remove_front();
+    ks.change_first_to(Branch<TestNode>(9, new TestNode(9), new TestNode(10)));
 
     ASSERT_EQ(1, ks.size());
+    ASSERT_EQ(9, ks.get_branch(0));
+    ASSERT_EQ(9, ks.get_branch(0).left->id);
+    ASSERT_EQ(10, ks.get_branch(0).right->id);
+
+    destroy_keys(ks);
+    delete branch_to_be_replaced.left;
+    delete branch_to_be_replaced.right;
+}
+
+TEST(Keys, change_first_to_for_keys_with_multiple_elements) {
+    auto ks = create_keys(2);
+    auto branch_to_be_replaced = ks.get_first_branch();
+    auto second_branch = ks.get_branch(1);
+
+    ks.change_first_to(Branch<TestNode>(9, new TestNode(9), new TestNode(10)));
+
+    ASSERT_EQ(2, ks.size());
     ASSERT_EQ(2, ks.get_branch(0));
     ASSERT_EQ(2, ks.get_branch(0).left->id);
-    ASSERT_EQ(3, ks.get_branch(0).right->id);
+    ASSERT_EQ(9, ks.get_branch(0).right->id);
+    ASSERT_EQ(9, ks.get_branch(1));
+    ASSERT_EQ(9, ks.get_branch(1).left->id);
+    ASSERT_EQ(10, ks.get_branch(1).right->id);
 
     destroy_keys(ks);
+    delete branch_to_be_replaced.left;
+    delete second_branch.right;
 }
 
-TEST(Keys, remove_end_only_branch) {
+TEST(Keys, change_last_to_for_keys_with_one_element) {
     auto ks = create_keys(1);
+    auto branch_to_be_replaced = ks.get_last_branch();
 
-    ks.remove_end();
-
-    ASSERT_EQ(0, ks.size());
-
-    destroy_keys(ks);
-}
-
-TEST(Keys, remove_end_multiple) {
-    auto ks = create_keys(2);
-
-    ks.remove_end();
+    ks.change_last_to(Branch<TestNode>(9, new TestNode(9), new TestNode(10)));
 
     ASSERT_EQ(1, ks.size());
-    ASSERT_EQ(1, ks.get_branch(0));
-    ASSERT_EQ(1, ks.get_branch(0).left->id);
-    ASSERT_EQ(2, ks.get_branch(0).right->id);
+    ASSERT_EQ(9, ks.get_branch(0));
+    ASSERT_EQ(9, ks.get_branch(0).left->id);
+    ASSERT_EQ(10, ks.get_branch(0).right->id);
 
     destroy_keys(ks);
+    delete branch_to_be_replaced.left;
+    delete branch_to_be_replaced.right;
 }
 
-TEST(Keys, drop_keys_less_than_only_one) {
-    auto ks = create_keys(1);
+TEST(Keys, change_last_to_for_keys_with_multiple_elements) {
+    auto ks = create_keys(2);
+    auto branch_to_be_replaced = ks.get_last_branch();
 
-    ks.drop_keys_less_than_including(1);
+    ks.change_last_to(Branch<TestNode>(9, new TestNode(9), new TestNode(10)));
 
-    ASSERT_EQ(0, ks.size());
-
-    destroy_keys(ks);
-}
-
-TEST(Keys, drop_keys_less_than_with_multiple) {
-    auto ks = create_keys(4);
-
-    ks.drop_keys_less_than_including(2);
-    ASSERT_EQ(2, ks.size());
-    ASSERT_EQ(3, ks.get_branch(0));
-    ASSERT_EQ(3, ks.get_branch(0).left->id);
-    ASSERT_EQ(4, ks.get_branch(0).right->id);
-    ASSERT_EQ(4, ks.get_branch(1));
-    ASSERT_EQ(4, ks.get_branch(1).left->id);
-    ASSERT_EQ(5, ks.get_branch(1).right->id);
-
-    destroy_keys(ks);
-}
-
-TEST(Keys, drop_keys_less_than_to_empty_all) {
-    auto ks = create_keys(4);
-
-    ks.drop_keys_less_than_including(9);
-    ASSERT_EQ(0, ks.size());
-
-    destroy_keys(ks);
-}
-
-TEST(Keys, drop_keys_bigger_than_only_one) {
-    auto ks = create_keys(1);
-
-    ks.drop_keys_bigger_than_including(1);
-    ASSERT_EQ(0, ks.size());
-
-    destroy_keys(ks);
-}
-
-TEST(Keys, drop_keys_bigger_than_with_multiple) {
-    auto ks = create_keys(4);
-
-    ks.drop_keys_bigger_than_including(3);
     ASSERT_EQ(2, ks.size());
     ASSERT_EQ(1, ks.get_branch(0));
     ASSERT_EQ(1, ks.get_branch(0).left->id);
-    ASSERT_EQ(2, ks.get_branch(0).right->id);
-    ASSERT_EQ(2, ks.get_branch(1));
-    ASSERT_EQ(2, ks.get_branch(1).left->id);
-    ASSERT_EQ(3, ks.get_branch(1).right->id);
+    ASSERT_EQ(9, ks.get_branch(0).right->id);
+    ASSERT_EQ(9, ks.get_branch(1));
+    ASSERT_EQ(9, ks.get_branch(1).left->id);
+    ASSERT_EQ(10, ks.get_branch(1).right->id);
 
     destroy_keys(ks);
-}
-
-TEST(Keys, drop_keys_bigger_than_to_empty_all) {
-    auto ks = create_keys(4);
-
-    ks.drop_keys_bigger_than_including(-9);
-    ASSERT_EQ(0, ks.size());
-
-    destroy_keys(ks);
+    delete branch_to_be_replaced.left;
+    delete branch_to_be_replaced.right;
 }
 
 

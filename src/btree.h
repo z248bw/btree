@@ -277,29 +277,19 @@ private:
 
             auto left_last_branch = left_branch_keys.get_last_branch();
             left_last_branch.right = unfitting.left;
-
-            left_branch_keys.remove_end();
-            left_branch_keys.add(left_last_branch);
+            left_branch_keys.change_last_to(left_last_branch);
 
             auto right_first_branch = right_branch_keys.get_first_branch();
             right_first_branch.left = unfitting.right;
-
-            right_branch_keys.remove_front();
-            right_branch_keys.add(right_first_branch);
+            right_branch_keys.change_first_to(right_first_branch);
         }
         else if (median < unfitting.value)
         {
-            // removes the median from right_branch
-            right_branch_keys.remove_front();
-
-            right_branch_keys.add(unfitting);
+            right_branch_keys.change_first_to(unfitting);
         }
         else if (median > unfitting.value)
         {
-            // removes the median from left branch
-            left_branch_keys.remove_end();
-
-            left_branch_keys.add(unfitting);
+            left_branch_keys.change_last_to(unfitting);
         }
 
         seperated.left = new Btree(left_branch_keys);

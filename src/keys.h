@@ -254,55 +254,18 @@ public:
         return Keys<Node>(degree, owner, right_keys, right_children);
     }
 
-    void remove_front()
+    void change_first_to(Branch<Node> new_first)
     {
-        keys.erase(keys.begin());
-
-        if (is_leaf())
-        {
-            return;
-        }
-
-        children.erase(children.begin());
+        remove_first();
+        add(new_first);
     }
 
-    void remove_end()
+    void change_last_to(Branch<Node> new_last)
     {
-        keys.erase(keys.end() - 1);
-
-        if (is_leaf())
-        {
-            return;
-        }
-
-        children.erase(children.end() - 1);
+        remove_last();
+        add(new_last);
     }
 
-    void drop_keys_less_than_including(int k)
-    {
-        auto pos = get_pos_of_key(k);
-
-        if ( pos < keys.size())
-        {
-            pos++;
-        }
-
-        for (size_t i = 0; i < pos; i++)
-        {
-            remove_front();
-        }
-    }
-
-    void drop_keys_bigger_than_including(int k)
-    {
-        auto pos = get_pos_of_key(k);
-        auto orig_size = keys.size();
-
-        for (size_t i = pos; i < orig_size; i++)
-        {
-            remove_end();
-        }
-    }
 
 private:
     size_t get_pos_of_key(int k)
@@ -375,12 +338,28 @@ private:
         children[pos+1] = k.right;
     }
 
-    void remove(std::vector<int> keys_to_be_removed)
+    void remove_first()
     {
-        for (auto k : keys_to_be_removed)
+        keys.erase(keys.begin());
+
+        if (is_leaf())
         {
-            remove(k);
+            return;
         }
+
+        children.erase(children.begin());
+    }
+
+    void remove_last()
+    {
+        keys.erase(keys.end() - 1);
+
+        if (is_leaf())
+        {
+            return;
+        }
+
+        children.erase(children.end() - 1);
     }
 };
 
