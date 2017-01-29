@@ -237,7 +237,7 @@ private:
     {
         if (keys.size() < degree)
         {
-            insert(branch);
+            keys.add(branch);
 
             return;
         }
@@ -254,11 +254,6 @@ private:
 
             remove_self();
         }
-    }
-
-    void insert(Branch<Btree> k)
-    {
-        keys.add(k);
     }
 
     Branch<Btree> seperate_current_for_unfitting(Branch<Btree> unfitting)
@@ -301,7 +296,7 @@ private:
     void grow(Branch<Btree> new_root)
     {
         keys.clear();
-        insert(new_root);
+        keys.add(new_root);
     }
 
     void remove_self()
