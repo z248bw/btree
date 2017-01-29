@@ -71,6 +71,72 @@ TEST(Keys, store_branches_in_order) {
     destroy_keys(ks);
 }
 
+TEST(Keys, add_new_branch_at_beginning) {
+    auto ks = create_keys(1);
+    auto original_first_branch = ks.get_first_branch();
+
+    ks.add(Branch<TestNode>(-1, new TestNode(-1), new TestNode(-2)));
+
+    auto b1 = ks.get_branch(0);
+    auto b2 = ks.get_branch(1);
+
+    ASSERT_EQ(-1, b1.value);
+    ASSERT_EQ(-1, b1.left->id);
+    ASSERT_EQ(-2, b1.right->id);
+    ASSERT_EQ(1, b2.value);
+    ASSERT_EQ(-2, b2.left->id);
+    ASSERT_EQ(2, b2.right->id);
+
+    destroy_keys(ks);
+    delete original_first_branch.left;
+}
+
+TEST(Keys, add_new_branch_at_end) {
+    auto ks = create_keys(1);
+    auto original_first_branch = ks.get_first_branch();
+
+    ks.add(Branch<TestNode>(9, new TestNode(9), new TestNode(10)));
+
+    auto b1 = ks.get_branch(0);
+    auto b2 = ks.get_branch(1);
+
+    ASSERT_EQ(1, b1.value);
+    ASSERT_EQ(1, b1.left->id);
+    ASSERT_EQ(9, b1.right->id);
+    ASSERT_EQ(9, b2.value);
+    ASSERT_EQ(9, b2.left->id);
+    ASSERT_EQ(10, b2.right->id);
+
+    destroy_keys(ks);
+    delete original_first_branch.right;
+}
+
+TEST(Keys, add_new_branch_at_middle) {
+    Keys<TestNode> ks(9);
+    auto common_node = new TestNode(100);
+    ks.add(Branch<TestNode>(1, new TestNode(1), common_node));
+    ks.add(Branch<TestNode>(100, common_node, new TestNode(101)));
+
+    ks.add(Branch<TestNode>(9, new TestNode(9), new TestNode(10)));
+
+    auto b1 = ks.get_branch(0);
+    auto b2 = ks.get_branch(1);
+    auto b3 = ks.get_branch(2);
+
+    ASSERT_EQ(1, b1.value);
+    ASSERT_EQ(1, b1.left->id);
+    ASSERT_EQ(9, b1.right->id);
+    ASSERT_EQ(9, b2.value);
+    ASSERT_EQ(9, b2.left->id);
+    ASSERT_EQ(10, b2.right->id);
+    ASSERT_EQ(100, b3.value);
+    ASSERT_EQ(10, b3.left->id);
+    ASSERT_EQ(101, b3.right->id);
+
+    destroy_keys(ks);
+    delete common_node;
+}
+
 TEST(Keys, is_present) {
     Keys<TestNode> ks(4);
 
