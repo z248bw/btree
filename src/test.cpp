@@ -890,3 +890,7 @@ TEST(Btree, odd_degree_mixed_grow) {
 TEST(Btree, odd_degree_mixed_recursive_grow) {
     test_odd_mixed(5);
 }
+
+TEST(Btree, odd_degree_mixed_big) {
+    test_odd_mixed(100);
+}
