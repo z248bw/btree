@@ -39,17 +39,25 @@ TESTS = test
 GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
                 $(GTEST_DIR)/include/gtest/internal/*.h
 
+
 # House-keeping build targets.
 
 all : $(TESTS)
 
+# Profile target specific compiler params, for coverage measurement
+profile: CXXFLAGS += --coverage
+profile: $(TESTS)
+	mkdir coverage
+	./test
+	lcov --directory . --capture --no-external --output-file coverage/coverage.info
+	genhtml --output-directory coverage coverage/coverage.info
+
 check:
 	make all
 	valgrind --leak-check=yes ./test
-	make clean
 
 clean :
-	rm -f $(TESTS) gtest.a gtest_main.a *.o
+	rm -rf $(TESTS) gtest.a gtest_main.a *.o coverage/
 
 # Builds gtest.a and gtest_main.a.
 
@@ -75,9 +83,6 @@ gtest.a : gtest-all.o
 gtest_main.a : gtest-all.o gtest_main.o
 	$(AR) $(ARFLAGS) $@ $^
 
-# Builds a sample test.  A test should link with either gtest.a or
-# gtest_main.a, depending on whether it defines its own main()
-# function.
 
 btree.o : $(USER_DIR)/btree.cpp $(USER_DIR)/btree.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/btree.cpp
