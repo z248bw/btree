@@ -285,16 +285,7 @@ private:
 
     size_t get_pos_of_key(int k)
     {
-        size_t result = 0;
-        for (size_t i = 0; i < keys.size(); i++)
-        {
-            if (keys[i] < k)
-            {
-                result++;
-            }
-        }
-
-        return result;
+        return std::upper_bound(keys.begin(), keys.end(), k) - keys.begin();
     }
 
     Node* get_child(size_t i)
