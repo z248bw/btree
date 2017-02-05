@@ -73,6 +73,11 @@ struct Branch
     Branch(int v): value(v), left(nullptr), right(nullptr) {}
     Branch(int v, Node* left, Node* right): value(v), left(left), right(right) {}
 
+    bool has_children()
+    {
+        return (left != nullptr && right != nullptr);
+    }
+
     operator int() const
     {
         return value;
@@ -120,13 +125,13 @@ public:
         auto pos = get_pos_of_key(k);
         keys.insert(keys.begin() + pos, k);
 
-        if (pos+1 < keys.size())
+        if (is_last_position(pos))
         {
-            insert_children(pos, k);
+            push_children_of_branch(k);
         }
         else
         {
-            set_children(pos, k);
+            insert_children_of_branch_to_pos(k, pos);
         }
     }
 
@@ -268,6 +273,11 @@ public:
 
 
 private:
+    bool is_last_position(size_t i)
+    {
+        return i + 1 >= keys.size();
+    }
+
     size_t get_pos_of_key(int k)
     {
         for (size_t i = 0; i < keys.size(); i++)
@@ -293,46 +303,41 @@ private:
         return children[i];
     }
 
-    void set_children(size_t pos, Branch<Node> k)
+    void push_children_of_branch(Branch<Node> k)
     {
-        if (k.left == nullptr || k.right == nullptr)
+        if (!k.has_children())
         {
             return;
         }
 
-        k.left->parent = owner;
-        k.right->parent = owner;
+        own_branch(k);
 
-        size_t children_size = children.size();
-
-        if (children_size == 0)
+        if (children.size() == 0)
         {
             children.push_back(k.left);
         }
         else
         {
-            children[pos] = k.left;
+            children[children.size()-1] = k.left;
         }
 
-        if (children_size < pos + 2)
-        {
-            children.push_back(k.right);
-        }
-        else
-        {
-            children[pos + 1] = k.right;
-        }
+        children.push_back(k.right);
     }
 
-    void insert_children(size_t pos, Branch<Node> k)
+    void own_branch(Branch<Node> k)
     {
-        if (k.left == nullptr || k.right == nullptr)
+        k.left->parent = owner;
+        k.right->parent = owner;
+    }
+
+    void insert_children_of_branch_to_pos(Branch<Node> k, size_t pos)
+    {
+        if (!k.has_children())
         {
             return;
         }
 
-        k.left->parent = owner;
-        k.right->parent = owner;
+        own_branch(k);
 
         children.insert(children.begin() + pos, k.left);
         children[pos+1] = k.right;
