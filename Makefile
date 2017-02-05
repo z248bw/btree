@@ -57,7 +57,7 @@ check:
 	valgrind --leak-check=yes ./test
 
 clean :
-	rm -rf $(TESTS) gtest.a gtest_main.a *.o coverage/
+	rm -rf $(TESTS) gtest.a gtest_main.a *.o coverage/ *.gcno *.gcda
 
 # Builds gtest.a and gtest_main.a.
 
