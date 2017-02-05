@@ -93,7 +93,6 @@ public:
     Btree(Keys<Btree> ks)
     {
         keys = ks;
-        // TODO: this is not really a nice solution
         keys.set_owner(this);
     }
 
@@ -108,6 +107,40 @@ public:
         {
             n->upwards_add(Branch<Btree>(k));
         }
+    }
+
+    std::vector<int> dump()
+    {
+        std::vector<int> result;
+        inorder_walk([&result] (int k) {
+            result.push_back(k);
+        });
+
+        return result;
+    }
+
+    Btree* find_node_with_key(int k)
+    {
+        if (keys.is_present(k))
+        {
+            return this;
+        }
+
+        for (auto it = keys.children_begin(); it != keys.children_end(); it++)
+        {
+            auto result = (*it)->find_node_with_key(k);
+            if (result != nullptr)
+            {
+                return result;
+            }
+        }
+
+        return nullptr;
+    }
+
+    std::vector<int> get_keys()
+    {
+        return keys.dump();
     }
 
     void inorder_walk(std::function<void(int)> on_visit)
@@ -156,40 +189,6 @@ public:
         {
             on_visit(keys.get_branch(i).value);
         }
-    }
-
-    std::vector<int> dump()
-    {
-        std::vector<int> result;
-        inorder_walk([&result] (int k) {
-            result.push_back(k);
-        });
-
-        return result;
-    }
-
-    Btree* find_node_with_key(int k)
-    {
-        if (keys.is_present(k))
-        {
-            return this;
-        }
-
-        for (auto it = keys.children_begin(); it != keys.children_end(); it++)
-        {
-            auto result = (*it)->find_node_with_key(k);
-            if (result != nullptr)
-            {
-                return result;
-            }
-        }
-
-        return nullptr;
-    }
-
-    std::vector<int> get_keys()
-    {
-        return keys.dump();
     }
 
     ~Btree()
@@ -246,10 +245,7 @@ private:
         auto left_branch_keys = keys.get_left_half_of_keys();
         auto right_branch_keys = keys.get_right_half_of_keys();
 
-        if (median == unfitting.value &&
-            unfitting.left != nullptr &&
-            unfitting.right != nullptr
-        )
+        if (median == unfitting.value && unfitting.has_children())
         {
             assert(left_branch_keys.get_last_branch().right == right_branch_keys.get_first_branch().left);
 
