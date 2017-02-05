@@ -137,16 +137,7 @@ public:
 
     Node* select_node_for_key(int k)
     {
-        size_t result_pos = 0;
-        for (size_t i = 0; i < keys.size(); i++)
-        {
-            if (keys[i] < k)
-            {
-                result_pos++;
-            }
-        }
-
-        return children[result_pos];
+        return children[get_pos_of_key(k)];
     }
 
     bool is_present(int k)
@@ -294,17 +285,16 @@ private:
 
     size_t get_pos_of_key(int k)
     {
+        size_t result = 0;
         for (size_t i = 0; i < keys.size(); i++)
         {
-            if (k <= keys[i])
+            if (keys[i] < k)
             {
-                return i;
+                result++;
             }
         }
 
-        assert(keys.size() < degree);
-
-        return keys.size();
+        return result;
     }
 
     Node* get_child(size_t i)
