@@ -135,6 +135,20 @@ public:
         }
     }
 
+    Node* select_node_for_key(int k)
+    {
+        size_t result_pos = 0;
+        for (size_t i = 0; i < keys.size(); i++)
+        {
+            if (keys[i] < k)
+            {
+                result_pos++;
+            }
+        }
+
+        return children[result_pos];
+    }
+
     bool is_present(int k)
     {
         return std::binary_search(keys.begin(), keys.end(), k);

@@ -213,24 +213,7 @@ private:
             return this;
         }
 
-        return select_branch_for_key(k)->get_leaf_for_key(k);
-    }
-
-    Btree* select_branch_for_key(int new_key)
-    {
-        Btree* branch_for_key = keys.get_first_branch().left;
-
-        for (size_t i = 0; i < keys.size(); i++)
-        {
-            auto key = keys.get_branch(i);
-
-            if (key.value < new_key)
-            {
-                branch_for_key = key.right;
-            }
-        }
-
-        return branch_for_key;
+        return keys.select_node_for_key(k)->get_leaf_for_key(k);
     }
 
     void upwards_add(Branch<Btree> branch)
