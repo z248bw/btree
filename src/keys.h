@@ -148,10 +148,9 @@ public:
     int get_median_with_new_key(int k)
     {
         std::vector<int> tmp(keys);
-        tmp.push_back(k);
-        std::sort(tmp.begin(), tmp.end());
-
+        tmp.insert(tmp.begin() + get_pos_of_key(k), k);
         size_t middle = keys.size() / 2;
+
         return tmp[middle];
     }
 
