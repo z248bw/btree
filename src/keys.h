@@ -73,12 +73,12 @@ struct Branch
     Branch(int v): value(v), left(nullptr), right(nullptr) {}
     Branch(int v, Node* left, Node* right): value(v), left(left), right(right) {}
 
-    bool has_children()
+    bool has_children() const noexcept
     {
         return (left != nullptr && right != nullptr);
     }
 
-    operator int() const
+    operator int() const noexcept
     {
         return value;
     }
@@ -110,7 +110,7 @@ public:
     Keys() {}
     Keys(size_t degree, Node* owner = nullptr): degree(degree), owner(owner) {}
 
-    Branch<Node> get_branch(size_t i)
+    Branch<Node> get_branch(const size_t i) const
     {
         if (is_leaf())
         {
@@ -120,7 +120,7 @@ public:
         return Branch<Node>(keys[i], get_child(i), get_child(i+1));
     }
 
-    void add(Branch<Node> k)
+    void add(const Branch<Node> k)
     {
         auto pos = get_pos_of_key(k);
         keys.insert(keys.begin() + pos, k);
@@ -135,17 +135,17 @@ public:
         }
     }
 
-    Node* select_node_for_key(int k)
+    Node* select_node_for_key(const int k)
     {
         return children[get_pos_of_key(k)];
     }
 
-    bool is_present(int k)
+    bool is_present(const int k) const noexcept
     {
         return std::binary_search(keys.begin(), keys.end(), k);
     }
 
-    int get_median_with_new_key(int k)
+    int get_median_with_new_key(const int k) const
     {
         std::vector<int> tmp(keys);
         tmp.insert(tmp.begin() + get_pos_of_key(k), k);
@@ -154,7 +154,7 @@ public:
         return tmp[middle];
     }
 
-    Branch<Node> get_first_branch()
+    Branch<Node> get_first_branch() const noexcept
     {
         if (is_leaf())
         {
@@ -164,7 +164,7 @@ public:
         return Branch<Node>(keys[0], get_child(0), get_child(1));
     }
 
-    Branch<Node> get_last_branch()
+    Branch<Node> get_last_branch() const noexcept
     {
         auto last_index = keys.size()-1;
 
@@ -176,53 +176,53 @@ public:
         return Branch<Node>(keys[last_index], get_child(last_index), get_child(last_index + 1));
     }
 
-    std::vector<int>::iterator begin()
+    std::vector<int>::iterator begin() noexcept
     {
         return keys.begin();
     }
 
-    std::vector<int>::iterator end()
+    std::vector<int>::iterator end() noexcept
     {
         return keys.end();
     }
 
-    size_t size()
+    size_t size() const noexcept
     {
         return keys.size();
     }
 
-    std::vector<int> dump()
+    std::vector<int> dump() const
     {
         return keys;
     }
 
-    void clear()
+    void clear() noexcept
     {
         keys.clear();
         children.clear();
     }
 
-    bool is_leaf()
+    bool is_leaf() const noexcept
     {
         return children.size() == 0;
     }
 
-    typename std::vector<Node*>::iterator children_begin()
+    typename std::vector<Node*>::iterator children_begin() noexcept
     {
         return children.begin();
     }
 
-    typename std::vector<Node*>::iterator children_end()
+    typename std::vector<Node*>::iterator children_end() noexcept
     {
         return children.end();
     }
 
-    Node* get_rightmost_child()
+    Node* get_rightmost_child() const
     {
         return children[children.size()-1];
     }
 
-    void set_owner(Node* new_owner)
+    void set_owner(Node* new_owner) noexcept
     {
         owner = new_owner;
 
@@ -232,7 +232,7 @@ public:
         }
     }
 
-    Keys<Node> get_left_half_of_keys()
+    Keys<Node> get_left_half_of_keys() const
     {
         size_t half = keys.size() / 2;
         auto left_keys = std::vector<int>(keys.begin(), keys.begin() + half);
@@ -248,7 +248,7 @@ public:
 
     }
 
-    Keys<Node> get_right_half_of_keys()
+    Keys<Node> get_right_half_of_keys() const
     {
         size_t half = keys.size() / 2;
         auto right_keys = std::vector<int>(keys.begin() + half, keys.end());
@@ -263,13 +263,13 @@ public:
         return Keys<Node>(degree, owner, right_keys, right_children);
     }
 
-    void change_first_to(Branch<Node> new_first)
+    void change_first_to(const Branch<Node> new_first)
     {
         remove_first();
         add(new_first);
     }
 
-    void change_last_to(Branch<Node> new_last)
+    void change_last_to(const Branch<Node> new_last)
     {
         remove_last();
         add(new_last);
@@ -277,17 +277,17 @@ public:
 
 
 private:
-    bool is_last_position(size_t i)
+    bool is_last_position(const size_t i) const noexcept
     {
         return i + 1 >= keys.size();
     }
 
-    size_t get_pos_of_key(int k)
+    size_t get_pos_of_key(const int k) const
     {
         return std::upper_bound(keys.begin(), keys.end(), k) - keys.begin();
     }
 
-    Node* get_child(size_t i)
+    Node* get_child(const size_t i) const noexcept
     {
         if (children.size() < i+1)
         {
@@ -324,7 +324,7 @@ private:
         k.right->parent = owner;
     }
 
-    void insert_children_of_branch_to_pos(Branch<Node> k, size_t pos)
+    void insert_children_of_branch_to_pos(Branch<Node> k, const size_t pos)
     {
         if (!k.has_children())
         {
