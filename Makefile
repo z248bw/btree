@@ -90,9 +90,12 @@ btree.o : $(USER_DIR)/btree.cpp $(USER_DIR)/btree.h
 keys.o : $(USER_DIR)/keys.cpp $(USER_DIR)/keys.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/keys.cpp
 
+test_utils.o : $(USER_DIR)/test_utils.cpp $(USER_DIR)/test_utils.h
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/test_utils.cpp
+
 test.o : $(USER_DIR)/test.cpp \
                      $(USER_DIR)/btree.h $(USER_DIR)/keys.h $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/test.cpp
 
-test : keys.o btree.o test.o gtest_main.a
+test : keys.o btree.o test_utils.o test.o gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@

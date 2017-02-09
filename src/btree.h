@@ -2,45 +2,8 @@
 #define BTREE_H_
 
 #include<keys.h>
+#include<functional>
 
-
-class TraversableTree : public Traversable
-{
-protected:
-    virtual std::vector<Traversable*> get_children() override
-    {
-        auto vector = std::vector<Traversable*>();
-        if (l != nullptr)
-        {
-            vector.push_back(l);
-        }
-        if (r != nullptr)
-        {
-            vector.push_back(r);
-        }
-
-        return vector;
-    }
-
-    virtual bool is_leaf() override
-    {
-        return l == nullptr || r == nullptr;
-    }
-
-public:
-    TraversableTree* l;
-    TraversableTree* r;
-
-    Traversable* current;
-
-    TraversableTree(): l(nullptr), r(nullptr) {}
-
-    ~TraversableTree()
-    {
-        delete l;
-        delete r;
-    }
-};
 
 class invalid_key_exception: public std::exception
 {
@@ -57,20 +20,20 @@ public:
 };
 
 template <size_t degree>
-class Btree : public Traversable
+class Btree
 {
-private:
-    Keys<Btree> keys;
-
 protected:
-    virtual bool is_leaf() override
+    Btree(const Keys<Btree> ks)
     {
-        return keys.is_leaf();
+        keys = ks;
+        keys.set_owner(this);
     }
 
-    virtual std::vector<Traversable*> get_children() override
+    Keys<Btree> keys;
+
+    virtual Btree* new_node(const Keys<Btree> ks)
     {
-        return std::vector<Traversable*>(keys.children_begin(), keys.children_end());
+        return new Btree(ks);
     }
 
 public:
@@ -80,23 +43,7 @@ public:
         keys = Keys<Btree>(degree, this);
     }
 
-    Btree(int k): Btree()
-    {
-        keys.add(Branch<Btree>(k));
-    }
-
-    Btree(Branch<Btree> k): Btree()
-    {
-        keys.add(k);
-    }
-
-    Btree(Keys<Btree> ks)
-    {
-        keys = ks;
-        keys.set_owner(this);
-    }
-
-    void add(int k)
+    void add(const int k)
     {
         auto n = get_leaf_for_key(k);
         if (n->keys.size() < degree)
@@ -117,30 +64,6 @@ public:
         });
 
         return result;
-    }
-
-    Btree* find_node_with_key(int k)
-    {
-        if (keys.is_present(k))
-        {
-            return this;
-        }
-
-        for (auto it = keys.children_begin(); it != keys.children_end(); it++)
-        {
-            auto result = (*it)->find_node_with_key(k);
-            if (result != nullptr)
-            {
-                return result;
-            }
-        }
-
-        return nullptr;
-    }
-
-    std::vector<int> get_keys()
-    {
-        return keys.dump();
     }
 
     void inorder_walk(std::function<void(int)> on_visit)
@@ -191,7 +114,7 @@ public:
         }
     }
 
-    ~Btree()
+    virtual ~Btree()
     {
         for (auto it = keys.children_begin(); it != keys.children_end(); it++)
         {
@@ -200,7 +123,7 @@ public:
     }
 
 private:
-    Btree* get_leaf_for_key(int k)
+    Btree* get_leaf_for_key(const int k)
     {
         if (keys.is_present(k))
         {
@@ -266,8 +189,8 @@ private:
             left_branch_keys.change_last_to(unfitting);
         }
 
-        seperated.left = new Btree(left_branch_keys);
-        seperated.right = new Btree(right_branch_keys);
+        seperated.left = new_node(left_branch_keys);
+        seperated.right = new_node(right_branch_keys);
 
         return seperated;
     }
@@ -278,7 +201,7 @@ private:
         keys.add(new_root);
     }
 
-    void remove_self()
+    void remove_self() noexcept
     {
         keys.clear();
         delete this;

@@ -1,4 +1,4 @@
-#include "btree.h"
+#include "test_utils.h"
 #include "gtest/gtest.h"
 #include<iostream>
 #include<fstream>
@@ -349,14 +349,14 @@ TEST(TraversableTree, 2_node_here_1_there) {
 }
 
 TEST(Btree, only_root_deepest_and_shallowest_branches) {
-    Btree<2> t;
+    TraversableBtree<2> t;
     t.walk();
     ASSERT_EQ(0, Traversable::deepest);
     ASSERT_EQ(0, Traversable::shallowest);
 }
 
 TEST(Btree, add_elements_to_root) {
-    Btree<2> t;
+    TraversableBtree<2> t;
     t.add(1);
     t.add(2);
     ASSERT_EQ(1, t.get_keys()[0]);
@@ -368,7 +368,7 @@ TEST(Btree, add_elements_to_root) {
 }
 
 TEST(Btree, elements_added_to_root_are_sorted) {
-    Btree<2> t;
+    TraversableBtree<2> t;
     t.add(2);
     t.add(1);
     ASSERT_EQ(1, t.get_keys()[0]);
@@ -380,7 +380,7 @@ TEST(Btree, elements_added_to_root_are_sorted) {
 }
 
 TEST(Btree, grow) {
-    Btree<2> t;
+    TraversableBtree<2> t;
     t.add(1);
     t.add(2);
     t.add(3);
@@ -392,7 +392,7 @@ TEST(Btree, grow) {
 }
 
 TEST(Btree, find_element_which_is_not_present) {
-    Btree<2> t;
+    TraversableBtree<2> t;
     t.add(1);
     t.add(2);
     t.add(3);
@@ -405,7 +405,7 @@ TEST(Btree, find_element_which_is_not_present) {
 }
 
 TEST(Btree, find_element_in_root) {
-    Btree<2> t;
+    TraversableBtree<2> t;
     t.add(1);
     t.add(2);
     t.add(3);
@@ -418,7 +418,7 @@ TEST(Btree, find_element_in_root) {
 }
 
 TEST(Btree, find_element_in_left_leaf) {
-    Btree<2> t;
+    TraversableBtree<2> t;
     t.add(1);
     t.add(2);
     t.add(3);
@@ -430,7 +430,7 @@ TEST(Btree, find_element_in_left_leaf) {
 }
 
 TEST(Btree, find_element_in_right_leaf) {
-    Btree<2> t;
+    TraversableBtree<2> t;
     t.add(1);
     t.add(2);
     t.add(3);
@@ -442,9 +442,9 @@ TEST(Btree, find_element_in_right_leaf) {
     ASSERT_EQ(1, Traversable::shallowest);
 }
 
-Btree<2> tree_with_incremental_elements(size_t num_of_elems)
+TraversableBtree<2> tree_with_incremental_elements(size_t num_of_elems)
 {
-    Btree<2> t;
+    TraversableBtree<2> t;
     for (size_t i = 0; i < num_of_elems; i++)
     {
         t.add(i);
@@ -455,7 +455,7 @@ Btree<2> tree_with_incremental_elements(size_t num_of_elems)
 
 void incremental_test(size_t num_of_elems)
 {
-    Btree<2> t = tree_with_incremental_elements(num_of_elems);
+    TraversableBtree<2> t = tree_with_incremental_elements(num_of_elems);
 
     auto result = t.dump();
     for (size_t i = 0; i < result.size(); i++)
@@ -472,7 +472,7 @@ TEST(Btree, dump) {
 }
 
 TEST(Btree, finds_place_of_new_element_in_the_tree) {
-    Btree<2> t;
+    TraversableBtree<2> t;
     t.add(1);
     t.add(2);
     t.add(3);
@@ -494,7 +494,7 @@ TEST(Btree, finds_place_of_new_element_in_the_tree) {
 }
 
 TEST(Btree, adding_new_element_moves_element_up_from_leaf) {
-    Btree<2> t;
+    TraversableBtree<2> t;
     t.add(1);
     t.add(2);
     t.add(3);
@@ -527,7 +527,7 @@ TEST(Btree, big_tree) {
 
 void decremental_test(size_t num_of_elems)
 {
-    Btree<2> t;
+    TraversableBtree<2> t;
     for (size_t i = num_of_elems; i > 0; i--)
     {
         t.add(i);
@@ -560,7 +560,7 @@ TEST(Btree, decrement_big_tree) {
 }
 
 TEST(Btree, mixed_grow) {
-    Btree<2> t;
+    TraversableBtree<2> t;
     t.add(1);
     t.add(20);
     t.add(2);
@@ -576,7 +576,7 @@ TEST(Btree, mixed_grow) {
 }
 
 TEST(Btree, mixed_find) {
-    Btree<2> t;
+    TraversableBtree<2> t;
     t.add(1);
     t.add(20);
     t.add(2);
@@ -594,7 +594,7 @@ TEST(Btree, mixed_find) {
 }
 
 TEST(Btree, mixed_recursive_grow) {
-    Btree<2> t;
+    TraversableBtree<2> t;
     t.add(1);
     t.add(20);
     t.add(2);
@@ -621,7 +621,7 @@ void test_mixed(size_t n)
 {
     auto top = 2 * n + 10;
 
-    Btree<2> t;
+    TraversableBtree<2> t;
     for (size_t i = 0; i < n; i++)
     {
         t.add(i);
@@ -647,7 +647,7 @@ TEST(Btree, mixed_big) {
 }
 
 TEST(Btree, full_grow) {
-    Btree<2> t;
+    TraversableBtree<2> t;
     t.add(1);
     t.add(101);
     t.add(1001);
@@ -677,7 +677,7 @@ void test_random(size_t n)
     }
 
 
-    Btree<2> t;
+    TraversableBtree<2> t;
     for (int i : s)
     {
         t.add(i);
@@ -714,7 +714,7 @@ void test_from_file(std::string filename)
 {
     std::vector<int> inputs = input_from_file(filename);
 
-    Btree<2> t;
+    TraversableBtree<2> t;
     for (int i : inputs)
     {
         t.add(i);
@@ -731,25 +731,25 @@ void test_from_file(std::string filename)
 }
 
 TEST(Btree, duplicate_key_root) {
-    Btree<2> t;
+    TraversableBtree<2> t;
     t.add(0);
     ASSERT_THROW(t.add(0), invalid_key_exception);
 }
 
 TEST(Btree, duplicate_key_in_leaf) {
-    Btree<2> t = tree_with_incremental_elements(9);
+    TraversableBtree<2> t = tree_with_incremental_elements(9);
 
     ASSERT_THROW(t.add(1), invalid_key_exception);
 }
 
 TEST(Btree, duplicate_key_in_node) {
-    Btree<2> t = tree_with_incremental_elements(9);
+    TraversableBtree<2> t = tree_with_incremental_elements(9);
 
     ASSERT_THROW(t.add(5), invalid_key_exception);
 }
 
 TEST(Btree, duplicate_key_in_root_recursive) {
-    Btree<2> t = tree_with_incremental_elements(9);
+    TraversableBtree<2> t = tree_with_incremental_elements(9);
 
     ASSERT_THROW(t.add(3), invalid_key_exception);
 }
@@ -759,7 +759,7 @@ TEST(Btree, random_big) {
 }
 
 TEST(Btree, preorder_walk) {
-    Btree<2> t = tree_with_incremental_elements(9);
+    TraversableBtree<2> t = tree_with_incremental_elements(9);
 
     std::vector<int> result;
     t.preorder_walk([&result] (int k) {
@@ -778,7 +778,7 @@ TEST(Btree, preorder_walk) {
 }
 
 TEST(Btree, postorder_walk) {
-    Btree<2> t = tree_with_incremental_elements(9);
+    TraversableBtree<2> t = tree_with_incremental_elements(9);
 
     std::vector<int> result;
     t.postorder_walk([&result] (int k) {
@@ -796,9 +796,9 @@ TEST(Btree, postorder_walk) {
     ASSERT_EQ(3, result[8]);
 }
 
-Btree<3> incremental_even_tree_with_num_of_elems(size_t n)
+TraversableBtree<3> incremental_even_tree_with_num_of_elems(size_t n)
 {
-    Btree<3> t;
+    TraversableBtree<3> t;
     for (size_t i = 0; i < n; i++)
     {
        t.add(i);
@@ -809,7 +809,7 @@ Btree<3> incremental_even_tree_with_num_of_elems(size_t n)
 
 void test_incremental_with_odd_degree_and_num_of_elems(size_t n)
 {
-    Btree<3> t = incremental_even_tree_with_num_of_elems(n);
+    TraversableBtree<3> t = incremental_even_tree_with_num_of_elems(n);
     auto result = t.dump();
     for (size_t i = 0; i < n; i++)
     {
@@ -834,7 +834,7 @@ TEST(Btree, odd_degree_incremental_big) {
 
 void odd_decremental_test(size_t num_of_elems)
 {
-    Btree<3> t;
+    TraversableBtree<3> t;
     for (size_t i = num_of_elems; i > 0; i--)
     {
         t.add(i);
@@ -862,7 +862,7 @@ void test_odd_mixed(size_t n)
 {
     auto top = 2 * n + 10;
 
-    Btree<3> t;
+    TraversableBtree<3> t;
     for (size_t i = 0; i < n; i++)
     {
         t.add(i);

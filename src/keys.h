@@ -5,63 +5,8 @@
 #include<vector>
 #include<iterator>
 #include<algorithm>
-#include<functional>
 #include<assert.h>
 
-
-#define MAX_INT 99999
-// I want to be able to simply verify whether the tree is balanced.
-// A way to do this is, to find the deepest and the shallowest leaf and then check
-// if they are equal. I provide this functionality as a mixin because I need to
-// prove that the walk algorithm works correctly and for this I need to be able
-// to walk unbalanced trees as well.
-class Traversable
-{
-protected:
-    virtual bool is_leaf() = 0;
-    virtual std::vector<Traversable*> get_children() = 0;
-
-public:
-    static size_t deepest;
-    static size_t shallowest;
-    virtual ~Traversable(){}
-
-    void walk(size_t depth = 0)
-    {
-        if (depth == 0)
-        {
-            init_walk();
-        }
-
-        auto children = get_children();
-        for (auto child : children)
-        {
-             child->walk(depth+1);
-        }
-
-        if (depth > deepest)
-        {
-            deepest = depth;
-        }
-
-        // A node is a leaf in a btree if it does not have the maximum number
-        // of children. Altough the class's name is Traversable, I use this
-        // rule because I want to use it for btrees. The other implementations of this class
-        // sole purposes are to test that the walk algorithm works in the defined way
-        if (is_leaf() && depth < shallowest)
-        {
-            shallowest = depth;
-        }
-    }
-
-private:
-    void init_walk()
-    {
-        deepest = 0;
-        shallowest = MAX_INT;
-    }
-
-};
 
 template<class Node>
 struct Branch
