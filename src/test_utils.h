@@ -10,16 +10,16 @@
 // if they are equal. I provide this functionality as a mixin because I need to
 // prove that the walk algorithm works correctly and for this I need to be able
 // to walk unbalanced trees as well.
-class Traversable
+class Measurable
 {
 protected:
     virtual bool is_leaf() = 0;
-    virtual std::vector<Traversable*> get_children() = 0;
+    virtual std::vector<Measurable*> get_children() = 0;
 
 public:
     static size_t deepest;
     static size_t shallowest;
-    virtual ~Traversable(){}
+    virtual ~Measurable(){}
 
     void walk(size_t depth = 0)
     {
@@ -58,12 +58,12 @@ private:
 
 };
 
-class TraversableTree : public Traversable
+class MeasurableTree : public Measurable
 {
 protected:
-    virtual std::vector<Traversable*> get_children() override
+    virtual std::vector<Measurable*> get_children() override
     {
-        auto vector = std::vector<Traversable*>();
+        auto vector = std::vector<Measurable*>();
         if (l != nullptr)
         {
             vector.push_back(l);
@@ -82,14 +82,14 @@ protected:
     }
 
 public:
-    TraversableTree* l;
-    TraversableTree* r;
+    MeasurableTree* l;
+    MeasurableTree* r;
 
-    Traversable* current;
+    Measurable* current;
 
-    TraversableTree(): l(nullptr), r(nullptr) {}
+    MeasurableTree(): l(nullptr), r(nullptr) {}
 
-    ~TraversableTree()
+    ~MeasurableTree()
     {
         delete l;
         delete r;
@@ -97,15 +97,15 @@ public:
 };
 
 template <size_t degree>
-class TraversableBtree : public Btree<degree>, public Traversable
+class MeasurableBtree : public Btree<degree>, public Measurable
 {
 private:
-    TraversableBtree(const Keys<Btree<degree>> ks): Btree<degree>(ks) {}
+    MeasurableBtree(const Keys<Btree<degree>> ks): Btree<degree>(ks) {}
 
 protected:
     virtual Btree<degree>* new_node(const Keys<Btree<degree>> ks) override
     {
-        return new TraversableBtree(ks);
+        return new MeasurableBtree(ks);
     }
 
     virtual bool is_leaf() override
@@ -113,21 +113,21 @@ protected:
         return this->keys.is_leaf();
     }
 
-    virtual std::vector<Traversable*> get_children() override
+    virtual std::vector<Measurable*> get_children() override
     {
-        std::vector<Traversable*> result;
+        std::vector<Measurable*> result;
         for (auto it = this->keys.children_begin(); it != this->keys.children_end(); ++it)
         {
-            result.push_back(static_cast<TraversableBtree*>(*(it)));
+            result.push_back(static_cast<MeasurableBtree*>(*(it)));
         }
 
         return result;
     }
 
 public:
-    TraversableBtree(): Btree<degree>() {}
+    MeasurableBtree(): Btree<degree>() {}
 
-    TraversableBtree* find_node_with_key(const int k)
+    MeasurableBtree* find_node_with_key(const int k)
     {
         if (this->keys.is_present(k))
         {
@@ -136,7 +136,7 @@ public:
 
         for (auto it = this->keys.children_begin(); it != this->keys.children_end(); it++)
         {
-            auto result = static_cast<TraversableBtree<degree>*>(*it)->find_node_with_key(k);
+            auto result = static_cast<MeasurableBtree<degree>*>(*it)->find_node_with_key(k);
             if (result != nullptr)
             {
                 return result;

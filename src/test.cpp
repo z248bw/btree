@@ -312,87 +312,87 @@ TEST(Keys, change_last_to_for_keys_with_multiple_elements) {
 }
 
 
-TEST(TraversableTree, no_children) {
-    TraversableTree t;
+TEST(MeasurableTree, no_children) {
+    MeasurableTree t;
     t.walk();
-    ASSERT_EQ(0, Traversable::deepest);
-    ASSERT_EQ(0, Traversable::shallowest);
+    ASSERT_EQ(0, Measurable::deepest);
+    ASSERT_EQ(0, Measurable::shallowest);
 }
 
-TEST(TraversableTree, list) {
-    TraversableTree t;
-    t.l = new TraversableTree();
-    t.l->l = new TraversableTree();
-    t.l->l->l = new TraversableTree();
+TEST(MeasurableTree, list) {
+    MeasurableTree t;
+    t.l = new MeasurableTree();
+    t.l->l = new MeasurableTree();
+    t.l->l->l = new MeasurableTree();
     t.walk();
-    ASSERT_EQ(3, Traversable::deepest);
-    ASSERT_EQ(0, Traversable::shallowest);
+    ASSERT_EQ(3, Measurable::deepest);
+    ASSERT_EQ(0, Measurable::shallowest);
 }
 
-TEST(TraversableTree, 1_node_here_1_there) {
-    TraversableTree t;
-    t.l = new TraversableTree();
-    t.r = new TraversableTree();
+TEST(MeasurableTree, 1_node_here_1_there) {
+    MeasurableTree t;
+    t.l = new MeasurableTree();
+    t.r = new MeasurableTree();
     t.walk();
-    ASSERT_EQ(1, Traversable::deepest);
-    ASSERT_EQ(1, Traversable::shallowest);
+    ASSERT_EQ(1, Measurable::deepest);
+    ASSERT_EQ(1, Measurable::shallowest);
 }
 
-TEST(TraversableTree, 2_node_here_1_there) {
-    TraversableTree t;
-    t.l = new TraversableTree();
-    t.l->l = new TraversableTree();
-    t.r = new TraversableTree();
+TEST(MeasurableTree, 2_node_here_1_there) {
+    MeasurableTree t;
+    t.l = new MeasurableTree();
+    t.l->l = new MeasurableTree();
+    t.r = new MeasurableTree();
     t.walk();
-    ASSERT_EQ(2, Traversable::deepest);
-    ASSERT_EQ(1, Traversable::shallowest);
+    ASSERT_EQ(2, Measurable::deepest);
+    ASSERT_EQ(1, Measurable::shallowest);
 }
 
 TEST(Btree, only_root_deepest_and_shallowest_branches) {
-    TraversableBtree<2> t;
+    MeasurableBtree<2> t;
     t.walk();
-    ASSERT_EQ(0, Traversable::deepest);
-    ASSERT_EQ(0, Traversable::shallowest);
+    ASSERT_EQ(0, Measurable::deepest);
+    ASSERT_EQ(0, Measurable::shallowest);
 }
 
 TEST(Btree, add_elements_to_root) {
-    TraversableBtree<2> t;
+    MeasurableBtree<2> t;
     t.add(1);
     t.add(2);
     ASSERT_EQ(1, t.get_keys()[0]);
     ASSERT_EQ(2, t.get_keys()[1]);
 
     t.walk();
-    ASSERT_EQ(0, Traversable::deepest);
-    ASSERT_EQ(0, Traversable::shallowest);
+    ASSERT_EQ(0, Measurable::deepest);
+    ASSERT_EQ(0, Measurable::shallowest);
 }
 
 TEST(Btree, elements_added_to_root_are_sorted) {
-    TraversableBtree<2> t;
+    MeasurableBtree<2> t;
     t.add(2);
     t.add(1);
     ASSERT_EQ(1, t.get_keys()[0]);
     ASSERT_EQ(2, t.get_keys()[1]);
 
     t.walk();
-    ASSERT_EQ(0, Traversable::deepest);
-    ASSERT_EQ(0, Traversable::shallowest);
+    ASSERT_EQ(0, Measurable::deepest);
+    ASSERT_EQ(0, Measurable::shallowest);
 }
 
 TEST(Btree, grow) {
-    TraversableBtree<2> t;
+    MeasurableBtree<2> t;
     t.add(1);
     t.add(2);
     t.add(3);
     ASSERT_EQ(2, t.get_keys()[0]);
 
     t.walk();
-    ASSERT_EQ(1, Traversable::deepest);
-    ASSERT_EQ(1, Traversable::shallowest);
+    ASSERT_EQ(1, Measurable::deepest);
+    ASSERT_EQ(1, Measurable::shallowest);
 }
 
 TEST(Btree, find_element_which_is_not_present) {
-    TraversableBtree<2> t;
+    MeasurableBtree<2> t;
     t.add(1);
     t.add(2);
     t.add(3);
@@ -400,12 +400,12 @@ TEST(Btree, find_element_which_is_not_present) {
     ASSERT_EQ(nullptr, t.find_node_with_key(4));
 
     t.walk();
-    ASSERT_EQ(1, Traversable::deepest);
-    ASSERT_EQ(1, Traversable::shallowest);
+    ASSERT_EQ(1, Measurable::deepest);
+    ASSERT_EQ(1, Measurable::shallowest);
 }
 
 TEST(Btree, find_element_in_root) {
-    TraversableBtree<2> t;
+    MeasurableBtree<2> t;
     t.add(1);
     t.add(2);
     t.add(3);
@@ -413,24 +413,24 @@ TEST(Btree, find_element_in_root) {
     ASSERT_EQ(2, t.find_node_with_key(2)->get_keys()[0]);
 
     t.walk();
-    ASSERT_EQ(1, Traversable::deepest);
-    ASSERT_EQ(1, Traversable::shallowest);
+    ASSERT_EQ(1, Measurable::deepest);
+    ASSERT_EQ(1, Measurable::shallowest);
 }
 
 TEST(Btree, find_element_in_left_leaf) {
-    TraversableBtree<2> t;
+    MeasurableBtree<2> t;
     t.add(1);
     t.add(2);
     t.add(3);
     ASSERT_EQ(1, t.find_node_with_key(1)->get_keys()[0]);
 
     t.walk();
-    ASSERT_EQ(1, Traversable::deepest);
-    ASSERT_EQ(1, Traversable::shallowest);
+    ASSERT_EQ(1, Measurable::deepest);
+    ASSERT_EQ(1, Measurable::shallowest);
 }
 
 TEST(Btree, find_element_in_right_leaf) {
-    TraversableBtree<2> t;
+    MeasurableBtree<2> t;
     t.add(1);
     t.add(2);
     t.add(3);
@@ -438,13 +438,13 @@ TEST(Btree, find_element_in_right_leaf) {
     ASSERT_EQ(3, t.find_node_with_key(3)->get_keys()[0]);
 
     t.walk();
-    ASSERT_EQ(1, Traversable::deepest);
-    ASSERT_EQ(1, Traversable::shallowest);
+    ASSERT_EQ(1, Measurable::deepest);
+    ASSERT_EQ(1, Measurable::shallowest);
 }
 
-TraversableBtree<2> tree_with_incremental_elements(size_t num_of_elems)
+MeasurableBtree<2> tree_with_incremental_elements(size_t num_of_elems)
 {
-    TraversableBtree<2> t;
+    MeasurableBtree<2> t;
     for (size_t i = 0; i < num_of_elems; i++)
     {
         t.add(i);
@@ -455,7 +455,7 @@ TraversableBtree<2> tree_with_incremental_elements(size_t num_of_elems)
 
 void incremental_test(size_t num_of_elems)
 {
-    TraversableBtree<2> t = tree_with_incremental_elements(num_of_elems);
+    MeasurableBtree<2> t = tree_with_incremental_elements(num_of_elems);
 
     auto result = t.dump();
     for (size_t i = 0; i < result.size(); i++)
@@ -464,7 +464,7 @@ void incremental_test(size_t num_of_elems)
     }
 
     t.walk();
-    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+    ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
 }
 
 TEST(Btree, dump) {
@@ -472,7 +472,7 @@ TEST(Btree, dump) {
 }
 
 TEST(Btree, finds_place_of_new_element_in_the_tree) {
-    TraversableBtree<2> t;
+    MeasurableBtree<2> t;
     t.add(1);
     t.add(2);
     t.add(3);
@@ -489,12 +489,12 @@ TEST(Btree, finds_place_of_new_element_in_the_tree) {
     ASSERT_EQ(4, n->get_keys()[1]);
 
     t.walk();
-    ASSERT_EQ(1, Traversable::deepest);
-    ASSERT_EQ(1, Traversable::shallowest);
+    ASSERT_EQ(1, Measurable::deepest);
+    ASSERT_EQ(1, Measurable::shallowest);
 }
 
 TEST(Btree, adding_new_element_moves_element_up_from_leaf) {
-    TraversableBtree<2> t;
+    MeasurableBtree<2> t;
     t.add(1);
     t.add(2);
     t.add(3);
@@ -513,8 +513,8 @@ TEST(Btree, adding_new_element_moves_element_up_from_leaf) {
     ASSERT_EQ(4, n->get_keys()[1]);
 
     t.walk();
-    ASSERT_EQ(1, Traversable::deepest);
-    ASSERT_EQ(1, Traversable::shallowest);
+    ASSERT_EQ(1, Measurable::deepest);
+    ASSERT_EQ(1, Measurable::shallowest);
 }
 
 TEST(Btree, adding_new_element_moves_element_up_from_leaf_and_grows_tree) {
@@ -527,7 +527,7 @@ TEST(Btree, big_tree) {
 
 void decremental_test(size_t num_of_elems)
 {
-    TraversableBtree<2> t;
+    MeasurableBtree<2> t;
     for (size_t i = num_of_elems; i > 0; i--)
     {
         t.add(i);
@@ -540,7 +540,7 @@ void decremental_test(size_t num_of_elems)
     }
 
     t.walk();
-    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+    ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
 }
 
 TEST(Btree, decrement_adding_grow) {
@@ -560,7 +560,7 @@ TEST(Btree, decrement_big_tree) {
 }
 
 TEST(Btree, mixed_grow) {
-    TraversableBtree<2> t;
+    MeasurableBtree<2> t;
     t.add(1);
     t.add(20);
     t.add(2);
@@ -572,11 +572,11 @@ TEST(Btree, mixed_grow) {
     ASSERT_EQ(20, result[2]);
 
     t.walk();
-    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+    ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
 }
 
 TEST(Btree, mixed_find) {
-    TraversableBtree<2> t;
+    MeasurableBtree<2> t;
     t.add(1);
     t.add(20);
     t.add(2);
@@ -590,11 +590,11 @@ TEST(Btree, mixed_find) {
     ASSERT_EQ(20, result[3]);
 
     t.walk();
-    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+    ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
 }
 
 TEST(Btree, mixed_recursive_grow) {
-    TraversableBtree<2> t;
+    MeasurableBtree<2> t;
     t.add(1);
     t.add(20);
     t.add(2);
@@ -614,14 +614,14 @@ TEST(Btree, mixed_recursive_grow) {
     ASSERT_EQ(20, result[6]);
 
     t.walk();
-    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+    ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
 }
 
 void test_mixed(size_t n)
 {
     auto top = 2 * n + 10;
 
-    TraversableBtree<2> t;
+    MeasurableBtree<2> t;
     for (size_t i = 0; i < n; i++)
     {
         t.add(i);
@@ -639,7 +639,7 @@ void test_mixed(size_t n)
         ASSERT_EQ(i+n+10+1, result[i+n]);
     }
 
-    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+    ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
 }
 
 TEST(Btree, mixed_big) {
@@ -647,7 +647,7 @@ TEST(Btree, mixed_big) {
 }
 
 TEST(Btree, full_grow) {
-    TraversableBtree<2> t;
+    MeasurableBtree<2> t;
     t.add(1);
     t.add(101);
     t.add(1001);
@@ -664,7 +664,7 @@ TEST(Btree, full_grow) {
     ASSERT_EQ(1002, result[5]);
 
     t.walk();
-    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+    ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
 }
 
 void test_random(size_t n)
@@ -677,7 +677,7 @@ void test_random(size_t n)
     }
 
 
-    TraversableBtree<2> t;
+    MeasurableBtree<2> t;
     for (int i : s)
     {
         t.add(i);
@@ -691,7 +691,7 @@ void test_random(size_t n)
         ASSERT_EQ(inputs[i], result[i]);
     }
 
-    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+    ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
 }
 
 std::vector<int> input_from_file(std::string filename)
@@ -714,7 +714,7 @@ void test_from_file(std::string filename)
 {
     std::vector<int> inputs = input_from_file(filename);
 
-    TraversableBtree<2> t;
+    MeasurableBtree<2> t;
     for (int i : inputs)
     {
         t.add(i);
@@ -727,29 +727,29 @@ void test_from_file(std::string filename)
         ASSERT_EQ(inputs[i], result[i]);
     }
 
-    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+    ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
 }
 
 TEST(Btree, duplicate_key_root) {
-    TraversableBtree<2> t;
+    MeasurableBtree<2> t;
     t.add(0);
     ASSERT_THROW(t.add(0), invalid_key_exception);
 }
 
 TEST(Btree, duplicate_key_in_leaf) {
-    TraversableBtree<2> t = tree_with_incremental_elements(9);
+    MeasurableBtree<2> t = tree_with_incremental_elements(9);
 
     ASSERT_THROW(t.add(1), invalid_key_exception);
 }
 
 TEST(Btree, duplicate_key_in_node) {
-    TraversableBtree<2> t = tree_with_incremental_elements(9);
+    MeasurableBtree<2> t = tree_with_incremental_elements(9);
 
     ASSERT_THROW(t.add(5), invalid_key_exception);
 }
 
 TEST(Btree, duplicate_key_in_root_recursive) {
-    TraversableBtree<2> t = tree_with_incremental_elements(9);
+    MeasurableBtree<2> t = tree_with_incremental_elements(9);
 
     ASSERT_THROW(t.add(3), invalid_key_exception);
 }
@@ -759,7 +759,7 @@ TEST(Btree, random_big) {
 }
 
 TEST(Btree, preorder_walk) {
-    TraversableBtree<2> t = tree_with_incremental_elements(9);
+    MeasurableBtree<2> t = tree_with_incremental_elements(9);
 
     std::vector<int> result;
     t.preorder_walk([&result] (int k) {
@@ -778,7 +778,7 @@ TEST(Btree, preorder_walk) {
 }
 
 TEST(Btree, postorder_walk) {
-    TraversableBtree<2> t = tree_with_incremental_elements(9);
+    MeasurableBtree<2> t = tree_with_incremental_elements(9);
 
     std::vector<int> result;
     t.postorder_walk([&result] (int k) {
@@ -796,9 +796,9 @@ TEST(Btree, postorder_walk) {
     ASSERT_EQ(3, result[8]);
 }
 
-TraversableBtree<3> incremental_even_tree_with_num_of_elems(size_t n)
+MeasurableBtree<3> incremental_even_tree_with_num_of_elems(size_t n)
 {
-    TraversableBtree<3> t;
+    MeasurableBtree<3> t;
     for (size_t i = 0; i < n; i++)
     {
        t.add(i);
@@ -809,7 +809,7 @@ TraversableBtree<3> incremental_even_tree_with_num_of_elems(size_t n)
 
 void test_incremental_with_odd_degree_and_num_of_elems(size_t n)
 {
-    TraversableBtree<3> t = incremental_even_tree_with_num_of_elems(n);
+    MeasurableBtree<3> t = incremental_even_tree_with_num_of_elems(n);
     auto result = t.dump();
     for (size_t i = 0; i < n; i++)
     {
@@ -817,7 +817,7 @@ void test_incremental_with_odd_degree_and_num_of_elems(size_t n)
     }
 
     t.walk();
-    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+    ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
 }
 
 TEST(Btree, odd_degree_root) {
@@ -834,7 +834,7 @@ TEST(Btree, odd_degree_incremental_big) {
 
 void odd_decremental_test(size_t num_of_elems)
 {
-    TraversableBtree<3> t;
+    MeasurableBtree<3> t;
     for (size_t i = num_of_elems; i > 0; i--)
     {
         t.add(i);
@@ -847,7 +847,7 @@ void odd_decremental_test(size_t num_of_elems)
     }
 
     t.walk();
-    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+    ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
 }
 
 TEST(Btree, odd_degree_decremental_grow) {
@@ -862,7 +862,7 @@ void test_odd_mixed(size_t n)
 {
     auto top = 2 * n + 10;
 
-    TraversableBtree<3> t;
+    MeasurableBtree<3> t;
     for (size_t i = 0; i < n; i++)
     {
         t.add(i);
@@ -880,7 +880,7 @@ void test_odd_mixed(size_t n)
         ASSERT_EQ(i+n+10+1, result[i+n]);
     }
 
-    ASSERT_EQ(Traversable::shallowest, Traversable::deepest);
+    ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
 }
 
 TEST(Btree, odd_degree_mixed_grow) {
