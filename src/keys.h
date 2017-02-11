@@ -80,7 +80,7 @@ public:
         }
     }
 
-    Node* select_node_for_key(const int k)
+    Node* select_node_for_key(const int k) const
     {
         return children[get_pos_of_key(k)];
     }
@@ -306,14 +306,5 @@ private:
         children.erase(children.end() - 1);
     }
 };
-
-struct TestNode
-{
-    size_t id;
-    TestNode* parent;
-
-    TestNode(size_t id): id(id) {}
-};
-
 
 #endif
