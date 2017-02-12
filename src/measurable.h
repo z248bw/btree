@@ -21,7 +21,7 @@ public:
     static size_t shallowest;
     virtual ~Measurable(){}
 
-    void walk(size_t depth = 0)
+    void measure(size_t depth = 0)
     {
         if (depth == 0)
         {
@@ -31,7 +31,7 @@ public:
         auto children = get_children();
         for (auto child : children)
         {
-             child->walk(depth+1);
+             child->measure(depth+1);
         }
 
         if (depth > deepest)
@@ -55,7 +55,6 @@ private:
         deepest = 0;
         shallowest = MAX_INT;
     }
-
 };
 
 class MeasurableTree : public Measurable

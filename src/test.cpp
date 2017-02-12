@@ -269,7 +269,7 @@ TEST(Keys, change_last_to_for_keys_with_multiple_elements) {
 
 TEST(MeasurableTree, no_children) {
     MeasurableTree t;
-    t.walk();
+    t.measure();
     ASSERT_EQ(0, Measurable::deepest);
     ASSERT_EQ(0, Measurable::shallowest);
 }
@@ -279,7 +279,7 @@ TEST(MeasurableTree, list) {
     t.l = new MeasurableTree();
     t.l->l = new MeasurableTree();
     t.l->l->l = new MeasurableTree();
-    t.walk();
+    t.measure();
     ASSERT_EQ(3, Measurable::deepest);
     ASSERT_EQ(0, Measurable::shallowest);
 }
@@ -288,7 +288,7 @@ TEST(MeasurableTree, 1_node_here_1_there) {
     MeasurableTree t;
     t.l = new MeasurableTree();
     t.r = new MeasurableTree();
-    t.walk();
+    t.measure();
     ASSERT_EQ(1, Measurable::deepest);
     ASSERT_EQ(1, Measurable::shallowest);
 }
@@ -298,14 +298,14 @@ TEST(MeasurableTree, 2_node_here_1_there) {
     t.l = new MeasurableTree();
     t.l->l = new MeasurableTree();
     t.r = new MeasurableTree();
-    t.walk();
+    t.measure();
     ASSERT_EQ(2, Measurable::deepest);
     ASSERT_EQ(1, Measurable::shallowest);
 }
 
 TEST(Btree, only_root_deepest_and_shallowest_branches) {
     MeasurableBtree<2> t;
-    t.walk();
+    t.measure();
     ASSERT_EQ(0, Measurable::deepest);
     ASSERT_EQ(0, Measurable::shallowest);
 }
@@ -317,7 +317,7 @@ TEST(Btree, add_elements_to_root) {
     ASSERT_EQ(1, t.get_keys()[0]);
     ASSERT_EQ(2, t.get_keys()[1]);
 
-    t.walk();
+    t.measure();
     ASSERT_EQ(0, Measurable::deepest);
     ASSERT_EQ(0, Measurable::shallowest);
 }
@@ -329,7 +329,7 @@ TEST(Btree, elements_added_to_root_are_sorted) {
     ASSERT_EQ(1, t.get_keys()[0]);
     ASSERT_EQ(2, t.get_keys()[1]);
 
-    t.walk();
+    t.measure();
     ASSERT_EQ(0, Measurable::deepest);
     ASSERT_EQ(0, Measurable::shallowest);
 }
@@ -341,7 +341,7 @@ TEST(Btree, grow) {
     t.add(3);
     ASSERT_EQ(2, t.get_keys()[0]);
 
-    t.walk();
+    t.measure();
     ASSERT_EQ(1, Measurable::deepest);
     ASSERT_EQ(1, Measurable::shallowest);
 }
@@ -354,7 +354,7 @@ TEST(Btree, find_element_which_is_not_present) {
     t.find_node_with_key(4);
     ASSERT_EQ(nullptr, t.find_node_with_key(4));
 
-    t.walk();
+    t.measure();
     ASSERT_EQ(1, Measurable::deepest);
     ASSERT_EQ(1, Measurable::shallowest);
 }
@@ -367,7 +367,7 @@ TEST(Btree, find_element_in_root) {
     t.find_node_with_key(4);
     ASSERT_EQ(2, t.find_node_with_key(2)->get_keys()[0]);
 
-    t.walk();
+    t.measure();
     ASSERT_EQ(1, Measurable::deepest);
     ASSERT_EQ(1, Measurable::shallowest);
 }
@@ -379,7 +379,7 @@ TEST(Btree, find_element_in_left_leaf) {
     t.add(3);
     ASSERT_EQ(1, t.find_node_with_key(1)->get_keys()[0]);
 
-    t.walk();
+    t.measure();
     ASSERT_EQ(1, Measurable::deepest);
     ASSERT_EQ(1, Measurable::shallowest);
 }
@@ -392,7 +392,7 @@ TEST(Btree, find_element_in_right_leaf) {
     t.find_node_with_key(3)->get_keys();
     ASSERT_EQ(3, t.find_node_with_key(3)->get_keys()[0]);
 
-    t.walk();
+    t.measure();
     ASSERT_EQ(1, Measurable::deepest);
     ASSERT_EQ(1, Measurable::shallowest);
 }
@@ -418,7 +418,7 @@ TEST(Btree, finds_place_of_new_element_in_the_tree) {
     ASSERT_EQ(3, n->get_keys()[0]);
     ASSERT_EQ(4, n->get_keys()[1]);
 
-    t.walk();
+    t.measure();
     ASSERT_EQ(1, Measurable::deepest);
     ASSERT_EQ(1, Measurable::shallowest);
 }
@@ -442,7 +442,7 @@ TEST(Btree, adding_new_element_moves_element_up_from_leaf) {
     ASSERT_EQ(2, n->get_keys()[0]);
     ASSERT_EQ(4, n->get_keys()[1]);
 
-    t.walk();
+    t.measure();
     ASSERT_EQ(1, Measurable::deepest);
     ASSERT_EQ(1, Measurable::shallowest);
 }
@@ -501,7 +501,7 @@ TEST(Btree, mixed_grow) {
     ASSERT_EQ(2, result[1]);
     ASSERT_EQ(20, result[2]);
 
-    t.walk();
+    t.measure();
     ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
 }
 
@@ -519,7 +519,7 @@ TEST(Btree, mixed_find) {
     ASSERT_EQ(19, result[2]);
     ASSERT_EQ(20, result[3]);
 
-    t.walk();
+    t.measure();
     ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
 }
 
@@ -543,7 +543,7 @@ TEST(Btree, mixed_recursive_grow) {
     ASSERT_EQ(19, result[5]);
     ASSERT_EQ(20, result[6]);
 
-    t.walk();
+    t.measure();
     ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
 }
 
@@ -568,7 +568,7 @@ TEST(Btree, full_grow) {
     ASSERT_EQ(1001, result[4]);
     ASSERT_EQ(1002, result[5]);
 
-    t.walk();
+    t.measure();
     ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
 }
 
