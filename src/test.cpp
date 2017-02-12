@@ -651,3 +651,7 @@ TEST(Btree, odd_degree_mixed_recursive_grow) {
 TEST(Btree, odd_degree_mixed_big) {
     test_mixed<3>(100);
 }
+
+TEST(Btree, odd_degree_random_big) {
+    test_random<3>(100);
+}
