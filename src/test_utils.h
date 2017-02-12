@@ -17,8 +17,6 @@ struct TestNode
     TestNode(size_t id): id(id) {}
 };
 
-
-
 std::vector<TestNode*> create_test_nodes(size_t n);
 
 void destroy_test_nodes(std::vector<TestNode*> nodes);
