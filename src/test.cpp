@@ -398,7 +398,7 @@ TEST(Btree, find_element_in_right_leaf) {
 }
 
 TEST(Btree, dump) {
-    incremental_test(3);
+    test_incremental<2>(3);
 }
 
 TEST(Btree, finds_place_of_new_element_in_the_tree) {
@@ -448,45 +448,27 @@ TEST(Btree, adding_new_element_moves_element_up_from_leaf) {
 }
 
 TEST(Btree, adding_new_element_moves_element_up_from_leaf_and_grows_tree) {
-    incremental_test(7);
+    test_incremental<2>(7);
 }
 
 TEST(Btree, big_tree) {
-    incremental_test(100);
-}
-
-void decremental_test(size_t num_of_elems)
-{
-    MeasurableBtree<2> t;
-    for (size_t i = num_of_elems; i > 0; i--)
-    {
-        t.add(i);
-    }
-
-    auto result = t.dump();
-    for (size_t i = 0; i < result.size(); i++)
-    {
-        ASSERT_EQ(i+1, result[i]);
-    }
-
-    t.walk();
-    ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
+    test_incremental<2>(100);
 }
 
 TEST(Btree, decrement_adding_grow) {
-    decremental_test(3);
+    test_decremental<2>(3);
 }
 
 TEST(Btree, decrement_find_node) {
-    decremental_test(4);
+    test_decremental<2>(4);
 }
 
 TEST(Btree, decrement_upwards_add) {
-    decremental_test(5);
+    test_decremental<2>(5);
 }
 
 TEST(Btree, decrement_big_tree) {
-    decremental_test(100);
+    test_decremental<2>(100);
 }
 
 TEST(Btree, mixed_grow) {
@@ -548,7 +530,7 @@ TEST(Btree, mixed_recursive_grow) {
 }
 
 TEST(Btree, mixed_big) {
-    test_mixed(100);
+    test_mixed<2>(100);
 }
 
 TEST(Btree, full_grow) {
@@ -579,29 +561,29 @@ TEST(Btree, duplicate_key_root) {
 }
 
 TEST(Btree, duplicate_key_in_leaf) {
-    MeasurableBtree<2> t = tree_with_incremental_elements(9);
+    MeasurableBtree<2> t = tree_with_incremental_elements<2>(9);
 
     ASSERT_THROW(t.add(1), invalid_key_exception);
 }
 
 TEST(Btree, duplicate_key_in_node) {
-    MeasurableBtree<2> t = tree_with_incremental_elements(9);
+    MeasurableBtree<2> t = tree_with_incremental_elements<2>(9);
 
     ASSERT_THROW(t.add(5), invalid_key_exception);
 }
 
 TEST(Btree, duplicate_key_in_root_recursive) {
-    MeasurableBtree<2> t = tree_with_incremental_elements(9);
+    MeasurableBtree<2> t = tree_with_incremental_elements<2>(9);
 
     ASSERT_THROW(t.add(3), invalid_key_exception);
 }
 
 TEST(Btree, random_big) {
-    test_random(100);
+    test_random<2>(100);
 }
 
 TEST(Btree, preorder_walk) {
-    MeasurableBtree<2> t = tree_with_incremental_elements(9);
+    MeasurableBtree<2> t = tree_with_incremental_elements<2>(9);
 
     std::vector<int> result;
     t.preorder_walk([&result] (int k) {
@@ -620,7 +602,7 @@ TEST(Btree, preorder_walk) {
 }
 
 TEST(Btree, postorder_walk) {
-    MeasurableBtree<2> t = tree_with_incremental_elements(9);
+    MeasurableBtree<2> t = tree_with_incremental_elements<2>(9);
 
     std::vector<int> result;
     t.postorder_walk([&result] (int k) {
@@ -639,33 +621,33 @@ TEST(Btree, postorder_walk) {
 }
 
 TEST(Btree, odd_degree_root) {
-    test_incremental_with_odd_degree_and_num_of_elems(3);
+    test_incremental<3>(3);
 }
 
 TEST(Btree, odd_degree_incremental_grow) {
-    test_incremental_with_odd_degree_and_num_of_elems(4);
+    test_incremental<3>(4);
 }
 
 TEST(Btree, odd_degree_incremental_big) {
-    test_incremental_with_odd_degree_and_num_of_elems(100);
+    test_incremental<3>(100);
 }
 
 TEST(Btree, odd_degree_decremental_grow) {
-    odd_decremental_test(4);
+    test_decremental<3>(4);
 }
 
 TEST(Btree, odd_degree_decremental_big) {
-    odd_decremental_test(100);
+    test_decremental<3>(100);
 }
 
 TEST(Btree, odd_degree_mixed_grow) {
-    test_odd_mixed(2);
+    test_mixed<3>(2);
 }
 
 TEST(Btree, odd_degree_mixed_recursive_grow) {
-    test_odd_mixed(5);
+    test_mixed<3>(5);
 }
 
 TEST(Btree, odd_degree_mixed_big) {
-    test_odd_mixed(100);
+    test_mixed<3>(100);
 }
