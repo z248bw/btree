@@ -1,8 +1,9 @@
 #ifndef BTREE_H_
 #define BTREE_H_
 
-#include<keys.h>
 #include<functional>
+
+#include "keys/keys.h"
 
 
 class invalid_key_exception: public std::exception

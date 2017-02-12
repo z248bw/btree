@@ -28,7 +28,7 @@ CPPFLAGS += -isystem $(GTEST_DIR)/include
 # set all compiler warnings on
 # pthread is probably needed by the gtest framework (link pthread lib as well)
 # use cpp11 standard
-CXXFLAGS += -Isrc -g -Wall -Wextra -pthread -std=c++11
+CXXFLAGS += -o $@ -Isrc -g -Wall -Wextra -pthread -std=c++11
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
@@ -77,28 +77,36 @@ gtest_main.o : $(GTEST_SRCS_)
 	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
             $(GTEST_DIR)/src/gtest_main.cc
 
-gtest.a : gtest-all.o
-	$(AR) $(ARFLAGS) $@ $^
-
 gtest_main.a : gtest-all.o gtest_main.o
 	$(AR) $(ARFLAGS) $@ $^
 
 
-btree.o : $(USER_DIR)/btree.cpp $(USER_DIR)/btree.h
+keys.o : $(USER_DIR)/keys/keys.cpp $(USER_DIR)/keys/keys.h
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/keys/keys.cpp
+
+btree.o : keys.o $(USER_DIR)/btree.cpp $(USER_DIR)/btree.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/btree.cpp
 
-keys.o : $(USER_DIR)/keys.cpp $(USER_DIR)/keys.h
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/keys.cpp
+measurable.o : btree.o $(USER_DIR)/measurable/measurable.cpp $(USER_DIR)/measurable/measurable.h
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/measurable/measurable.cpp
 
-measurable.o : $(USER_DIR)/measurable.cpp $(USER_DIR)/measurable.h
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/measurable.cpp
+utils.o : measurable.o $(USER_DIR)/utils/utils.cpp $(USER_DIR)/utils/utils.h
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/utils/utils.cpp
 
-test_utils.o : $(USER_DIR)/test_utils.cpp $(USER_DIR)/test_utils.h
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/test_utils.cpp
+keys_test.o : utils.o keys.o $(USER_DIR)/keys/keys.h $(USER_DIR)/keys/test_keys.cpp \
+              $(USER_DIR)/keys/test_keys.h $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/keys/test_keys.cpp
 
-test.o : $(USER_DIR)/test.cpp \
-                     $(USER_DIR)/btree.h $(USER_DIR)/keys.h $(GTEST_HEADERS)
+measurable_test.o : utils.o measurable.o $(USER_DIR)/measurable/test_measurable.cpp \
+              $(USER_DIR)/measurable/test_measurable.h $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/measurable/test_measurable.cpp
+
+utils_test.o : utils.o $(USER_DIR)/utils/test_utils.cpp \
+              $(USER_DIR)/utils/test_utils.h $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/utils/test_utils.cpp
+
+all_test.o : keys_test.o measurable_test.o utils_test.o $(USER_DIR)/test.cpp $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/test.cpp
 
-test : keys.o btree.o measurable.o test_utils.o test.o gtest_main.a
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
+test : keys.o btree.o measurable.o utils.o keys_test.o measurable_test.o utils_test.o all_test.o gtest_main.a
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^

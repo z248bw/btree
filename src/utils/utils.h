@@ -7,7 +7,8 @@
 
 #include "gtest/gtest.h"
 
-#include "measurable.h"
+#include "measurable/measurable.h"
+#include "keys/keys.h"
 
 struct TestNode
 {
