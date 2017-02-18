@@ -16,6 +16,10 @@ struct TestNode
     TestNode* parent;
 
     TestNode(size_t id): id(id) {}
+    void set_parent(TestNode* new_parent)
+    {
+        parent = new_parent;
+    }
 };
 
 std::vector<TestNode*> create_test_nodes(size_t n);

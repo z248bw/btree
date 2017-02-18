@@ -23,14 +23,17 @@ public:
 template <size_t degree>
 class Btree
 {
+private:
+    Btree* parent = nullptr;
+
 protected:
+    Keys<Btree> keys;
+
     Btree(const Keys<Btree> ks)
     {
         keys = ks;
         keys.set_owner(this);
     }
-
-    Keys<Btree> keys;
 
     virtual Btree* new_node(const Keys<Btree> ks)
     {
@@ -38,7 +41,7 @@ protected:
     }
 
 public:
-    Btree* parent = nullptr;
+
     Btree()
     {
         keys = Keys<Btree>(degree, this);
@@ -55,6 +58,11 @@ public:
         {
             n->upwards_add(Branch<Btree>(k));
         }
+    }
+
+    void set_parent(Btree* new_parent) noexcept
+    {
+        parent = new_parent;
     }
 
     std::vector<int> dump()
