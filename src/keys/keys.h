@@ -120,16 +120,6 @@ public:
         return Branch<Node>(keys[last_index], get_child(last_index), get_child(last_index + 1));
     }
 
-    std::vector<int>::iterator begin() noexcept
-    {
-        return keys.begin();
-    }
-
-    std::vector<int>::iterator end() noexcept
-    {
-        return keys.end();
-    }
-
     size_t size() const noexcept
     {
         return keys.size();
