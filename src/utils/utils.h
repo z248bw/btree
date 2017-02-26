@@ -22,6 +22,14 @@ struct TestNode
     }
 };
 
+template<class T>
+void check_balance(T measurable_btree)
+{
+    measurable_btree.measure();
+
+    ASSERT_EQ(Measurable::deepest, Measurable::shallowest);
+}
+
 std::vector<TestNode*> create_test_nodes(size_t n);
 
 void destroy_test_nodes(std::vector<TestNode*> nodes);

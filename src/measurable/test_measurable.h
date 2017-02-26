@@ -9,9 +9,7 @@
 
 TEST(Btree, onlyRootDeepestAndShallowestBranches) {
     MeasurableBtree<2> t;
-    t.measure();
-    ASSERT_EQ(0, Measurable::deepest);
-    ASSERT_EQ(0, Measurable::shallowest);
+    check_balance(t);
 }
 
 TEST(Btree, addElementsToRoot) {
@@ -187,8 +185,7 @@ TEST(Btree, mixedGrow) {
     ASSERT_EQ(2, result[1]);
     ASSERT_EQ(20, result[2]);
 
-    t.measure();
-    ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
+    check_balance(t);
 }
 
 TEST(Btree, mixedFind) {
@@ -205,8 +202,7 @@ TEST(Btree, mixedFind) {
     ASSERT_EQ(19, result[2]);
     ASSERT_EQ(20, result[3]);
 
-    t.measure();
-    ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
+    check_balance(t);
 }
 
 TEST(Btree, mixedRecursiveGrow) {
@@ -229,8 +225,7 @@ TEST(Btree, mixedRecursiveGrow) {
     ASSERT_EQ(19, result[5]);
     ASSERT_EQ(20, result[6]);
 
-    t.measure();
-    ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
+    check_balance(t);
 }
 
 TEST(Btree, mixedBig) {
@@ -254,8 +249,7 @@ TEST(Btree, fullGrow) {
     ASSERT_EQ(1001, result[4]);
     ASSERT_EQ(1002, result[5]);
 
-    t.measure();
-    ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
+    check_balance(t);
 }
 
 TEST(Btree, duplicateKeyRoot) {
