@@ -52,10 +52,7 @@ public:
         keys = other.keys;
         for (auto it = keys.children_begin(); it != keys.children_end(); it++)
         {
-            Btree* copy((*it)->copy(copy));
-            (*it) = std::move(copy);
-
-            //(*it) = (*it)->copy(copy);
+            (*it) = (*it)->copy(this);
         }
     }
 
