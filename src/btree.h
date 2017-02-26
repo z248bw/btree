@@ -47,6 +47,28 @@ public:
         keys = Keys<Btree>(degree, this);
     }
 
+    Btree(const Btree & other)
+    {
+        keys = other.keys;
+        for (auto it = keys.children_begin(); it != keys.children_end(); it++)
+        {
+            Btree* copy((*it)->copy(copy));
+            (*it) = std::move(copy);
+
+            //(*it) = (*it)->copy(copy);
+        }
+    }
+
+    Btree(Btree && other) = default;
+
+    Btree& operator=(Btree copy_of_other)
+    {
+        std::swap(keys, copy_of_other.keys);
+        std::swap(parent, copy_of_other.parent);
+
+        return *this;
+    }
+
     void add(const int k)
     {
         auto n = get_leaf_for_key(k);
@@ -214,6 +236,19 @@ private:
     {
         keys.clear();
         delete this;
+    }
+
+    Btree* copy(Btree* parent)
+    {
+        auto copy = new_node(keys);
+        copy->set_parent(parent);
+
+        for (auto it = keys.children_begin(); it != keys.children_end(); it++)
+        {
+            (*it) = (*it)->copy(copy);
+        }
+
+        return copy;
     }
 
 };

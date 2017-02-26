@@ -125,6 +125,7 @@ protected:
 
 public:
     MeasurableBtree(): Btree<degree>() {}
+    MeasurableBtree(const MeasurableBtree & other): Btree<degree>(other) {}
 
     MeasurableBtree* find_node_with_key(const int k)
     {
