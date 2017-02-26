@@ -12,14 +12,6 @@ std::vector<TestNode*> create_test_nodes(size_t n)
     return result;
 }
 
-void destroy_test_nodes(std::vector<TestNode*> nodes)
-{
-    for (TestNode* n : nodes)
-    {
-        delete n;
-    }
-}
-
 Keys<TestNode> create_keys(size_t n)
 {
     Keys<TestNode> ks(n+1);
