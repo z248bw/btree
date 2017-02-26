@@ -61,8 +61,7 @@ void test_incremental(size_t num_of_elems)
         ASSERT_EQ(i, result[i]);
     }
 
-    t.measure();
-    ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
+    check_balance(t);
 }
 
 template<size_t degree>
@@ -80,8 +79,7 @@ void test_decremental(size_t num_of_elems)
         ASSERT_EQ(i+1, result[i]);
     }
 
-    t.measure();
-    ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
+    check_balance(t);
 }
 
 template<size_t degree>
@@ -107,8 +105,7 @@ void test_mixed(size_t n)
         ASSERT_EQ(i+n+10+1, result[i+n]);
     }
 
-    t.measure();
-    ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
+    check_balance(t);
 }
 
 template<size_t degree>
@@ -136,8 +133,7 @@ void test_random(size_t n)
         ASSERT_EQ(inputs[i], result[i]);
     }
 
-    t.measure();
-    ASSERT_EQ(Measurable::shallowest, Measurable::deepest);
+    check_balance(t);
 }
 
 
