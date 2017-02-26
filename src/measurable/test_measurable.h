@@ -354,4 +354,18 @@ TEST(Btree, oddDegreeRandomBig) {
     test_random<3>(100);
 }
 
+TEST(Btree, copy_assignment) {
+    MeasurableBtree<2> orig = tree_with_incremental_elements<2>(10);
+
+    auto copy = orig;
+
+    auto copied_elems = copy.dump();
+    auto orig_elems = orig.dump();
+
+    for (size_t i = 0; i < orig_elems.size(); i++)
+    {
+        ASSERT_EQ(copied_elems[i], orig_elems[i]);
+    }
+}
+
 #endif
