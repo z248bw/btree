@@ -189,7 +189,6 @@ public:
         auto left_children = std::vector<Node*>(children.begin(), children.begin() + half + 1);
 
         return Keys<Node>(degree, owner, left_keys, left_children);
-
     }
 
     Keys<Node> get_right_half_of_keys() const
