@@ -81,32 +81,55 @@ gtest_main.a : gtest-all.o gtest_main.o
 	$(AR) $(ARFLAGS) $@ $^
 
 
-keys.o : $(USER_DIR)/keys/keys.cpp $(USER_DIR)/keys/keys.h
+keys.o : \
+	$(USER_DIR)/keys/keys.cpp \
+	$(USER_DIR)/keys/keys.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/keys/keys.cpp
 
-btree.o : keys.o $(USER_DIR)/btree.cpp $(USER_DIR)/btree.h
+btree.o : \
+	keys.o \
+	$(USER_DIR)/btree.cpp \
+	$(USER_DIR)/btree.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/btree.cpp
 
-measurable.o : btree.o $(USER_DIR)/measurable/measurable.cpp $(USER_DIR)/measurable/measurable.h
+measurable.o : \
+	btree.o \
+	$(USER_DIR)/measurable/measurable.cpp \
+	$(USER_DIR)/measurable/measurable.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/measurable/measurable.cpp
 
 keys_test_utils.o : \
-		keys.o $(USER_DIR)/keys/keys_test_utils.cpp $(USER_DIR)/keys/keys_test_utils.h
+	keys.o \
+	$(USER_DIR)/keys/keys_test_utils.cpp \
+	$(USER_DIR)/keys/keys_test_utils.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/keys/keys_test_utils.cpp
 
-keys_test.o : keys_test_utils.o keys.o $(USER_DIR)/keys/keys.h $(USER_DIR)/keys/test_keys.cpp \
-              $(USER_DIR)/keys/test_keys.h $(GTEST_HEADERS)
+keys_test.o : \
+	keys_test_utils.o \
+	keys.o \
+	$(USER_DIR)/keys/keys.h \
+	$(USER_DIR)/keys/test_keys.cpp \
+	$(USER_DIR)/keys/test_keys.h $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/keys/test_keys.cpp
 
 measurable_test_utils.o : \
-		measurable.o $(USER_DIR)/measurable/measurable_test_utils.cpp $(USER_DIR)/measurable/measurable_test_utils.h
+	measurable.o \
+	$(USER_DIR)/measurable/measurable_test_utils.cpp \
+	$(USER_DIR)/measurable/measurable_test_utils.h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/measurable/measurable_test_utils.cpp
 
-measurable_test.o : measurable_test_utils.o measurable.o $(USER_DIR)/measurable/test_measurable.cpp \
-              $(USER_DIR)/measurable/test_measurable.h $(GTEST_HEADERS)
+measurable_test.o : \
+	measurable_test_utils.o \
+	measurable.o \
+	$(USER_DIR)/measurable/test_measurable.cpp \
+	$(USER_DIR)/measurable/test_measurable.h $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/measurable/test_measurable.cpp
 
-all_test.o : keys_test.o measurable_test.o $(USER_DIR)/test.cpp $(GTEST_HEADERS)
+all_test.o : \
+	keys_test.o \
+	measurable_test.o \
+	$(USER_DIR)/test.cpp \
+	$(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/test.cpp
 
 test : \
