@@ -1,21 +1,29 @@
 #include "utils.h"
 
-std::vector<TestNode*> create_test_nodes(size_t n)
+std::vector<TestNode*> TestNodeFactoryRAII::create_nodes(size_t n)
 {
     std::vector<TestNode*> result;
 
     for (size_t i = 0; i < n; i++)
     {
-        result.push_back(new TestNode(i + 1));
+        result.push_back(create(i+1));
     }
 
     return result;
 }
 
-Keys<TestNode> create_keys(size_t n)
+TestNode* TestNodeFactoryRAII::create(size_t id)
+{
+    auto new_node = std::make_shared<TestNode>(id);
+    nodes.push_back(new_node);
+
+    return new_node.get();
+}
+
+Keys<TestNode> KeysFactoryRAII::create_keys(size_t n)
 {
     Keys<TestNode> ks(n+1);
-    auto nodes = create_test_nodes(n + 1);
+    auto nodes = node_factory.create_nodes(n + 1);
 
     for (size_t i = 0; i < n; i++)
     {
@@ -23,14 +31,6 @@ Keys<TestNode> create_keys(size_t n)
     }
 
     return ks;
-}
-
-void destroy_keys(Keys<TestNode> ks)
-{
-    for (auto it = ks.children_begin(); it != ks.children_end(); it++)
-    {
-        delete *it;
-    }
 }
 
 std::vector<int> input_from_file(std::string filename)

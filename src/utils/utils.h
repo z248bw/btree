@@ -4,6 +4,7 @@
 #include<unordered_set>
 #include<iostream>
 #include<fstream>
+#include<memory>
 
 #include "gtest/gtest.h"
 
@@ -22,6 +23,25 @@ struct TestNode
     }
 };
 
+class TestNodeFactoryRAII
+{
+private:
+    std::vector<std::shared_ptr<TestNode>> nodes;
+
+public:
+    std::vector<TestNode*> create_nodes(size_t n);
+    TestNode* create(size_t id);
+};
+
+class KeysFactoryRAII
+{
+private:
+    TestNodeFactoryRAII node_factory;
+
+public:
+    Keys<TestNode> create_keys(size_t n);
+};
+
 template<class T>
 void check_balance(T measurable_btree)
 {
@@ -29,14 +49,6 @@ void check_balance(T measurable_btree)
 
     ASSERT_EQ(Measurable::deepest, Measurable::shallowest);
 }
-
-std::vector<TestNode*> create_test_nodes(size_t n);
-
-void destroy_test_nodes(std::vector<TestNode*> nodes);
-
-Keys<TestNode> create_keys(size_t n);
-
-void destroy_keys(Keys<TestNode> ks);
 
 template<size_t degree>
 MeasurableBtree<degree> tree_with_incremental_elements(size_t num_of_elems)
