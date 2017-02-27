@@ -1,5 +1,5 @@
-#ifndef TESTUTILS_H_
-#define TESTUTILS_H_
+#ifndef MEASURABLETESTUTILS_H_
+#define MEASURABLETESTUTILS_H_
 
 #include<unordered_set>
 #include<iostream>
@@ -11,36 +11,6 @@
 #include "measurable/measurable.h"
 #include "keys/keys.h"
 
-struct TestNode
-{
-    size_t id;
-    TestNode* parent;
-
-    TestNode(size_t id): id(id) {}
-    void set_parent(TestNode* new_parent)
-    {
-        parent = new_parent;
-    }
-};
-
-class TestNodeFactoryRAII
-{
-private:
-    std::vector<std::shared_ptr<TestNode>> nodes;
-
-public:
-    std::vector<TestNode*> create_nodes(size_t n);
-    TestNode* create(size_t id);
-};
-
-class KeysFactoryRAII
-{
-private:
-    TestNodeFactoryRAII node_factory;
-
-public:
-    Keys<TestNode> create_keys(size_t n);
-};
 
 template<class T>
 void check_balance(T measurable_btree)

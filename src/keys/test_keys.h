@@ -3,7 +3,7 @@
 
 #include "gtest/gtest.h"
 
-#include "utils/utils.h"
+#include "keys_test_utils.h"
 
 
 TEST(Keys, storeBranchesInOrder) {
