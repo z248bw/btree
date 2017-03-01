@@ -23,6 +23,8 @@ public:
 template <size_t degree>
 class Btree
 {
+    friend class Keys<Btree<degree>>;
+
 private:
     Btree* parent = nullptr;
 
@@ -77,11 +79,6 @@ public:
         {
             n->upwards_add(Branch<Btree>(k));
         }
-    }
-
-    void set_parent(Btree* new_parent) noexcept
-    {
-        parent = new_parent;
     }
 
     std::vector<int> dump()
@@ -238,7 +235,7 @@ private:
     Btree* copy(Btree* parent)
     {
         auto copy = new_node(keys);
-        copy->set_parent(parent);
+        copy->parent = parent;
 
         for (auto it = keys.children_begin(); it != keys.children_end(); it++)
         {

@@ -162,7 +162,7 @@ public:
 
         for (Node* child : children)
         {
-            child->set_parent(owner);
+            child->parent = owner;
         }
     }
 
@@ -253,8 +253,8 @@ private:
 
     void own_branch(Branch<Node> k)
     {
-        k.left->set_parent(owner);
-        k.right->set_parent(owner);
+        k.left->parent = owner;
+        k.right->parent = owner;
     }
 
     void insert_children_of_branch_to_pos(Branch<Node> k, const size_t pos)
