@@ -10,6 +10,7 @@
 
 #include "measurable/measurable.h"
 #include "keys/keys.h"
+#include "keys/keys_test_utils.h"
 
 
 template<class T>
@@ -26,7 +27,7 @@ MeasurableBtree<degree> tree_with_incremental_elements(size_t num_of_elems)
     MeasurableBtree<degree> t;
     for (size_t i = 0; i < num_of_elems; i++)
     {
-        t.add(i);
+        t.add(IdentityKeyValue<int>(i));
     }
 
     return t;
@@ -52,7 +53,7 @@ void test_decremental(size_t num_of_elems)
     MeasurableBtree<degree> t;
     for (size_t i = num_of_elems; i > 0; i--)
     {
-        t.add(i);
+        t.add(IdentityKeyValue<int>(i));
     }
 
     auto result = t.dump();
@@ -64,18 +65,26 @@ void test_decremental(size_t num_of_elems)
     check_balance(t);
 }
 
+
 template<size_t degree>
-void test_mixed(size_t n)
+MeasurableBtree<degree> tree_filled_in_mixed_order(size_t n)
 {
     auto top = 2 * n + 10;
 
     MeasurableBtree<degree> t;
     for (size_t i = 0; i < n; i++)
     {
-        t.add(i);
-        t.add(top - i);
+        t.add(IdentityKeyValue<int>(i));
+        t.add(IdentityKeyValue<int>(top - i));
     }
 
+    return t;
+}
+
+template<size_t degree>
+void test_mixed(size_t n)
+{
+    auto t = tree_filled_in_mixed_order<degree>(n);
     auto result = t.dump();
     for (size_t i = 0; i < n; i++)
     {
@@ -104,7 +113,7 @@ void test_random(size_t n)
     MeasurableBtree<degree> t;
     for (int i : s)
     {
-        t.add(i);
+        t.add(IdentityKeyValue<int>(i));
     }
 
     auto result = t.dump();

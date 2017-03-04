@@ -7,12 +7,21 @@
 
 #include "keys/keys.h"
 
+
+template<typename T>
+struct IdentityKeyValue: public KeyValue<T, T>
+{
+    IdentityKeyValue(T id): KeyValue<T, T>(id, id) {}
+};
+
 struct TestNode
 {
-    size_t id;
+    using key_t = int;
+    using value_t = int;
+    KeyValue<key_t, value_t> id;
     TestNode* parent;
 
-    TestNode(size_t id): id(id) {}
+    TestNode(size_t id): id(id, id){}
 };
 
 class TestNodeFactoryRAII

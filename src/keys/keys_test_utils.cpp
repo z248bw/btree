@@ -27,7 +27,7 @@ Keys<TestNode> KeysFactoryRAII::create_keys(size_t n)
 
     for (size_t i = 0; i < n; i++)
     {
-        ks.add(Branch<TestNode>(i+1, nodes[i], nodes[i+1]));
+        ks.add(Branch<TestNode>(IdentityKeyValue<int>(i+1), nodes[i], nodes[i+1]));
     }
 
     return ks;

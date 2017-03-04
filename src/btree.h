@@ -20,12 +20,19 @@ public:
     }
 };
 
-template <size_t degree>
+template <typename KEY, typename VALUE, size_t DEGREE>
 class Btree
 {
-    friend class Keys<Btree<degree>>;
+public:
+    static const size_t degree = DEGREE;
+    using key_t = KEY;
+    using value_t = VALUE;
 
 private:
+    friend class Keys<Btree>;
+
+    using KV = KeyValue<KEY, VALUE>;
+
     Btree* parent = nullptr;
 
 protected:
@@ -43,7 +50,6 @@ protected:
     }
 
 public:
-
     Btree()
     {
         keys = Keys<Btree>(degree, this);
@@ -68,7 +74,7 @@ public:
         return *this;
     }
 
-    void add(const int k)
+    void add(const KV k)
     {
         auto n = get_leaf_for_key(k);
         if (n->keys.size() < degree)
@@ -81,17 +87,17 @@ public:
         }
     }
 
-    std::vector<int> dump()
+    std::vector<KV> dump()
     {
-        std::vector<int> result;
-        inorder_walk([&result] (int k) {
+        std::vector<KV> result;
+        inorder_walk([&result] (KV k) {
             result.push_back(k);
         });
 
         return result;
     }
 
-    void inorder_walk(std::function<void(int)> on_visit)
+    void inorder_walk(std::function<void(KV)> on_visit)
     {
         if (!keys.is_leaf())
         {
@@ -113,7 +119,7 @@ public:
         }
     }
 
-    void preorder_walk(std::function<void(int)> on_visit)
+    void preorder_walk(std::function<void(KV)> on_visit)
     {
         for (size_t i = 0; i < keys.size(); i++)
         {
@@ -126,7 +132,7 @@ public:
         }
     }
 
-    void postorder_walk(std::function<void(int)> on_visit)
+    void postorder_walk(std::function<void(KV)> on_visit)
     {
         for (auto it = keys.children_begin(); it != keys.children_end(); it++)
         {
@@ -148,7 +154,7 @@ public:
     }
 
 private:
-    Btree* get_leaf_for_key(const int k)
+    Btree* get_leaf_for_key(const key_t k)
     {
         if (keys.is_present(k))
         {

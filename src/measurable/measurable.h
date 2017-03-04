@@ -96,13 +96,14 @@ public:
 };
 
 template <size_t degree>
-class MeasurableBtree : public Btree<degree>, public Measurable
+class MeasurableBtree : public Btree<int, int, degree>, public Measurable
 {
 private:
-    MeasurableBtree(const Keys<Btree<degree>> ks): Btree<degree>(ks) {}
+    using btree_t = Btree<int, int, degree>;
+    MeasurableBtree(const Keys<btree_t> ks): Btree<int, int, degree>(ks) {}
 
 protected:
-    virtual Btree<degree>* new_node(const Keys<Btree<degree>> ks) override
+    virtual Btree<int, int, degree>* new_node(const Keys<btree_t> ks) override
     {
         return new MeasurableBtree(ks);
     }
@@ -124,8 +125,8 @@ protected:
     }
 
 public:
-    MeasurableBtree(): Btree<degree>() {}
-    MeasurableBtree(const MeasurableBtree & other): Btree<degree>(other) {}
+    MeasurableBtree(): Btree<int, int, degree>() {}
+    MeasurableBtree(const MeasurableBtree & other): Btree<int, int, degree>(other) {}
 
     MeasurableBtree* find_node_with_key(const int k)
     {
@@ -146,7 +147,7 @@ public:
         return nullptr;
     }
 
-    std::vector<int> get_keys() const
+    std::vector<KeyValue<int, int>> get_keys() const
     {
         return this->keys.dump();
     }

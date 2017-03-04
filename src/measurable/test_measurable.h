@@ -58,8 +58,8 @@ TEST(Btree, onlyRootDeepestAndShallowestBranches) {
 
 TEST(Btree, addElementsToRoot) {
     MeasurableBtree<2> t;
-    t.add(1);
-    t.add(2);
+    t.add(IdentityKeyValue<int>(1));
+    t.add(IdentityKeyValue<int>(2));
     ASSERT_EQ(1, t.get_keys()[0]);
     ASSERT_EQ(2, t.get_keys()[1]);
 
@@ -70,8 +70,8 @@ TEST(Btree, addElementsToRoot) {
 
 TEST(Btree, elementsAddedToRootAreSorted) {
     MeasurableBtree<2> t;
-    t.add(2);
-    t.add(1);
+    t.add(IdentityKeyValue<int>(2));
+    t.add(IdentityKeyValue<int>(1));
     ASSERT_EQ(1, t.get_keys()[0]);
     ASSERT_EQ(2, t.get_keys()[1]);
 
@@ -82,9 +82,9 @@ TEST(Btree, elementsAddedToRootAreSorted) {
 
 TEST(Btree, grow) {
     MeasurableBtree<2> t;
-    t.add(1);
-    t.add(2);
-    t.add(3);
+    t.add(IdentityKeyValue<int>(1));
+    t.add(IdentityKeyValue<int>(2));
+    t.add(IdentityKeyValue<int>(3));
     ASSERT_EQ(2, t.get_keys()[0]);
 
     t.measure();
@@ -94,9 +94,9 @@ TEST(Btree, grow) {
 
 TEST(Btree, findElementWhichIsNotPresent) {
     MeasurableBtree<2> t;
-    t.add(1);
-    t.add(2);
-    t.add(3);
+    t.add(IdentityKeyValue<int>(1));
+    t.add(IdentityKeyValue<int>(2));
+    t.add(IdentityKeyValue<int>(3));
     t.find_node_with_key(4);
     ASSERT_EQ(nullptr, t.find_node_with_key(4));
 
@@ -107,9 +107,9 @@ TEST(Btree, findElementWhichIsNotPresent) {
 
 TEST(Btree, findElementInRoot) {
     MeasurableBtree<2> t;
-    t.add(1);
-    t.add(2);
-    t.add(3);
+    t.add(IdentityKeyValue<int>(1));
+    t.add(IdentityKeyValue<int>(2));
+    t.add(IdentityKeyValue<int>(3));
     t.find_node_with_key(4);
     ASSERT_EQ(2, t.find_node_with_key(2)->get_keys()[0]);
 
@@ -120,9 +120,9 @@ TEST(Btree, findElementInRoot) {
 
 TEST(Btree, findElementInLeftLeaf) {
     MeasurableBtree<2> t;
-    t.add(1);
-    t.add(2);
-    t.add(3);
+    t.add(IdentityKeyValue<int>(1));
+    t.add(IdentityKeyValue<int>(2));
+    t.add(IdentityKeyValue<int>(3));
     ASSERT_EQ(1, t.find_node_with_key(1)->get_keys()[0]);
 
     t.measure();
@@ -132,9 +132,9 @@ TEST(Btree, findElementInLeftLeaf) {
 
 TEST(Btree, findElementInRightLeaf) {
     MeasurableBtree<2> t;
-    t.add(1);
-    t.add(2);
-    t.add(3);
+    t.add(IdentityKeyValue<int>(1));
+    t.add(IdentityKeyValue<int>(2));
+    t.add(IdentityKeyValue<int>(3));
     t.find_node_with_key(3)->get_keys();
     ASSERT_EQ(3, t.find_node_with_key(3)->get_keys()[0]);
 
@@ -149,10 +149,10 @@ TEST(Btree, dump) {
 
 TEST(Btree, findsPlaceOfNewElementInTheTree) {
     MeasurableBtree<2> t;
-    t.add(1);
-    t.add(2);
-    t.add(3);
-    t.add(4);
+    t.add(IdentityKeyValue<int>(1));
+    t.add(IdentityKeyValue<int>(2));
+    t.add(IdentityKeyValue<int>(3));
+    t.add(IdentityKeyValue<int>(4));
 
     auto result = t.dump();
     ASSERT_EQ(1, result[0]);
@@ -170,23 +170,18 @@ TEST(Btree, findsPlaceOfNewElementInTheTree) {
 }
 
 TEST(Btree, addingNewElementMovesElementUpFromLeaf) {
-    MeasurableBtree<2> t;
-    t.add(1);
-    t.add(2);
-    t.add(3);
-    t.add(4);
-    t.add(5);
+    auto t = tree_with_incremental_elements<2>(5);
 
     auto result = t.dump();
-    ASSERT_EQ(1, result[0]);
-    ASSERT_EQ(2, result[1]);
-    ASSERT_EQ(3, result[2]);
-    ASSERT_EQ(4, result[3]);
-    ASSERT_EQ(5, result[4]);
+    ASSERT_EQ(0, result[0]);
+    ASSERT_EQ(1, result[1]);
+    ASSERT_EQ(2, result[2]);
+    ASSERT_EQ(3, result[3]);
+    ASSERT_EQ(4, result[4]);
 
-    auto n = t.find_node_with_key(4);
-    ASSERT_EQ(2, n->get_keys()[0]);
-    ASSERT_EQ(4, n->get_keys()[1]);
+    auto n = t.find_node_with_key(3);
+    ASSERT_EQ(1, n->get_keys()[0]);
+    ASSERT_EQ(3, n->get_keys()[1]);
 
     t.measure();
     ASSERT_EQ(1, Measurable::deepest);
@@ -219,9 +214,9 @@ TEST(Btree, decrementBigTree) {
 
 TEST(Btree, mixedGrow) {
     MeasurableBtree<2> t;
-    t.add(1);
-    t.add(20);
-    t.add(2);
+    t.add(IdentityKeyValue<int>(1));
+    t.add(IdentityKeyValue<int>(20));
+    t.add(IdentityKeyValue<int>(2));
 
     auto result = t.dump();
 
@@ -234,10 +229,10 @@ TEST(Btree, mixedGrow) {
 
 TEST(Btree, mixedFind) {
     MeasurableBtree<2> t;
-    t.add(1);
-    t.add(20);
-    t.add(2);
-    t.add(19);
+    t.add(IdentityKeyValue<int>(1));
+    t.add(IdentityKeyValue<int>(20));
+    t.add(IdentityKeyValue<int>(2));
+    t.add(IdentityKeyValue<int>(19));
 
     auto result = t.dump();
 
@@ -251,13 +246,13 @@ TEST(Btree, mixedFind) {
 
 TEST(Btree, mixedRecursiveGrow) {
     MeasurableBtree<2> t;
-    t.add(1);
-    t.add(20);
-    t.add(2);
-    t.add(19);
-    t.add(3);
-    t.add(18);
-    t.add(4);
+    t.add(IdentityKeyValue<int>(1));
+    t.add(IdentityKeyValue<int>(20));
+    t.add(IdentityKeyValue<int>(2));
+    t.add(IdentityKeyValue<int>(19));
+    t.add(IdentityKeyValue<int>(3));
+    t.add(IdentityKeyValue<int>(18));
+    t.add(IdentityKeyValue<int>(4));
 
     auto result = t.dump();
 
@@ -278,12 +273,12 @@ TEST(Btree, mixedBig) {
 
 TEST(Btree, fullGrow) {
     MeasurableBtree<2> t;
-    t.add(1);
-    t.add(101);
-    t.add(1001);
-    t.add(2);
-    t.add(1002);
-    t.add(102);
+    t.add(IdentityKeyValue<int>(1));
+    t.add(IdentityKeyValue<int>(101));
+    t.add(IdentityKeyValue<int>(1001));
+    t.add(IdentityKeyValue<int>(2));
+    t.add(IdentityKeyValue<int>(1002));
+    t.add(IdentityKeyValue<int>(102));
 
     auto result = t.dump();
     ASSERT_EQ(1, result[0]);
@@ -298,26 +293,26 @@ TEST(Btree, fullGrow) {
 
 TEST(Btree, duplicateKeyRoot) {
     MeasurableBtree<2> t;
-    t.add(0);
-    ASSERT_THROW(t.add(0), invalid_key_exception);
+    t.add(IdentityKeyValue<int>(0));
+    ASSERT_THROW(t.add(IdentityKeyValue<int>(0)), invalid_key_exception);
 }
 
 TEST(Btree, duplicateKeyInLeaf) {
     MeasurableBtree<2> t = tree_with_incremental_elements<2>(9);
 
-    ASSERT_THROW(t.add(1), invalid_key_exception);
+    ASSERT_THROW(t.add(IdentityKeyValue<int>(1)), invalid_key_exception);
 }
 
 TEST(Btree, duplicateKeyInNode) {
     MeasurableBtree<2> t = tree_with_incremental_elements<2>(9);
 
-    ASSERT_THROW(t.add(5), invalid_key_exception);
+    ASSERT_THROW(t.add(IdentityKeyValue<int>(5)), invalid_key_exception);
 }
 
 TEST(Btree, duplicateKeyInRootRecursive) {
     MeasurableBtree<2> t = tree_with_incremental_elements<2>(9);
 
-    ASSERT_THROW(t.add(3), invalid_key_exception);
+    ASSERT_THROW(t.add(IdentityKeyValue<int>(3)), invalid_key_exception);
 }
 
 TEST(Btree, randomBig) {
@@ -328,7 +323,7 @@ TEST(Btree, preorderWalk) {
     MeasurableBtree<2> t = tree_with_incremental_elements<2>(9);
 
     std::vector<int> result;
-    t.preorder_walk([&result] (int k) {
+    t.preorder_walk([&result] (KeyValue<int, int> k) {
         result.push_back(k);
     });
 
@@ -347,7 +342,7 @@ TEST(Btree, postorderWalk) {
     MeasurableBtree<2> t = tree_with_incremental_elements<2>(9);
 
     std::vector<int> result;
-    t.postorder_walk([&result] (int k) {
+    t.postorder_walk([&result] (KeyValue<int, int> k) {
         result.push_back(k);
     });
 
