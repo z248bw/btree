@@ -1,4 +1,4 @@
-USER_DIR = src
+SRC_DIR = src
 LIB_DIR = lib
 BIN_DIR = bin
 
@@ -11,7 +11,7 @@ PRE_TARGET_STEP = mkdir -p bin;
 # Flags passed to the C++ compiler.
 # set all compiler warnings on
 # use cpp11 standard
-CXXFLAGS += -o $@ -I $(USER_DIR) -I $(GTEST_HEADERS) -L $(GTEST_LIB) -g -Wall -Wextra -pthread -std=c++11
+CXXFLAGS += -o $@ -I $(SRC_DIR) -I $(GTEST_HEADERS) -L $(GTEST_LIB) -g -Wall -Wextra -pthread -std=c++11
 
 TESTS = test
 
@@ -30,68 +30,41 @@ check:
 	valgrind --leak-check=yes ./test
 
 clean :
-	rm -rf $(TESTS) $(BIN_DIR)/*.o coverage/ $(BIN_DIR)/*.gcno $(BIN_DIR)/*.gcda
+	rm -rf $(TESTS) $(BIN_DIR)/ coverage/
 
+COMPILE = $(PRE_TARGET_STEP) $(CXX) $(CXXFLAGS) -c $<
 
-$(BIN_DIR)/keys.o : \
-	$(USER_DIR)/keys/keys.cpp \
-	$(USER_DIR)/keys/keys.h
-	$(PRE_TARGET_STEP) $(CXX) $(CXXFLAGS) -c $(USER_DIR)/keys/keys.cpp
+# compile files under keys
+$(BIN_DIR)/%.o: $(SRC_DIR)/keys/%.cpp $(SRC_DIR)/keys/%.h
+	$(COMPILE)
 
-$(BIN_DIR)/btree.o : \
-	$(BIN_DIR)/keys.o \
-	$(USER_DIR)/btree.cpp \
-	$(USER_DIR)/btree.h
-	$(PRE_TARGET_STEP) $(CXX) $(CXXFLAGS) -c $(USER_DIR)/btree.cpp
+# compile files under measurable
+$(BIN_DIR)/%.o: $(SRC_DIR)/measurable/%.cpp $(SRC_DIR)/measurable/%.h
+	$(COMPILE)
 
-$(BIN_DIR)/measurable.o : \
-	$(BIN_DIR)/btree.o \
-	$(USER_DIR)/measurable/measurable.cpp \
-	$(USER_DIR)/measurable/measurable.h
-	$(PRE_TARGET_STEP) $(CXX) $(CXXFLAGS) -c $(USER_DIR)/measurable/measurable.cpp
+# compile files under btree
+$(BIN_DIR)/%.o : $(SRC_DIR)/btree/%.cpp $(SRC_DIR)/btree/%.h
+	$(COMPILE)
 
-$(BIN_DIR)/keys_test_utils.o : \
-	$(BIN_DIR)/keys.o \
-	$(USER_DIR)/keys/keys_test_utils.cpp \
-	$(USER_DIR)/keys/keys_test_utils.h
-	$(PRE_TARGET_STEP) $(CXX) $(CXXFLAGS) -c $(USER_DIR)/keys/keys_test_utils.cpp
+# compile main_test.cpp
+$(BIN_DIR)/main_test.o : $(SRC_DIR)/main_test.cpp
+	$(COMPILE)
 
-$(BIN_DIR)/keys_test.o : \
-	$(BIN_DIR)/keys_test_utils.o \
-	$(BIN_DIR)/keys.o \
-	$(USER_DIR)/keys/keys.h \
-	$(USER_DIR)/keys/test_keys.cpp \
-	$(USER_DIR)/keys/test_keys.h
-	$(PRE_TARGET_STEP) $(CXX) $(CXXFLAGS) -c $(USER_DIR)/keys/test_keys.cpp
+# define the required object files
+_OBJ = keys.o \
+       btree.o \
+       measurable.o \
+       keys_test_utils.o \
+       test_keys.o \
+       measurable_test_utils.o \
+       test_measurable.o \
+       main_test.o
 
-$(BIN_DIR)/measurable_test_utils.o : \
-	$(BIN_DIR)/measurable.o \
-	$(USER_DIR)/measurable/measurable_test_utils.cpp \
-	$(USER_DIR)/measurable/measurable_test_utils.h
-	$(PRE_TARGET_STEP) $(CXX) $(CXXFLAGS) -c $(USER_DIR)/measurable/measurable_test_utils.cpp
+# add bin dir as prefix to the required object files
+OBJ = $(patsubst %,$(BIN_DIR)/%,$(_OBJ))
 
-$(BIN_DIR)/measurable_test.o : \
-	$(BIN_DIR)/measurable_test_utils.o \
-	$(BIN_DIR)/measurable.o \
-	$(USER_DIR)/measurable/test_measurable.cpp \
-	$(USER_DIR)/measurable/test_measurable.h
-	$(PRE_TARGET_STEP) $(CXX) $(CXXFLAGS) -c $(USER_DIR)/measurable/test_measurable.cpp
-
-$(BIN_DIR)/all_test.o : \
-	$(BIN_DIR)/keys_test.o \
-	$(BIN_DIR)/measurable_test.o \
-	$(USER_DIR)/test.cpp \
-	$(GTEST_HEADERS)
-	$(PRE_TARGET_STEP) $(CXX) $(CXXFLAGS) -c $(USER_DIR)/test.cpp
-
+# link the object files and create test executable
 test : \
-	$(BIN_DIR)/keys.o \
-	$(BIN_DIR)/btree.o \
-	$(BIN_DIR)/measurable.o \
-	$(BIN_DIR)/keys_test_utils.o \
-	$(BIN_DIR)/keys_test.o \
-	$(BIN_DIR)/measurable_test_utils.o \
-	$(BIN_DIR)/measurable_test.o \
-	$(BIN_DIR)/all_test.o \
+	$(OBJ) \
 	$(GTEST_LIB)
 	$(CXX) $(CXXFLAGS) -lpthread $^
