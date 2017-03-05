@@ -58,9 +58,11 @@ private:
     Keys(size_t degree, Node* owner, std::vector<KV> _keyvalues): Keys(degree, owner)
     {
         keyvalues = _keyvalues;
+        children.reserve(degree + 1);
     }
 
-    Keys(size_t degree, Node* owner, std::vector<KV> keyvalues, std::vector<Node*> new_children): Keys(degree, owner, keyvalues)
+    Keys(size_t degree, Node* owner, std::vector<KV> keyvalues, std::vector<Node*> new_children)
+        : Keys(degree, owner, keyvalues)
     {
         assert(keyvalues.size() + 1 == new_children.size());
 
@@ -70,7 +72,11 @@ private:
 public:
     Keys() = default;
 
-    Keys(size_t degree, Node* owner = nullptr): degree(degree), owner(owner) {}
+    Keys(size_t degree, Node* owner = nullptr): degree(degree), owner(owner)
+    {
+        keyvalues.reserve(degree);
+        children.reserve(degree + 1);
+    }
 
     Branch<Node> get_branch(const size_t i) const
     {
