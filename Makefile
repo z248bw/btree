@@ -27,7 +27,7 @@ profile: $(TESTS)
 
 check:
 	make all
-	valgrind --leak-check=yes ./test
+	valgrind --track-origins=yes --leak-check=yes ./test
 
 clean :
 	rm -rf $(TESTS) $(BIN_DIR)/ coverage/
