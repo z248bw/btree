@@ -95,10 +95,10 @@ TEST(Keys, isPresent) {
     ks.add(IdentityKeyValue<int>(1));
     ks.add(IdentityKeyValue<int>(4));
 
-    ASSERT_EQ(false, ks.is_present(6));
-    ASSERT_EQ(true, ks.is_present(3));
-    ASSERT_EQ(true, ks.is_present(1));
-    ASSERT_EQ(true, ks.is_present(5));
+    ASSERT_FALSE(ks.is_present(6));
+    ASSERT_TRUE(ks.is_present(3));
+    ASSERT_TRUE(ks.is_present(1));
+    ASSERT_TRUE(ks.is_present(5));
 }
 
 TEST(Keys, emptyGetMedianWithNewKey) {
