@@ -113,7 +113,7 @@ public:
         return std::binary_search(keyvalues.begin(), keyvalues.end(), k);
     }
 
-    KV get_median_with_new_key(const KV k) const
+    KV get_median_KV_with_new_key(const KV k) const
     {
         std::vector<KV> tmp(keyvalues.begin(), keyvalues.end());
         tmp.insert(tmp.begin() + get_pos_of_key(k), k);

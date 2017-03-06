@@ -104,7 +104,7 @@ TEST(Keys, isPresent) {
 TEST(Keys, emptyGetMedianWithNewKey) {
     Keys<TestNode> ks(4);
 
-    ASSERT_EQ(1, ks.get_median_with_new_key(IdentityKeyValue<int>(1)));
+    ASSERT_EQ(1, ks.get_median_KV_with_new_key(IdentityKeyValue<int>(1)));
 }
 
 TEST(Keys, oneElementGetMedianWithNewKey) {
@@ -112,7 +112,7 @@ TEST(Keys, oneElementGetMedianWithNewKey) {
 
     ks.add(IdentityKeyValue<int>(4));
 
-    ASSERT_EQ(1, ks.get_median_with_new_key(IdentityKeyValue<int>(1)));
+    ASSERT_EQ(1, ks.get_median_KV_with_new_key(IdentityKeyValue<int>(1)));
 }
 
 TEST(Keys, twoElementsGetMedianWithNewKey) {
@@ -121,7 +121,7 @@ TEST(Keys, twoElementsGetMedianWithNewKey) {
     ks.add(IdentityKeyValue<int>(2));
     ks.add(IdentityKeyValue<int>(3));
 
-    ASSERT_EQ(2, ks.get_median_with_new_key(IdentityKeyValue<int>(1)));
+    ASSERT_EQ(2, ks.get_median_KV_with_new_key(IdentityKeyValue<int>(1)));
 }
 
 TEST(Keys, threeElementsGetMedianWithNewKey) {
@@ -131,7 +131,7 @@ TEST(Keys, threeElementsGetMedianWithNewKey) {
     ks.add(IdentityKeyValue<int>(3));
     ks.add(IdentityKeyValue<int>(4));
 
-    ASSERT_EQ(2, ks.get_median_with_new_key(IdentityKeyValue<int>(1)));
+    ASSERT_EQ(2, ks.get_median_KV_with_new_key(IdentityKeyValue<int>(1)));
 }
 
 TEST(Keys, evenGetLeftHalfOfKeys) {

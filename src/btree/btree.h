@@ -194,7 +194,7 @@ private:
 
     Branch<Btree> seperate_current_for_unfitting(Branch<Btree> unfitting)
     {
-        auto median = keys.get_median_with_new_key(unfitting.value);
+        auto median = keys.get_median_KV_with_new_key(unfitting.value);
         Branch<Btree> seperated(median);
         auto left_branch_keys = keys.get_left_half_of_keys();
         auto right_branch_keys = keys.get_right_half_of_keys();
