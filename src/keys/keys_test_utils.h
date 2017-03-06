@@ -2,16 +2,17 @@
 #define KEYSTESTUTILS_H_
 
 #include<memory>
+#include<string>
 
 #include "gtest/gtest.h"
 
 #include "keys/keys.h"
 
 
-KeyValue<int, char> get_kv(size_t n);
+KeyValue<int, const char*> get_kv(size_t n);
 
 
-template<typename K = int, typename V = char>
+template<typename K = int, typename V = const char*>
 struct TestNode
 {
     using key_t = K;

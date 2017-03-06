@@ -323,7 +323,7 @@ TEST(Btree, preorderWalk) {
     MeasurableBtree<2> t = tree_with_incremental_elements<2>(9);
 
     std::vector<int> result;
-    t.preorder_walk([&result] (KeyValue<int, char> k) {
+    t.preorder_walk([&result] (KeyValue<int, const char*> k) {
         result.push_back(k);
     });
 
@@ -342,7 +342,7 @@ TEST(Btree, postorderWalk) {
     MeasurableBtree<2> t = tree_with_incremental_elements<2>(9);
 
     std::vector<int> result;
-    t.postorder_walk([&result] (KeyValue<int, char> k) {
+    t.postorder_walk([&result] (KeyValue<int, const char*> k) {
         result.push_back(k);
     });
 
@@ -405,6 +405,43 @@ TEST(Btree, copy_assignment) {
     {
         ASSERT_EQ(copied_elems[i], orig_elems[i]);
     }
+}
+
+TEST(Btree, getValueForEmptyTreeShouldThrowException) {
+    MeasurableBtree<2> t = tree_with_incremental_elements<2>(0);
+
+    ASSERT_THROW(t.get(99), key_does_not_exist_exception);
+}
+
+TEST(Btree, getValueForNonExistentKeyShouldThrowException) {
+    MeasurableBtree<2> t = tree_with_incremental_elements<2>(10);
+
+    ASSERT_THROW(t.get(99), key_does_not_exist_exception);
+}
+
+TEST(Btree, getValueWithOneValueStored) {
+    Btree<int, const char*, 2> t;
+
+    t.add(KeyValue<int, const char*>(1, "hello"));
+
+    ASSERT_STREQ(t.get(1), "hello");
+}
+
+TEST(Btree, getValueWithMultipleValuesStored) {
+    Btree<int, const char*, 2> t;
+
+    t.add(KeyValue<int, const char*>(1, "hello"));
+    t.add(KeyValue<int, const char*>(2, "world"));
+
+    ASSERT_STREQ(t.get(2), "world");
+}
+
+TEST(Btree, getValueFromBigTree) {
+    MeasurableBtree<2> t = tree_with_incremental_elements<2>(99);
+
+    t.add(KeyValue<int, const char*>(101, "hello"));
+
+    ASSERT_STREQ(t.get(101), "hello");
 }
 
 #endif

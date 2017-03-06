@@ -20,6 +20,7 @@ public:
     }
 };
 
+
 template <typename KEY, typename VALUE, size_t DEGREE>
 class Btree
 {
@@ -85,6 +86,21 @@ public:
         {
             n->upwards_add(Branch<Btree>(k));
         }
+    }
+
+    value_t get(const key_t k)
+    {
+        if (keys.is_present(k))
+        {
+            return keys.get_value(k);
+        }
+
+        if (keys.is_leaf())
+        {
+            throw key_does_not_exist_exception();
+        }
+
+        return keys.select_node_for_key(k)->get(k);
     }
 
     std::vector<KV> dump()

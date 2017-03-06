@@ -267,9 +267,9 @@ TEST(Keys, getValueForNoneExistantKey) {
 TEST(Keys, getValue) {
     Keys<TestNode<>> ks(2);
 
-    ks.add(KeyValue<int, char>(3, 'a'));
+    ks.add(KeyValue<int, const char*>(3, "a"));
 
-    ASSERT_EQ('a', ks.get_value(3));
+    ASSERT_EQ("a", ks.get_value(3));
 }
 
 #endif

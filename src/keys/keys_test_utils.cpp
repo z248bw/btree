@@ -1,10 +1,11 @@
 #include "keys_test_utils.h"
 
-KeyValue<int, char> get_kv(size_t n)
+KeyValue<int, const char*> get_kv(size_t n)
 {
     // * lower case ascii letters start from 97
     // * there is 25 lower case ascii letters
-    return KeyValue<int, char>(n, (n % 25) + 97);
+    const char* v = std::to_string((n % 25) + 97).c_str();
+    return KeyValue<int, const char*>(n, v);
 }
 
 std::vector<TestNode<>*> TestNodeFactoryRAII::create_nodes(size_t n)

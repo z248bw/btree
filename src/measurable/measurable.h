@@ -95,7 +95,7 @@ public:
     }
 };
 
-template <size_t degree, typename KEY = int, typename VALUE = char>
+template <size_t degree, typename KEY = int, typename VALUE = const char*>
 class MeasurableBtree : public Btree<KEY, VALUE, degree>, public Measurable
 {
     using btree_t = Btree<KEY, VALUE, degree>;
