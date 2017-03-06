@@ -6,11 +6,14 @@
 #include<algorithm>
 #include<assert.h>
 
+
 template<typename KEY, typename VALUE>
 struct KeyValue
 {
     KEY k;
     VALUE v;
+
+    KeyValue() = default;
 
     KeyValue(KEY k, VALUE v): k(k), v(v) {}
 
@@ -44,6 +47,17 @@ struct Branch
     }
 };
 
+
+class key_does_not_exist_exception: public std::exception
+{
+public:
+    virtual const char* what() const noexcept override
+    {
+        return "key does not exist";
+    }
+};
+
+
 template <class Node>
 class Keys
 {
@@ -76,6 +90,18 @@ public:
     {
         keyvalues.reserve(degree);
         children.reserve(degree + 1);
+    }
+
+    typename Node::value_t get_value(typename Node::key_t k)
+    {
+        size_t pos = std::lower_bound(keyvalues.begin(), keyvalues.end(), k) - keyvalues.begin();
+
+        if (pos >= keyvalues.size() || keyvalues[pos] != k)
+        {
+            throw key_does_not_exist_exception();
+        }
+
+        return keyvalues[pos].v;
     }
 
     Branch<Node> get_branch(const size_t i) const

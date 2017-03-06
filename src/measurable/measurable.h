@@ -95,15 +95,14 @@ public:
     }
 };
 
-template <size_t degree>
-class MeasurableBtree : public Btree<int, int, degree>, public Measurable
+template <size_t degree, typename KEY = int, typename VALUE = char>
+class MeasurableBtree : public Btree<KEY, VALUE, degree>, public Measurable
 {
-private:
-    using btree_t = Btree<int, int, degree>;
-    MeasurableBtree(const Keys<btree_t> ks): Btree<int, int, degree>(ks) {}
+    using btree_t = Btree<KEY, VALUE, degree>;
+    MeasurableBtree(const Keys<btree_t> ks): Btree<KEY, VALUE, degree>(ks) {}
 
 protected:
-    virtual Btree<int, int, degree>* new_node(const Keys<btree_t> ks) override
+    virtual Btree<KEY, VALUE, degree>* new_node(const Keys<btree_t> ks) override
     {
         return new MeasurableBtree(ks);
     }
@@ -125,8 +124,8 @@ protected:
     }
 
 public:
-    MeasurableBtree(): Btree<int, int, degree>() {}
-    MeasurableBtree(const MeasurableBtree & other): Btree<int, int, degree>(other) {}
+    MeasurableBtree(): Btree<KEY, VALUE, degree>() {}
+    MeasurableBtree(const MeasurableBtree & other): Btree<KEY, VALUE, degree>(other) {}
 
     MeasurableBtree* find_node_with_key(const int k)
     {
@@ -147,7 +146,7 @@ public:
         return nullptr;
     }
 
-    std::vector<KeyValue<int, int>> get_keys() const
+    std::vector<KeyValue<KEY, VALUE>> get_keys() const
     {
         return this->keys.dump();
     }

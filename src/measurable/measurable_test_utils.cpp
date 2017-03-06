@@ -24,7 +24,7 @@ void test_from_file(std::string filename)
     MeasurableBtree<2> t;
     for (int i : inputs)
     {
-        t.add(IdentityKeyValue<int>(i));
+        t.add(get_kv(i));
     }
 
     std::sort(inputs.begin(), inputs.end());

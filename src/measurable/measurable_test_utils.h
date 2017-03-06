@@ -27,7 +27,7 @@ MeasurableBtree<degree> tree_with_incremental_elements(size_t num_of_elems)
     MeasurableBtree<degree> t;
     for (size_t i = 0; i < num_of_elems; i++)
     {
-        t.add(IdentityKeyValue<int>(i));
+        t.add(get_kv(i));
     }
 
     return t;
@@ -53,7 +53,7 @@ void test_decremental(size_t num_of_elems)
     MeasurableBtree<degree> t;
     for (size_t i = num_of_elems; i > 0; i--)
     {
-        t.add(IdentityKeyValue<int>(i));
+        t.add(get_kv(i));
     }
 
     auto result = t.dump();
@@ -74,8 +74,8 @@ MeasurableBtree<degree> tree_filled_in_mixed_order(size_t n)
     MeasurableBtree<degree> t;
     for (size_t i = 0; i < n; i++)
     {
-        t.add(IdentityKeyValue<int>(i));
-        t.add(IdentityKeyValue<int>(top - i));
+        t.add(get_kv(i));
+        t.add(get_kv(top - i));
     }
 
     return t;
@@ -113,7 +113,7 @@ void test_random(size_t n)
     MeasurableBtree<degree> t;
     for (int i : s)
     {
-        t.add(IdentityKeyValue<int>(i));
+        t.add(get_kv(i));
     }
 
     auto result = t.dump();

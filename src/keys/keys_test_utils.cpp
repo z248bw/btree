@@ -1,8 +1,15 @@
 #include "keys_test_utils.h"
 
-std::vector<TestNode*> TestNodeFactoryRAII::create_nodes(size_t n)
+KeyValue<int, char> get_kv(size_t n)
 {
-    std::vector<TestNode*> result;
+    // * lower case ascii letters start from 97
+    // * there is 25 lower case ascii letters
+    return KeyValue<int, char>(n, (n % 25) + 97);
+}
+
+std::vector<TestNode<>*> TestNodeFactoryRAII::create_nodes(size_t n)
+{
+    std::vector<TestNode<>*> result;
 
     for (size_t i = 0; i < n; i++)
     {
@@ -12,22 +19,22 @@ std::vector<TestNode*> TestNodeFactoryRAII::create_nodes(size_t n)
     return result;
 }
 
-TestNode* TestNodeFactoryRAII::create(size_t id)
+TestNode<>* TestNodeFactoryRAII::create(size_t id)
 {
-    auto new_node = std::make_shared<TestNode>(id);
+    auto new_node = std::make_shared<TestNode<>>(get_kv(id));
     nodes.push_back(new_node);
 
     return new_node.get();
 }
 
-Keys<TestNode> KeysFactoryRAII::create_keys(size_t n)
+Keys<TestNode<>> KeysFactoryRAII::create_keys(size_t n)
 {
-    Keys<TestNode> ks(n+1);
+    Keys<TestNode<>> ks(n+1);
     auto nodes = node_factory.create_nodes(n + 1);
 
     for (size_t i = 0; i < n; i++)
     {
-        ks.add(Branch<TestNode>(IdentityKeyValue<int>(i+1), nodes[i], nodes[i+1]));
+        ks.add(Branch<TestNode<>>(get_kv(i+1), nodes[i], nodes[i+1]));
     }
 
     return ks;
