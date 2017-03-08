@@ -92,16 +92,38 @@ public:
         children.reserve(degree + 1);
     }
 
-    typename Node::value_t get_value(typename Node::key_t k)
+    template<typename VALUE>
+    class SearchedValue
+    {
+    private:
+        VALUE * v = nullptr;
+
+    public:
+        bool is_present = false;
+
+        SearchedValue() = default;
+        SearchedValue(bool _is_present, VALUE * _v): v(_v), is_present(_is_present) {}
+
+        operator VALUE & ()
+        {
+            if (!is_present)
+            {
+                throw key_does_not_exist_exception();
+            }
+
+            return *v;
+        }
+    };
+
+    SearchedValue<typename Node::value_t> find_and_get_value(typename Node::key_t k)
     {
         size_t pos = std::lower_bound(keyvalues.begin(), keyvalues.end(), k) - keyvalues.begin();
-
         if (pos >= keyvalues.size() || keyvalues[pos] != k)
         {
-            throw key_does_not_exist_exception();
+            return SearchedValue<typename Node::value_t>();
         }
 
-        return keyvalues[pos].v;
+        return SearchedValue<typename Node::value_t>(true, &keyvalues[pos].v);
     }
 
     Branch<Node> get_branch(const size_t i) const
@@ -129,6 +151,7 @@ public:
         }
     }
 
+    // TODO: write unit tests!!!
     Node* select_node_for_key(const typename Node::key_t k) const
     {
         return children[get_pos_of_key(k)];

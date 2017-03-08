@@ -444,4 +444,13 @@ TEST(Btree, getValueFromBigTree) {
     ASSERT_STREQ(t.get(101), "hello");
 }
 
+TEST(Btree, getValueReturnsReference) {
+    Btree<int, const char*, 2> t;
+    t.add(1, "a");
+
+    t.get(1) = "b";
+
+    ASSERT_STREQ(t.get(1), "b");
+}
+
 #endif

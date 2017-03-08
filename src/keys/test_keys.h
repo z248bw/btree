@@ -1,6 +1,8 @@
 #ifndef TEST_KEYS_H_
 #define TEST_KEYS_H_
 
+#include <string>
+
 #include "gtest/gtest.h"
 
 #include "keys/keys.h"
@@ -254,22 +256,42 @@ TEST(Keys, changeLastToForKeysWithMultipleElements) {
 TEST(Keys, getValueForEmptyKeys) {
     Keys<TestNode<>> ks(10);
 
-    ASSERT_THROW(ks.get_value(99), key_does_not_exist_exception);
+    ASSERT_FALSE(ks.find_and_get_value(99).is_present);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-value"
+    ASSERT_THROW(static_cast<const char*>(ks.find_and_get_value(99)), key_does_not_exist_exception);
+#pragma GCC diagnostic pop
 }
 
 TEST(Keys, getValueForNoneExistantKey) {
     auto keys_factory = KeysFactoryRAII();
     auto ks = keys_factory.create_keys(2);
 
-    ASSERT_THROW(ks.get_value(99), key_does_not_exist_exception);
+    ASSERT_FALSE(ks.find_and_get_value(99).is_present);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-value"
+    ASSERT_THROW(static_cast<const char*>(ks.find_and_get_value(99)), key_does_not_exist_exception);
+#pragma GCC diagnostic pop
 }
 
 TEST(Keys, getValue) {
-    Keys<TestNode<>> ks(2);
+    Keys<TestNode<int, std::string>> ks(2);
 
-    ks.add(KeyValue<int, const char*>(3, "a"));
+    ks.add(KeyValue<int, std::string>(3, "a"));
 
-    ASSERT_EQ("a", ks.get_value(3));
+    ASSERT_TRUE(ks.find_and_get_value(3).is_present);
+    ASSERT_EQ("a", static_cast<std::string>(ks.find_and_get_value(3)));
+}
+
+TEST(Keys, getValueReturnsReference) {
+    Keys<TestNode<int, std::string>> ks(2);
+    ks.add(KeyValue<int, std::string>(3, "a"));
+
+    std::string& ref = ks.find_and_get_value(3);
+    ref = "b";
+
+    ASSERT_TRUE(ks.find_and_get_value(3).is_present);
+    ASSERT_EQ("b", static_cast<std::string>(ks.find_and_get_value(3)));
 }
 
 #endif

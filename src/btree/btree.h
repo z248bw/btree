@@ -90,11 +90,12 @@ public:
         }
     }
 
-    value_t get(const key_t k)
+    value_t & get(const key_t k)
     {
-        if (keys.is_present(k))
+        auto value = keys.find_and_get_value(k);
+        if (value.is_present)
         {
-            return keys.get_value(k);
+            return value;
         }
 
         if (keys.is_leaf())
