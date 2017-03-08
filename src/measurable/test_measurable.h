@@ -58,8 +58,8 @@ TEST(Btree, onlyRootDeepestAndShallowestBranches) {
 
 TEST(Btree, addElementsToRoot) {
     MeasurableBtree<2> t;
-    t.add(get_kv(1));
-    t.add(get_kv(2));
+    t.add(1, "hello");
+    t.add(2, "world");
     ASSERT_EQ(1, t.get_keys()[0]);
     ASSERT_EQ(2, t.get_keys()[1]);
 
@@ -70,8 +70,8 @@ TEST(Btree, addElementsToRoot) {
 
 TEST(Btree, elementsAddedToRootAreSorted) {
     MeasurableBtree<2> t;
-    t.add(get_kv(2));
-    t.add(get_kv(1));
+    t.add(2, "world");
+    t.add(1, "hello");
     ASSERT_EQ(1, t.get_keys()[0]);
     ASSERT_EQ(2, t.get_keys()[1]);
 
@@ -82,9 +82,9 @@ TEST(Btree, elementsAddedToRootAreSorted) {
 
 TEST(Btree, grow) {
     MeasurableBtree<2> t;
-    t.add(get_kv(1));
-    t.add(get_kv(2));
-    t.add(get_kv(3));
+    t.add(1, "hello");
+    t.add(2, "world");
+    t.add(3, "world");
     ASSERT_EQ(2, t.get_keys()[0]);
 
     t.measure();
@@ -94,9 +94,9 @@ TEST(Btree, grow) {
 
 TEST(Btree, findElementWhichIsNotPresent) {
     MeasurableBtree<2> t;
-    t.add(get_kv(1));
-    t.add(get_kv(2));
-    t.add(get_kv(3));
+    t.add(1, "hello");
+    t.add(2, "world");
+    t.add(3, "world");
     t.find_node_with_key(4);
     ASSERT_EQ(nullptr, t.find_node_with_key(4));
 
@@ -107,9 +107,9 @@ TEST(Btree, findElementWhichIsNotPresent) {
 
 TEST(Btree, findElementInRoot) {
     MeasurableBtree<2> t;
-    t.add(get_kv(1));
-    t.add(get_kv(2));
-    t.add(get_kv(3));
+    t.add(1, "hello");
+    t.add(2, "world");
+    t.add(3, "world");
     t.find_node_with_key(4);
     ASSERT_EQ(2, t.find_node_with_key(2)->get_keys()[0]);
 
@@ -120,9 +120,9 @@ TEST(Btree, findElementInRoot) {
 
 TEST(Btree, findElementInLeftLeaf) {
     MeasurableBtree<2> t;
-    t.add(get_kv(1));
-    t.add(get_kv(2));
-    t.add(get_kv(3));
+    t.add(1, "hello");
+    t.add(2, "world");
+    t.add(3, "world");
     ASSERT_EQ(1, t.find_node_with_key(1)->get_keys()[0]);
 
     t.measure();
@@ -132,9 +132,9 @@ TEST(Btree, findElementInLeftLeaf) {
 
 TEST(Btree, findElementInRightLeaf) {
     MeasurableBtree<2> t;
-    t.add(get_kv(1));
-    t.add(get_kv(2));
-    t.add(get_kv(3));
+    t.add(1, "hello");
+    t.add(2, "world");
+    t.add(3, "world");
     t.find_node_with_key(3)->get_keys();
     ASSERT_EQ(3, t.find_node_with_key(3)->get_keys()[0]);
 
@@ -149,10 +149,10 @@ TEST(Btree, dump) {
 
 TEST(Btree, findsPlaceOfNewElementInTheTree) {
     MeasurableBtree<2> t;
-    t.add(get_kv(1));
-    t.add(get_kv(2));
-    t.add(get_kv(3));
-    t.add(get_kv(4));
+    t.add(1, "hello");
+    t.add(2, "world");
+    t.add(3, "world");
+    t.add(4, "world");
 
     auto result = t.dump();
     ASSERT_EQ(1, result[0]);
@@ -214,9 +214,9 @@ TEST(Btree, decrementBigTree) {
 
 TEST(Btree, mixedGrow) {
     MeasurableBtree<2> t;
-    t.add(get_kv(1));
-    t.add(get_kv(20));
-    t.add(get_kv(2));
+    t.add(1, "hello");
+    t.add(20, "world");
+    t.add(2, "world");
 
     auto result = t.dump();
 
@@ -229,10 +229,10 @@ TEST(Btree, mixedGrow) {
 
 TEST(Btree, mixedFind) {
     MeasurableBtree<2> t;
-    t.add(get_kv(1));
-    t.add(get_kv(20));
-    t.add(get_kv(2));
-    t.add(get_kv(19));
+    t.add(1, "hello");
+    t.add(20, "world");
+    t.add(2, "world");
+    t.add(19, "world");
 
     auto result = t.dump();
 
@@ -246,13 +246,13 @@ TEST(Btree, mixedFind) {
 
 TEST(Btree, mixedRecursiveGrow) {
     MeasurableBtree<2> t;
-    t.add(get_kv(1));
-    t.add(get_kv(20));
-    t.add(get_kv(2));
-    t.add(get_kv(19));
-    t.add(get_kv(3));
-    t.add(get_kv(18));
-    t.add(get_kv(4));
+    t.add(1, "hello");
+    t.add(20, "world");
+    t.add(2, "world");
+    t.add(19, "world");
+    t.add(3, "world");
+    t.add(18, "world");
+    t.add(4, "world");
 
     auto result = t.dump();
 
@@ -273,12 +273,12 @@ TEST(Btree, mixedBig) {
 
 TEST(Btree, fullGrow) {
     MeasurableBtree<2> t;
-    t.add(get_kv(1));
-    t.add(get_kv(101));
-    t.add(get_kv(1001));
-    t.add(get_kv(2));
-    t.add(get_kv(1002));
-    t.add(get_kv(102));
+    t.add(1, "hello");
+    t.add(101, "world");
+    t.add(1001, "world");
+    t.add(2, "world");
+    t.add(1002, "world");
+    t.add(102, "world");
 
     auto result = t.dump();
     ASSERT_EQ(1, result[0]);
@@ -293,26 +293,26 @@ TEST(Btree, fullGrow) {
 
 TEST(Btree, duplicateKeyRoot) {
     MeasurableBtree<2> t;
-    t.add(get_kv(0));
-    ASSERT_THROW(t.add(get_kv(0)), invalid_key_exception);
+    t.add(0, "world");
+    ASSERT_THROW(t.add(0, "hello"), invalid_key_exception);
 }
 
 TEST(Btree, duplicateKeyInLeaf) {
     MeasurableBtree<2> t = tree_with_incremental_elements<2>(9);
 
-    ASSERT_THROW(t.add(get_kv(1)), invalid_key_exception);
+    ASSERT_THROW(t.add(1, "hello"), invalid_key_exception);
 }
 
 TEST(Btree, duplicateKeyInNode) {
     MeasurableBtree<2> t = tree_with_incremental_elements<2>(9);
 
-    ASSERT_THROW(t.add(get_kv(5)), invalid_key_exception);
+    ASSERT_THROW(t.add(5, "hello"), invalid_key_exception);
 }
 
 TEST(Btree, duplicateKeyInRootRecursive) {
     MeasurableBtree<2> t = tree_with_incremental_elements<2>(9);
 
-    ASSERT_THROW(t.add(get_kv(3)), invalid_key_exception);
+    ASSERT_THROW(t.add(3, "hello"), invalid_key_exception);
 }
 
 TEST(Btree, randomBig) {
@@ -422,7 +422,7 @@ TEST(Btree, getValueForNonExistentKeyShouldThrowException) {
 TEST(Btree, getValueWithOneValueStored) {
     Btree<int, const char*, 2> t;
 
-    t.add(KeyValue<int, const char*>(1, "hello"));
+    t.add(1, "hello");
 
     ASSERT_STREQ(t.get(1), "hello");
 }
@@ -430,8 +430,8 @@ TEST(Btree, getValueWithOneValueStored) {
 TEST(Btree, getValueWithMultipleValuesStored) {
     Btree<int, const char*, 2> t;
 
-    t.add(KeyValue<int, const char*>(1, "hello"));
-    t.add(KeyValue<int, const char*>(2, "world"));
+    t.add(1, "hello");
+    t.add(2, "world");
 
     ASSERT_STREQ(t.get(2), "world");
 }
@@ -439,7 +439,7 @@ TEST(Btree, getValueWithMultipleValuesStored) {
 TEST(Btree, getValueFromBigTree) {
     MeasurableBtree<2> t = tree_with_incremental_elements<2>(99);
 
-    t.add(KeyValue<int, const char*>(101, "hello"));
+    t.add(101, "hello");
 
     ASSERT_STREQ(t.get(101), "hello");
 }

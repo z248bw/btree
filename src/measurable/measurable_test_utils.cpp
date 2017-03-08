@@ -24,7 +24,7 @@ void test_from_file(std::string filename)
     MeasurableBtree<2> t;
     for (int i : inputs)
     {
-        t.add(get_kv(i));
+        t.add(i, "hello");
     }
 
     std::sort(inputs.begin(), inputs.end());

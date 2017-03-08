@@ -75,16 +75,18 @@ public:
         return *this;
     }
 
-    void add(const KV k)
+    void add(const key_t k, const value_t v)
     {
         auto n = get_leaf_for_key(k);
+        auto kv = KeyValue<key_t, value_t>(k, v);
+
         if (n->keys.size() < degree)
         {
-            n->keys.add(Branch<Btree>(k));
+            n->keys.add(Branch<Btree>(kv));
         }
         else
         {
-            n->upwards_add(Branch<Btree>(k));
+            n->upwards_add(Branch<Btree>(kv));
         }
     }
 
