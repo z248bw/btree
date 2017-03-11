@@ -15,14 +15,37 @@ struct KeyValue
 
     KeyValue() = default;
 
-    KeyValue(KEY k, VALUE v): k(k), v(v) {}
+    KeyValue(const KEY k, const VALUE v): k(k), v(v) {}
+
+    struct Compare
+    {
+        bool operator () (const KEY & k, const KeyValue<KEY, VALUE> & kv) const
+        {
+            return k < kv.k;
+        }
+
+        bool operator () (const KeyValue<KEY, VALUE> & kv, const KEY & k) const
+        {
+            return kv.k < k;
+        }
+    };
 
     bool operator<(const KeyValue & other) const
     {
         return k < other.k;
     }
 
-    operator KEY() const
+    bool operator>(const KeyValue & other) const
+    {
+        return k > other.k;
+    }
+
+    bool operator==(const KeyValue & other) const
+    {
+        return k == other.k;
+    }
+
+    operator KEY () const
     {
         return k;
     }
@@ -117,8 +140,8 @@ public:
 
     SearchedValue<typename Node::value_t> find_and_get_value(typename Node::key_t k)
     {
-        size_t pos = std::lower_bound(keyvalues.begin(), keyvalues.end(), k) - keyvalues.begin();
-        if (pos >= keyvalues.size() || keyvalues[pos] != k)
+        size_t pos = std::lower_bound(keyvalues.begin(), keyvalues.end(), k, typename KV::Compare()) - keyvalues.begin();
+        if (pos >= keyvalues.size() || keyvalues[pos].k != k)
         {
             return SearchedValue<typename Node::value_t>();
         }
@@ -151,7 +174,6 @@ public:
         }
     }
 
-    // TODO: write unit tests!!!
     Node* select_node_for_key(const typename Node::key_t k) const
     {
         return children[get_pos_of_key(k)];
@@ -159,7 +181,7 @@ public:
 
     bool is_present(const typename Node::key_t k) const noexcept
     {
-        return std::binary_search(keyvalues.begin(), keyvalues.end(), k);
+        return std::binary_search(keyvalues.begin(), keyvalues.end(), k, typename KV::Compare());
     }
 
     KV get_median_KV_with_new_key(const KV k) const
@@ -290,7 +312,7 @@ private:
 
     size_t get_pos_of_key(const typename Node::key_t  k) const
     {
-        return std::upper_bound(keyvalues.begin(), keyvalues.end(), k) - keyvalues.begin();
+        return std::upper_bound(keyvalues.begin(), keyvalues.end(), k, typename KV::Compare()) - keyvalues.begin();
     }
 
     Node* get_child(const size_t i) const noexcept

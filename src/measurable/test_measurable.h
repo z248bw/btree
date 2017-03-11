@@ -453,4 +453,57 @@ TEST(Btree, getValueReturnsReference) {
     ASSERT_STREQ(t.get(1), "b");
 }
 
+TEST(Btree, storeSimpleInt) {
+    Btree<int, int, 2> t;
+    t.add(1, 1);
+
+    t.get(1) = 2;
+
+    ASSERT_EQ(t.get(1), 2);
+}
+
+TEST(Btree, storeIntPointer) {
+    Btree<int, int*, 2> t;
+    int p = 2;
+    int new_p = 3;
+    t.add(1, &p);
+
+    t.get(1) = &new_p;
+
+    ASSERT_EQ(*(t.get(1)), new_p);
+}
+
+TEST(Btree, storeObject) {
+    Btree<int, std::vector<int>, 2> t;
+    t.add(1, std::vector<int>(4, 9));
+
+    t.get(1) = std::vector<int>(3, 8);
+
+    ASSERT_EQ(t.get(1).size(), 3);
+    ASSERT_EQ(t.get(1)[2], 8);
+}
+
+TEST(Btree, stringAsKey) {
+    Btree<std::string, int, 2> t;
+    t.add("hello", 1);
+
+    t.get("hello") = 2;
+
+    ASSERT_EQ(t.get("hello"), 2);
+}
+
+TEST(Btree, multipleStringAsKey) {
+    Btree<std::string, int, 2> t;
+    t.add("a", 1);
+    t.add("c", 1);
+    t.add("b", 1);
+
+    auto elems = t.dump();
+
+    ASSERT_EQ(elems[0].k, "a");
+    ASSERT_EQ(elems[1].k, "b");
+    ASSERT_EQ(elems[2].k, "c");
+}
+
+
 #endif
