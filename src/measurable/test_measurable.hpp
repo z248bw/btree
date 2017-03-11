@@ -294,25 +294,25 @@ TEST(Btree, fullGrow) {
 TEST(Btree, duplicateKeyRoot) {
     MeasurableBtree<2> t;
     t.add(0, "world");
-    ASSERT_THROW(t.add(0, "hello"), invalid_key_exception);
+    ASSERT_THROW(t.add(0, "hello"), duplicated_key_exception);
 }
 
 TEST(Btree, duplicateKeyInLeaf) {
     MeasurableBtree<2> t = tree_with_incremental_elements<2>(9);
 
-    ASSERT_THROW(t.add(1, "hello"), invalid_key_exception);
+    ASSERT_THROW(t.add(1, "hello"), duplicated_key_exception);
 }
 
 TEST(Btree, duplicateKeyInNode) {
     MeasurableBtree<2> t = tree_with_incremental_elements<2>(9);
 
-    ASSERT_THROW(t.add(5, "hello"), invalid_key_exception);
+    ASSERT_THROW(t.add(5, "hello"), duplicated_key_exception);
 }
 
 TEST(Btree, duplicateKeyInRootRecursive) {
     MeasurableBtree<2> t = tree_with_incremental_elements<2>(9);
 
-    ASSERT_THROW(t.add(3, "hello"), invalid_key_exception);
+    ASSERT_THROW(t.add(3, "hello"), duplicated_key_exception);
 }
 
 TEST(Btree, randomBig) {

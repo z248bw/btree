@@ -6,17 +6,12 @@
 #include "keys/keys.hpp"
 
 
-class invalid_key_exception: public std::exception
+class duplicated_key_exception: public std::exception
 {
 public:
-    const char* message;
-
-    invalid_key_exception(const char* message):
-        std::exception(), message(message){}
-
     virtual const char* what() const noexcept override
     {
-        return message;
+        return "duplicated key";
     }
 };
 
@@ -177,7 +172,7 @@ private:
     {
         if (keys.is_present(k))
         {
-            throw invalid_key_exception("key already exists");
+            throw duplicated_key_exception();
         }
 
         if (keys.is_leaf())
