@@ -1,7 +1,8 @@
 #ifndef MEASURABLE_H_
 #define MEASURABLE_H_
 
-#include "btree/btree.h"
+#include "btree/btree.hpp"
+#include "keys/keys.hpp"
 
 #define MAX_INT 99999
 

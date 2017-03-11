@@ -8,9 +8,9 @@
 
 #include "gtest/gtest.h"
 
-#include "measurable/measurable.h"
-#include "keys/keys.h"
-#include "keys/keys_test_utils.h"
+#include "measurable/measurable.hpp"
+#include "keys/keys.hpp"
+#include "keys/keys_test_utils.hpp"
 
 
 template<class T>

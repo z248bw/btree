@@ -35,15 +35,15 @@ clean :
 COMPILE = $(PRE_TARGET_STEP) $(CXX) $(CXXFLAGS) -c $<
 
 # compile files under keys
-$(BIN_DIR)/%.o: $(SRC_DIR)/keys/%.cpp $(SRC_DIR)/keys/%.h
+$(BIN_DIR)/%.o: $(SRC_DIR)/keys/%.cpp $(SRC_DIR)/keys/%.hpp
 	$(COMPILE)
 
 # compile files under measurable
-$(BIN_DIR)/%.o: $(SRC_DIR)/measurable/%.cpp $(SRC_DIR)/measurable/%.h
+$(BIN_DIR)/%.o: $(SRC_DIR)/measurable/%.cpp $(SRC_DIR)/measurable/%.hpp
 	$(COMPILE)
 
 # compile files under btree
-$(BIN_DIR)/%.o : $(SRC_DIR)/btree/%.cpp $(SRC_DIR)/btree/%.h
+$(BIN_DIR)/%.o : $(SRC_DIR)/btree/%.cpp $(SRC_DIR)/btree/%.hpp
 	$(COMPILE)
 
 # compile main_test.cpp

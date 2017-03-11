@@ -6,7 +6,7 @@
 
 #include "gtest/gtest.h"
 
-#include "keys/keys.h"
+#include "keys/keys.hpp"
 
 
 KeyValue<int, const char*> get_kv(size_t n);

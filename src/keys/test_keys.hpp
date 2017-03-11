@@ -5,8 +5,8 @@
 
 #include "gtest/gtest.h"
 
-#include "keys/keys.h"
-#include "keys_test_utils.h"
+#include "keys/keys.hpp"
+#include "keys_test_utils.hpp"
 
 
 TEST(Keys, storeBranchesInOrder) {

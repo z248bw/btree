@@ -1,4 +1,4 @@
-#include "keys_test_utils.h"
+#include "keys_test_utils.hpp"
 
 KeyValue<int, const char*> get_kv(size_t n)
 {
