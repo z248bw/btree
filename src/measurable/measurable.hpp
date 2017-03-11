@@ -6,11 +6,6 @@
 
 #define MAX_INT 99999
 
-// I want to be able to simply verify whether the tree is balanced.
-// A way to do this is, to find the level of the deepest and the shallowest leaf and then check
-// if they are equal. I provide this functionality as a mixin because I need to
-// prove that the walk algorithm works correctly and for this I need to be able
-// to walk unbalanced trees as well.
 class Measurable
 {
 protected:
@@ -40,10 +35,6 @@ public:
             deepest = depth;
         }
 
-        // A node is a leaf in a btree if it does not have the maximum number
-        // of children. Altough the class's name is Traversable, I use this
-        // rule because I want to use it for btrees. The other implementations of this class
-        // sole purposes are to test that the walk algorithm works in the defined way
         if (is_leaf() && depth < shallowest)
         {
             shallowest = depth;
