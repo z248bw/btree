@@ -182,7 +182,7 @@ namespace btree
             }
         }
 
-        Node* select_node_for_key(const typename Node::key_t k) const
+        Node* select_child_for_key(const typename Node::key_t k) const
         {
             return children[get_pos_of_key(k)];
         }

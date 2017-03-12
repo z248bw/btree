@@ -100,7 +100,7 @@ namespace btree
                 throw key_does_not_exist_exception();
             }
 
-            return keys.select_node_for_key(k)->get(k);
+            return keys.select_child_for_key(k)->get(k);
         }
 
         std::vector<KV_pair> dump()
@@ -182,7 +182,7 @@ namespace btree
                 return this;
             }
 
-            return keys.select_node_for_key(k)->get_leaf_for_key(k);
+            return keys.select_child_for_key(k)->get_leaf_for_key(k);
         }
 
         void upwards_add(Branch<Btree> branch)
