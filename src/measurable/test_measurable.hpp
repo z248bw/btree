@@ -425,7 +425,7 @@ TEST(Btree, getValueWithOneValueStored) {
 
     t.add(1, "hello");
 
-    ASSERT_STREQ(t.get(1), "hello");
+    ASSERT_STREQ("hello", t.get(1));
 }
 
 TEST(Btree, getValueWithMultipleValuesStored) {
@@ -434,7 +434,7 @@ TEST(Btree, getValueWithMultipleValuesStored) {
     t.add(1, "hello");
     t.add(2, "world");
 
-    ASSERT_STREQ(t.get(2), "world");
+    ASSERT_STREQ("world", t.get(2));
 }
 
 TEST(Btree, getValueFromBigTree) {
@@ -442,7 +442,7 @@ TEST(Btree, getValueFromBigTree) {
 
     t.add(101, "hello");
 
-    ASSERT_STREQ(t.get(101), "hello");
+    ASSERT_STREQ("hello", t.get(101));
 }
 
 TEST(Btree, getValueReturnsReference) {
@@ -451,7 +451,7 @@ TEST(Btree, getValueReturnsReference) {
 
     t.get(1) = "b";
 
-    ASSERT_STREQ(t.get(1), "b");
+    ASSERT_STREQ("b", t.get(1));
 }
 
 TEST(Btree, storeSimpleInt) {
@@ -460,7 +460,7 @@ TEST(Btree, storeSimpleInt) {
 
     t.get(1) = 2;
 
-    ASSERT_EQ(t.get(1), 2);
+    ASSERT_EQ(2, t.get(1));
 }
 
 TEST(Btree, storeIntPointer) {
@@ -471,7 +471,7 @@ TEST(Btree, storeIntPointer) {
 
     t.get(1) = &new_p;
 
-    ASSERT_EQ(*(t.get(1)), new_p);
+    ASSERT_EQ(new_p, *(t.get(1)));
 }
 
 TEST(Btree, storeObject) {
@@ -480,8 +480,8 @@ TEST(Btree, storeObject) {
 
     t.get(1) = std::vector<int>(3, 8);
 
-    ASSERT_EQ(t.get(1).size(), 3);
-    ASSERT_EQ(t.get(1)[2], 8);
+    ASSERT_EQ(3, t.get(1).size());
+    ASSERT_EQ(8, t.get(1)[2]);
 }
 
 TEST(Btree, stringAsKey) {
@@ -490,7 +490,7 @@ TEST(Btree, stringAsKey) {
 
     t.get("hello") = 2;
 
-    ASSERT_EQ(t.get("hello"), 2);
+    ASSERT_EQ(2, t.get("hello"));
 }
 
 TEST(Btree, multipleStringAsKey) {
@@ -501,9 +501,9 @@ TEST(Btree, multipleStringAsKey) {
 
     auto elems = t.dump();
 
-    ASSERT_EQ(elems[0].key, "a");
-    ASSERT_EQ(elems[1].key, "b");
-    ASSERT_EQ(elems[2].key, "c");
+    ASSERT_EQ("a", elems[0].key);
+    ASSERT_EQ("b", elems[1].key);
+    ASSERT_EQ("c", elems[2].key);
 }
 
 

@@ -159,7 +159,7 @@ namespace btree
                 return Branch<Node>(keyvalues[i]);
             }
 
-            return Branch<Node>(keyvalues[i], get_child(i), get_child(i+1));
+            return Branch<Node>(keyvalues[i], get_child(i), get_child(i + 1));
         }
 
         void add(const Branch<Node> b)
@@ -208,7 +208,7 @@ namespace btree
 
         Branch<Node> get_last_branch() const noexcept
         {
-            auto last_index = keyvalues.size()-1;
+            auto last_index = keyvalues.size() - 1;
 
             if (is_leaf())
             {
@@ -251,7 +251,7 @@ namespace btree
 
         Node* get_rightmost_child() const
         {
-            return children[children.size()-1];
+            return children[children.size() - 1];
         }
 
         void set_owner(Node* new_owner) noexcept
@@ -320,7 +320,7 @@ namespace btree
 
         Node* get_child(const size_t i) const noexcept
         {
-            if (children.size() < i+1)
+            if (children.size() < i + 1)
             {
                 return nullptr;
             }
@@ -343,7 +343,7 @@ namespace btree
             }
             else
             {
-                children[children.size()-1] = b.left;
+                children[children.size() - 1] = b.left;
             }
 
             children.push_back(b.right);
