@@ -33,7 +33,7 @@ namespace btree
         auto result = t.dump();
         for (size_t i = 0; i < inputs.size(); i++)
         {
-            ASSERT_EQ(inputs[i], result[i]);
+            ASSERT_EQ(inputs[i], result[i].first);
         }
 
         ASSERT_EQ(Measurable::shallowest, Measurable::deepest);

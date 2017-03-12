@@ -29,7 +29,7 @@ namespace btree
     private:
         friend class Keys<Btree>;
 
-        using KV = KeyValue<KEY, VALUE>;
+        using KV_pair = std::pair<key_t, value_t>;
 
         Btree* parent = nullptr;
 
@@ -103,17 +103,17 @@ namespace btree
             return keys.select_node_for_key(k)->get(k);
         }
 
-        std::vector<KV> dump()
+        std::vector<KV_pair> dump()
         {
-            std::vector<KV> result;
-            inorder_walk([&result] (KV k) {
-                result.push_back(k);
+            std::vector<KV_pair> result;
+            inorder_walk([&result] (KV_pair kv_pair) {
+                result.push_back(kv_pair);
             });
 
             return result;
         }
 
-        void inorder_walk(std::function<void(KV)> on_visit)
+        void inorder_walk(std::function<void(KV_pair)> on_visit)
         {
             if (!keys.is_leaf())
             {
@@ -135,7 +135,7 @@ namespace btree
             }
         }
 
-        void preorder_walk(std::function<void(KV)> on_visit)
+        void preorder_walk(std::function<void(KV_pair)> on_visit)
         {
             for (size_t i = 0; i < keys.size(); i++)
             {
@@ -148,7 +148,7 @@ namespace btree
             }
         }
 
-        void postorder_walk(std::function<void(KV)> on_visit)
+        void postorder_walk(std::function<void(KV_pair)> on_visit)
         {
             for (auto it = keys.children_begin(); it != keys.children_end(); it++)
             {

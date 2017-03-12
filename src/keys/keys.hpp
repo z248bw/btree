@@ -32,6 +32,11 @@ namespace btree
             }
         };
 
+        operator std::pair<KEY, VALUE> () const
+        {
+            return std::pair<KEY, VALUE>(key, value);
+        }
+
         bool operator<(const KeyValue & other) const
         {
             return key < other.key;

@@ -43,7 +43,7 @@ namespace btree
         auto result = t.dump();
         for (size_t i = 0; i < result.size(); i++)
         {
-            ASSERT_EQ(i, result[i]);
+            ASSERT_EQ(i, result[i].first);
         }
 
         check_balance(t);
@@ -61,7 +61,7 @@ namespace btree
         auto result = t.dump();
         for (size_t i = 0; i < result.size(); i++)
         {
-            ASSERT_EQ(i+1, result[i]);
+            ASSERT_EQ(i+1, result[i].first);
         }
 
         check_balance(t);
@@ -90,12 +90,12 @@ namespace btree
         auto result = t.dump();
         for (size_t i = 0; i < n; i++)
         {
-            ASSERT_EQ(i, result[i]);
+            ASSERT_EQ(i, result[i].first);
         }
 
         for (size_t i = 0; i < n; i++)
         {
-            ASSERT_EQ(i+n+10+1, result[i+n]);
+            ASSERT_EQ(i+n+10+1, result[i+n].first);
         }
 
         check_balance(t);
@@ -123,7 +123,7 @@ namespace btree
         std::sort(inputs.begin(), inputs.end());
         for (size_t i = 0; i < inputs.size(); i++)
         {
-            ASSERT_EQ(inputs[i], result[i]);
+            ASSERT_EQ(inputs[i], result[i].first);
         }
 
         check_balance(t);

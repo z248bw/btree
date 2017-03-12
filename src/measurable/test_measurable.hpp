@@ -156,10 +156,10 @@ TEST(Btree, findsPlaceOfNewElementInTheTree) {
     t.add(4, "world");
 
     auto result = t.dump();
-    ASSERT_EQ(1, result[0]);
-    ASSERT_EQ(2, result[1]);
-    ASSERT_EQ(3, result[2]);
-    ASSERT_EQ(4, result[3]);
+    ASSERT_EQ(1, result[0].first);
+    ASSERT_EQ(2, result[1].first);
+    ASSERT_EQ(3, result[2].first);
+    ASSERT_EQ(4, result[3].first);
 
     auto n = t.find_node_with_key(4);
     ASSERT_EQ(3, n->get_keys()[0]);
@@ -174,11 +174,11 @@ TEST(Btree, addingNewElementMovesElementUpFromLeaf) {
     auto t = tree_with_incremental_elements<2>(5);
 
     auto result = t.dump();
-    ASSERT_EQ(0, result[0]);
-    ASSERT_EQ(1, result[1]);
-    ASSERT_EQ(2, result[2]);
-    ASSERT_EQ(3, result[3]);
-    ASSERT_EQ(4, result[4]);
+    ASSERT_EQ(0, result[0].first);
+    ASSERT_EQ(1, result[1].first);
+    ASSERT_EQ(2, result[2].first);
+    ASSERT_EQ(3, result[3].first);
+    ASSERT_EQ(4, result[4].first);
 
     auto n = t.find_node_with_key(3);
     ASSERT_EQ(1, n->get_keys()[0]);
@@ -221,9 +221,9 @@ TEST(Btree, mixedGrow) {
 
     auto result = t.dump();
 
-    ASSERT_EQ(1, result[0]);
-    ASSERT_EQ(2, result[1]);
-    ASSERT_EQ(20, result[2]);
+    ASSERT_EQ(1, result[0].first);
+    ASSERT_EQ(2, result[1].first);
+    ASSERT_EQ(20, result[2].first);
 
     check_balance(t);
 }
@@ -237,10 +237,10 @@ TEST(Btree, mixedFind) {
 
     auto result = t.dump();
 
-    ASSERT_EQ(1, result[0]);
-    ASSERT_EQ(2, result[1]);
-    ASSERT_EQ(19, result[2]);
-    ASSERT_EQ(20, result[3]);
+    ASSERT_EQ(1, result[0].first);
+    ASSERT_EQ(2, result[1].first);
+    ASSERT_EQ(19, result[2].first);
+    ASSERT_EQ(20, result[3].first);
 
     check_balance(t);
 }
@@ -257,13 +257,13 @@ TEST(Btree, mixedRecursiveGrow) {
 
     auto result = t.dump();
 
-    ASSERT_EQ(1, result[0]);
-    ASSERT_EQ(2, result[1]);
-    ASSERT_EQ(3, result[2]);
-    ASSERT_EQ(4, result[3]);
-    ASSERT_EQ(18, result[4]);
-    ASSERT_EQ(19, result[5]);
-    ASSERT_EQ(20, result[6]);
+    ASSERT_EQ(1, result[0].first);
+    ASSERT_EQ(2, result[1].first);
+    ASSERT_EQ(3, result[2].first);
+    ASSERT_EQ(4, result[3].first);
+    ASSERT_EQ(18, result[4].first);
+    ASSERT_EQ(19, result[5].first);
+    ASSERT_EQ(20, result[6].first);
 
     check_balance(t);
 }
@@ -282,12 +282,12 @@ TEST(Btree, fullGrow) {
     t.add(102, "world");
 
     auto result = t.dump();
-    ASSERT_EQ(1, result[0]);
-    ASSERT_EQ(2, result[1]);
-    ASSERT_EQ(101, result[2]);
-    ASSERT_EQ(102, result[3]);
-    ASSERT_EQ(1001, result[4]);
-    ASSERT_EQ(1002, result[5]);
+    ASSERT_EQ(1, result[0].first);
+    ASSERT_EQ(2, result[1].first);
+    ASSERT_EQ(101, result[2].first);
+    ASSERT_EQ(102, result[3].first);
+    ASSERT_EQ(1001, result[4].first);
+    ASSERT_EQ(1002, result[5].first);
 
     check_balance(t);
 }
@@ -324,8 +324,8 @@ TEST(Btree, preorderWalk) {
     MeasurableBtree<2> t = tree_with_incremental_elements<2>(9);
 
     std::vector<int> result;
-    t.preorder_walk([&result] (KeyValue<int, const char*> k) {
-        result.push_back(k);
+    t.preorder_walk([&result] (std::pair<int, const char*> kv_pair) {
+        result.push_back(kv_pair.first);
     });
 
     ASSERT_EQ(3, result[0]);
@@ -343,8 +343,8 @@ TEST(Btree, postorderWalk) {
     MeasurableBtree<2> t = tree_with_incremental_elements<2>(9);
 
     std::vector<int> result;
-    t.postorder_walk([&result] (KeyValue<int, const char*> k) {
-        result.push_back(k);
+    t.postorder_walk([&result] (std::pair<int, const char*> kv_pair) {
+        result.push_back(kv_pair.first);
     });
 
     ASSERT_EQ(0, result[0]);
@@ -501,9 +501,9 @@ TEST(Btree, multipleStringAsKey) {
 
     auto elems = t.dump();
 
-    ASSERT_EQ("a", elems[0].key);
-    ASSERT_EQ("b", elems[1].key);
-    ASSERT_EQ("c", elems[2].key);
+    ASSERT_EQ("a", elems[0].first);
+    ASSERT_EQ("b", elems[1].first);
+    ASSERT_EQ("c", elems[2].first);
 }
 
 
