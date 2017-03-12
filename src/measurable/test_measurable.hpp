@@ -500,9 +500,9 @@ TEST(Btree, multipleStringAsKey) {
 
     auto elems = t.dump();
 
-    ASSERT_EQ(elems[0].k, "a");
-    ASSERT_EQ(elems[1].k, "b");
-    ASSERT_EQ(elems[2].k, "c");
+    ASSERT_EQ(elems[0].key, "a");
+    ASSERT_EQ(elems[1].key, "b");
+    ASSERT_EQ(elems[2].key, "c");
 }
 
 

@@ -17,13 +17,13 @@ TEST(Keys, storeBranchesInOrder) {
     auto b2 = ks.get_branch(1);
     auto b3 = ks.get_branch(2);
 
-    ASSERT_EQ(1, b1.value);
+    ASSERT_EQ(1, b1.kv);
     ASSERT_EQ(1, b1.left->kv);
     ASSERT_EQ(2, b1.right->kv);
-    ASSERT_EQ(2, b2.value);
+    ASSERT_EQ(2, b2.kv);
     ASSERT_EQ(2, b2.left->kv);
     ASSERT_EQ(3, b2.right->kv);
-    ASSERT_EQ(3, b3.value);
+    ASSERT_EQ(3, b3.kv);
     ASSERT_EQ(3, b3.left->kv);
     ASSERT_EQ(4, b3.right->kv);
 }
@@ -38,10 +38,10 @@ TEST(Keys, addNewBranchAtBeginning) {
     auto b1 = ks.get_branch(0);
     auto b2 = ks.get_branch(1);
 
-    ASSERT_EQ(-1, b1.value);
+    ASSERT_EQ(-1, b1.kv);
     ASSERT_EQ(-1, b1.left->kv);
     ASSERT_EQ(-2, b1.right->kv);
-    ASSERT_EQ(1, b2.value);
+    ASSERT_EQ(1, b2.kv);
     ASSERT_EQ(-2, b2.left->kv);
     ASSERT_EQ(2, b2.right->kv);
 }
@@ -56,10 +56,10 @@ TEST(Keys, addNewBranchAtEnd) {
     auto b1 = ks.get_branch(0);
     auto b2 = ks.get_branch(1);
 
-    ASSERT_EQ(1, b1.value);
+    ASSERT_EQ(1, b1.kv);
     ASSERT_EQ(1, b1.left->kv);
     ASSERT_EQ(9, b1.right->kv);
-    ASSERT_EQ(9, b2.value);
+    ASSERT_EQ(9, b2.kv);
     ASSERT_EQ(9, b2.left->kv);
     ASSERT_EQ(10, b2.right->kv);
 }
@@ -77,13 +77,13 @@ TEST(Keys, addNewBranchAtMiddle) {
     auto b2 = ks.get_branch(1);
     auto b3 = ks.get_branch(2);
 
-    ASSERT_EQ(1, b1.value);
+    ASSERT_EQ(1, b1.kv);
     ASSERT_EQ(1, b1.left->kv);
     ASSERT_EQ(9, b1.right->kv);
-    ASSERT_EQ(9, b2.value);
+    ASSERT_EQ(9, b2.kv);
     ASSERT_EQ(9, b2.left->kv);
     ASSERT_EQ(10, b2.right->kv);
-    ASSERT_EQ(100, b3.value);
+    ASSERT_EQ(100, b3.kv);
     ASSERT_EQ(10, b3.left->kv);
     ASSERT_EQ(101, b3.right->kv);
 }
@@ -143,7 +143,7 @@ TEST(Keys, evenGetLeftHalfOfKeys) {
     auto half = ks.get_left_half_of_keys();
 
     ASSERT_EQ(1, half.size());
-    ASSERT_EQ(1, half.get_branch(0).value);
+    ASSERT_EQ(1, half.get_branch(0).kv);
     ASSERT_EQ(1, half.get_branch(0).left->kv);
     ASSERT_EQ(2, half.get_branch(0).right->kv);
 }
@@ -155,7 +155,7 @@ TEST(Keys, evenGetRightHalfOfKeys) {
     auto half = ks.get_right_half_of_keys();
 
     ASSERT_EQ(1, half.size());
-    ASSERT_EQ(2, half.get_branch(0).value);
+    ASSERT_EQ(2, half.get_branch(0).kv);
     ASSERT_EQ(2, half.get_branch(0).left->kv);
     ASSERT_EQ(3, half.get_branch(0).right->kv);
 }
@@ -167,7 +167,7 @@ TEST(Keys, oddGetLeftHalfOfKeys) {
     auto half = ks.get_left_half_of_keys();
 
     ASSERT_EQ(1, half.size());
-    ASSERT_EQ(1, half.get_branch(0).value);
+    ASSERT_EQ(1, half.get_branch(0).kv);
     ASSERT_EQ(1, half.get_branch(0).left->kv);
     ASSERT_EQ(2, half.get_branch(0).right->kv);
 }
@@ -179,10 +179,10 @@ TEST(Keys, oddGetRightHalfOfKeys) {
     auto half = ks.get_right_half_of_keys();
 
     ASSERT_EQ(2, half.size());
-    ASSERT_EQ(2, half.get_branch(0).value);
+    ASSERT_EQ(2, half.get_branch(0).kv);
     ASSERT_EQ(2, half.get_branch(0).left->kv);
     ASSERT_EQ(3, half.get_branch(0).right->kv);
-    ASSERT_EQ(3, half.get_branch(1).value);
+    ASSERT_EQ(3, half.get_branch(1).kv);
     ASSERT_EQ(3, half.get_branch(1).left->kv);
     ASSERT_EQ(4, half.get_branch(1).right->kv);
 }
@@ -197,7 +197,7 @@ TEST(Keys, changeFirstToForKeysWithOneElement) {
     );
 
     ASSERT_EQ(1, ks.size());
-    ASSERT_EQ(9, ks.get_branch(0).value);
+    ASSERT_EQ(9, ks.get_branch(0).kv);
     ASSERT_EQ(9, ks.get_branch(0).left->kv);
     ASSERT_EQ(10, ks.get_branch(0).right->kv);
 }
@@ -212,10 +212,10 @@ TEST(Keys, changeFirstToForKeysWithMultipleElements) {
     );
 
     ASSERT_EQ(2, ks.size());
-    ASSERT_EQ(2, ks.get_branch(0).value);
+    ASSERT_EQ(2, ks.get_branch(0).kv);
     ASSERT_EQ(2, ks.get_branch(0).left->kv);
     ASSERT_EQ(9, ks.get_branch(0).right->kv);
-    ASSERT_EQ(9, ks.get_branch(1).value);
+    ASSERT_EQ(9, ks.get_branch(1).kv);
     ASSERT_EQ(9, ks.get_branch(1).left->kv);
     ASSERT_EQ(10, ks.get_branch(1).right->kv);
 }
@@ -230,7 +230,7 @@ TEST(Keys, changeLastToForKeysWithOneElement) {
     );
 
     ASSERT_EQ(1, ks.size());
-    ASSERT_EQ(9, ks.get_branch(0).value);
+    ASSERT_EQ(9, ks.get_branch(0).kv);
     ASSERT_EQ(9, ks.get_branch(0).left->kv);
     ASSERT_EQ(10, ks.get_branch(0).right->kv);
 }
@@ -245,10 +245,10 @@ TEST(Keys, changeLastToForKeysWithMultipleElements) {
     );
 
     ASSERT_EQ(2, ks.size());
-    ASSERT_EQ(1, ks.get_branch(0).value);
+    ASSERT_EQ(1, ks.get_branch(0).kv);
     ASSERT_EQ(1, ks.get_branch(0).left->kv);
     ASSERT_EQ(9, ks.get_branch(0).right->kv);
-    ASSERT_EQ(9, ks.get_branch(1).value);
+    ASSERT_EQ(9, ks.get_branch(1).kv);
     ASSERT_EQ(9, ks.get_branch(1).left->kv);
     ASSERT_EQ(10, ks.get_branch(1).right->kv);
 }

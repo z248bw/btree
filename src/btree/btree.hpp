@@ -62,7 +62,7 @@ public:
 
     Btree(Btree && other) = default;
 
-    Btree& operator=(Btree copy_of_other)
+    Btree & operator=(Btree && copy_of_other)
     {
         std::swap(keys, copy_of_other.keys);
         std::swap(parent, copy_of_other.parent);
@@ -117,9 +117,9 @@ public:
         {
             for (size_t i = 0; i < keys.size(); i++)
             {
-                auto k = keys.get_branch(i);
-                k.left->inorder_walk(on_visit);
-                on_visit(k.value);
+                auto b = keys.get_branch(i);
+                b.left->inorder_walk(on_visit);
+                on_visit(b.kv);
             }
 
             keys.get_rightmost_child()->inorder_walk(on_visit);
@@ -128,7 +128,7 @@ public:
         {
             for (size_t i = 0; i < keys.size(); i++)
             {
-                on_visit(keys.get_branch(i).value);
+                on_visit(keys.get_branch(i).kv);
             }
         }
     }
@@ -137,7 +137,7 @@ public:
     {
         for (size_t i = 0; i < keys.size(); i++)
         {
-            on_visit(keys.get_branch(i).value);
+            on_visit(keys.get_branch(i).kv);
         }
 
         for (auto it = keys.children_begin(); it != keys.children_end(); it++)
@@ -155,7 +155,7 @@ public:
 
         for (size_t i = 0; i < keys.size(); i++)
         {
-            on_visit(keys.get_branch(i).value);
+            on_visit(keys.get_branch(i).kv);
         }
     }
 
@@ -208,12 +208,12 @@ private:
 
     Branch<Btree> seperate_current_for_unfitting(Branch<Btree> unfitting)
     {
-        auto median = keys.get_median_KV_with_new_key(unfitting.value);
+        auto median = keys.get_median_KV_with_new_key(unfitting.kv);
         Branch<Btree> seperated(median);
         auto left_branch_keys = keys.get_left_half_of_keys();
         auto right_branch_keys = keys.get_right_half_of_keys();
 
-        if (median == unfitting.value && unfitting.has_children())
+        if (median == unfitting.kv && unfitting.has_children())
         {
             assert(left_branch_keys.get_last_branch().right == right_branch_keys.get_first_branch().left);
 
@@ -225,11 +225,11 @@ private:
             right_first_branch.left = unfitting.right;
             right_branch_keys.change_first_to(right_first_branch);
         }
-        else if (median < unfitting.value)
+        else if (median < unfitting.kv)
         {
             right_branch_keys.change_first_to(unfitting);
         }
-        else if (median > unfitting.value)
+        else if (median > unfitting.kv)
         {
             left_branch_keys.change_last_to(unfitting);
         }

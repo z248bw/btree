@@ -10,44 +10,44 @@
 template<typename KEY, typename VALUE>
 struct KeyValue
 {
-    KEY k;
-    VALUE v;
+    KEY key;
+    VALUE value;
 
     KeyValue() = default;
 
-    KeyValue(const KEY k, const VALUE v): k(k), v(v) {}
+    KeyValue(const KEY key, const VALUE value): key(key), value(value) {}
 
     struct Compare
     {
         bool operator () (const KEY & k, const KeyValue<KEY, VALUE> & kv) const
         {
-            return k < kv.k;
+            return k < kv.key;
         }
 
         bool operator () (const KeyValue<KEY, VALUE> & kv, const KEY & k) const
         {
-            return kv.k < k;
+            return kv.key < k;
         }
     };
 
     bool operator<(const KeyValue & other) const
     {
-        return k < other.k;
+        return key < other.key;
     }
 
     bool operator>(const KeyValue & other) const
     {
-        return k > other.k;
+        return key > other.key;
     }
 
     bool operator==(const KeyValue & other) const
     {
-        return k == other.k;
+        return key == other.key;
     }
 
     operator KEY () const
     {
-        return k;
+        return key;
     }
 };
 
@@ -57,12 +57,12 @@ struct Branch
 {
     using KV = KeyValue<typename Node::key_t, typename Node::value_t>;
 
-    KV value;
+    KV kv;
     Node* left;
     Node* right;
 
-    Branch(KV v): value(v), left(nullptr), right(nullptr) {}
-    Branch(KV v, Node* left, Node* right): value(v), left(left), right(right) {}
+    Branch(KV kv): kv(kv), left(nullptr), right(nullptr) {}
+    Branch(KV kv, Node* left, Node* right): kv(kv), left(left), right(right) {}
 
     bool has_children() const noexcept
     {
@@ -141,12 +141,12 @@ public:
     SearchedValue<typename Node::value_t> find_and_get_value(typename Node::key_t k)
     {
         size_t pos = std::lower_bound(keyvalues.begin(), keyvalues.end(), k, typename KV::Compare()) - keyvalues.begin();
-        if (pos >= keyvalues.size() || keyvalues[pos].k != k)
+        if (pos >= keyvalues.size() || keyvalues[pos].key != k)
         {
             return SearchedValue<typename Node::value_t>();
         }
 
-        return SearchedValue<typename Node::value_t>(true, &keyvalues[pos].v);
+        return SearchedValue<typename Node::value_t>(true, &keyvalues[pos].value);
     }
 
     Branch<Node> get_branch(const size_t i) const
@@ -159,18 +159,18 @@ public:
         return Branch<Node>(keyvalues[i], get_child(i), get_child(i+1));
     }
 
-    void add(const Branch<Node> k)
+    void add(const Branch<Node> b)
     {
-        auto pos = get_pos_of_key(k.value);
-        keyvalues.insert(keyvalues.begin() + pos, k.value);
+        auto pos = get_pos_of_key(b.kv);
+        keyvalues.insert(keyvalues.begin() + pos, b.kv);
 
         if (is_last_position(pos))
         {
-            push_children_of_branch(k);
+            push_children_of_branch(b);
         }
         else
         {
-            insert_children_of_branch_to_pos(k, pos);
+            insert_children_of_branch_to_pos(b, pos);
         }
     }
 
@@ -325,44 +325,44 @@ private:
         return children[i];
     }
 
-    void push_children_of_branch(Branch<Node> k)
+    void push_children_of_branch(Branch<Node> b)
     {
-        if (!k.has_children())
+        if (!b.has_children())
         {
             return;
         }
 
-        own_branch(k);
+        own_branch(b);
 
         if (children.size() == 0)
         {
-            children.push_back(k.left);
+            children.push_back(b.left);
         }
         else
         {
-            children[children.size()-1] = k.left;
+            children[children.size()-1] = b.left;
         }
 
-        children.push_back(k.right);
+        children.push_back(b.right);
     }
 
-    void own_branch(Branch<Node> k)
+    void own_branch(Branch<Node> b)
     {
-        k.left->parent = owner;
-        k.right->parent = owner;
+        b.left->parent = owner;
+        b.right->parent = owner;
     }
 
-    void insert_children_of_branch_to_pos(Branch<Node> k, const size_t pos)
+    void insert_children_of_branch_to_pos(Branch<Node> b, const size_t pos)
     {
-        if (!k.has_children())
+        if (!b.has_children())
         {
             return;
         }
 
-        own_branch(k);
+        own_branch(b);
 
-        children.insert(children.begin() + pos, k.left);
-        children[pos+1] = k.right;
+        children.insert(children.begin() + pos, b.left);
+        children[pos+1] = b.right;
     }
 
     void remove_first()
