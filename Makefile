@@ -11,7 +11,7 @@ PRE_TARGET_STEP = mkdir -p bin;
 # Flags passed to the C++ compiler.
 # set all compiler warnings on
 # use cpp11 standard
-CXXFLAGS += -o $@ -I $(SRC_DIR) -I $(GTEST_HEADERS) -L $(GTEST_LIB) -g -Wall -Wextra -pthread -std=c++11
+CXXFLAGS += -o $@ -I $(SRC_DIR) -I $(GTEST_HEADERS) -L $(GTEST_LIB) -Wall -Wextra -pthread -std=c++11
 
 TESTS = test
 
@@ -50,9 +50,11 @@ $(BIN_DIR)/%.o : $(SRC_DIR)/btree/%.cpp $(SRC_DIR)/btree/%.hpp
 $(BIN_DIR)/main_test.o : $(SRC_DIR)/main_test.cpp
 	$(COMPILE)
 
+_PROD_OBJ = keys.o \
+           btree.o
+
 # define the required object files
-_OBJ = keys.o \
-       btree.o \
+_OBJ = $(_PROD_OBJ) \
        measurable.o \
        keys_test_utils.o \
        test_keys.o \
@@ -62,9 +64,15 @@ _OBJ = keys.o \
 
 # add bin dir as prefix to the required object files
 OBJ = $(patsubst %,$(BIN_DIR)/%,$(_OBJ))
+PROD_OBJ = $(patsubst %,$(BIN_DIR)/%,$(_PROD_OBJ))
 
 # link the object files and create test executable
+test: CXXFLAGS += -g
 test : \
 	$(OBJ) \
 	$(GTEST_LIB)
 	$(CXX) $(CXXFLAGS) -lpthread $^
+
+build: CXXFLAGS += -O3
+build: $(PROD_OBJ)
+	ar crv btree.a $(PROD_OBJ)
