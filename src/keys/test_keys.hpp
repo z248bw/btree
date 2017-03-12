@@ -9,6 +9,8 @@
 #include "keys_test_utils.hpp"
 
 
+using namespace btree;
+
 TEST(Keys, storeBranchesInOrder) {
     auto keys_factory = KeysFactoryRAII();
     auto ks = keys_factory.create_keys(3);

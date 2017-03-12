@@ -7,6 +7,7 @@
 #include "measurable_test_utils.hpp"
 
 
+using namespace btree;
 
 TEST(Test, shouldPassIfTwoStringsAreEqualByValue) {
     const char* s1 = "kaucsuk rece";

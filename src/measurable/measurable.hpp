@@ -6,143 +6,148 @@
 
 #define MAX_INT 99999
 
-class Measurable
+
+namespace btree
 {
-protected:
-    virtual bool is_leaf() = 0;
-    virtual std::vector<Measurable*> get_children() = 0;
-
-public:
-    static size_t deepest;
-    static size_t shallowest;
-    virtual ~Measurable(){}
-
-    void measure(size_t depth = 0)
+    class Measurable
     {
-        if (depth == 0)
+    protected:
+        virtual bool is_leaf() = 0;
+        virtual std::vector<Measurable*> get_children() = 0;
+
+    public:
+        static size_t deepest;
+        static size_t shallowest;
+        virtual ~Measurable(){}
+
+        void measure(size_t depth = 0)
         {
-            init_walk();
-        }
-
-        auto children = get_children();
-        for (auto child : children)
-        {
-             child->measure(depth+1);
-        }
-
-        if (depth > deepest)
-        {
-            deepest = depth;
-        }
-
-        if (is_leaf() && depth < shallowest)
-        {
-            shallowest = depth;
-        }
-    }
-
-private:
-    void init_walk()
-    {
-        deepest = 0;
-        shallowest = MAX_INT;
-    }
-};
-
-class MeasurableTree : public Measurable
-{
-protected:
-    virtual std::vector<Measurable*> get_children() override
-    {
-        auto vector = std::vector<Measurable*>();
-        if (l != nullptr)
-        {
-            vector.push_back(l);
-        }
-        if (r != nullptr)
-        {
-            vector.push_back(r);
-        }
-
-        return vector;
-    }
-
-    virtual bool is_leaf() override
-    {
-        return l == nullptr || r == nullptr;
-    }
-
-public:
-    MeasurableTree* l;
-    MeasurableTree* r;
-
-    Measurable* current;
-
-    MeasurableTree(): l(nullptr), r(nullptr) {}
-
-    ~MeasurableTree()
-    {
-        delete l;
-        delete r;
-    }
-};
-
-template <size_t degree, typename KEY = int, typename VALUE = const char*>
-class MeasurableBtree : public Btree<KEY, VALUE, degree>, public Measurable
-{
-    using btree_t = Btree<KEY, VALUE, degree>;
-    MeasurableBtree(const Keys<btree_t> ks): Btree<KEY, VALUE, degree>(ks) {}
-
-protected:
-    virtual Btree<KEY, VALUE, degree>* new_node(const Keys<btree_t> ks) override
-    {
-        return new MeasurableBtree(ks);
-    }
-
-    virtual bool is_leaf() override
-    {
-        return this->keys.is_leaf();
-    }
-
-    virtual std::vector<Measurable*> get_children() override
-    {
-        std::vector<Measurable*> result;
-        for (auto it = this->keys.children_begin(); it != this->keys.children_end(); ++it)
-        {
-            result.push_back(static_cast<MeasurableBtree*>(*(it)));
-        }
-
-        return result;
-    }
-
-public:
-    MeasurableBtree(): Btree<KEY, VALUE, degree>() {}
-    MeasurableBtree(const MeasurableBtree & other): Btree<KEY, VALUE, degree>(other) {}
-
-    MeasurableBtree* find_node_with_key(const int k)
-    {
-        if (this->keys.is_present(k))
-        {
-            return this;
-        }
-
-        for (auto it = this->keys.children_begin(); it != this->keys.children_end(); it++)
-        {
-            auto result = static_cast<MeasurableBtree<degree>*>(*it)->find_node_with_key(k);
-            if (result != nullptr)
+            if (depth == 0)
             {
-                return result;
+                init_walk();
+            }
+
+            auto children = get_children();
+            for (auto child : children)
+            {
+                 child->measure(depth+1);
+            }
+
+            if (depth > deepest)
+            {
+                deepest = depth;
+            }
+
+            if (is_leaf() && depth < shallowest)
+            {
+                shallowest = depth;
             }
         }
 
-        return nullptr;
-    }
+    private:
+        void init_walk()
+        {
+            deepest = 0;
+            shallowest = MAX_INT;
+        }
+    };
 
-    std::vector<KeyValue<KEY, VALUE>> get_keys() const
+
+    class MeasurableTree : public Measurable
     {
-        return this->keys.dump();
-    }
+    protected:
+        virtual std::vector<Measurable*> get_children() override
+        {
+            auto vector = std::vector<Measurable*>();
+            if (l != nullptr)
+            {
+                vector.push_back(l);
+            }
+            if (r != nullptr)
+            {
+                vector.push_back(r);
+            }
 
-};
+            return vector;
+        }
+
+        virtual bool is_leaf() override
+        {
+            return l == nullptr || r == nullptr;
+        }
+
+    public:
+        MeasurableTree* l;
+        MeasurableTree* r;
+
+        Measurable* current;
+
+        MeasurableTree(): l(nullptr), r(nullptr) {}
+
+        ~MeasurableTree()
+        {
+            delete l;
+            delete r;
+        }
+    };
+
+    template <size_t degree, typename KEY = int, typename VALUE = const char*>
+    class MeasurableBtree : public Btree<KEY, VALUE, degree>, public Measurable
+    {
+        using btree_t = Btree<KEY, VALUE, degree>;
+        MeasurableBtree(const Keys<btree_t> ks): Btree<KEY, VALUE, degree>(ks) {}
+
+    protected:
+        virtual Btree<KEY, VALUE, degree>* new_node(const Keys<btree_t> ks) override
+        {
+            return new MeasurableBtree(ks);
+        }
+
+        virtual bool is_leaf() override
+        {
+            return this->keys.is_leaf();
+        }
+
+        virtual std::vector<Measurable*> get_children() override
+        {
+            std::vector<Measurable*> result;
+            for (auto it = this->keys.children_begin(); it != this->keys.children_end(); ++it)
+            {
+                result.push_back(static_cast<MeasurableBtree*>(*(it)));
+            }
+
+            return result;
+        }
+
+    public:
+        MeasurableBtree(): Btree<KEY, VALUE, degree>() {}
+        MeasurableBtree(const MeasurableBtree & other): Btree<KEY, VALUE, degree>(other) {}
+
+        MeasurableBtree* find_node_with_key(const int k)
+        {
+            if (this->keys.is_present(k))
+            {
+                return this;
+            }
+
+            for (auto it = this->keys.children_begin(); it != this->keys.children_end(); it++)
+            {
+                auto result = static_cast<MeasurableBtree<degree>*>(*it)->find_node_with_key(k);
+                if (result != nullptr)
+                {
+                    return result;
+                }
+            }
+
+            return nullptr;
+        }
+
+        std::vector<KeyValue<KEY, VALUE>> get_keys() const
+        {
+            return this->keys.dump();
+        }
+
+    };
+}
 
 #endif
