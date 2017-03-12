@@ -64,7 +64,7 @@ namespace btree
 
         Btree(Btree && other) = default;
 
-        Btree & operator=(Btree && copy_of_other)
+        Btree & operator=(Btree copy_of_other)
         {
             std::swap(keys, copy_of_other.keys);
             std::swap(parent, copy_of_other.parent);
