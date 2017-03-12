@@ -71,6 +71,7 @@ solving the problem of odd number of *degrees*.
 
 After this finishing the tree was a piece of cake, I added:
 
+* copy constructor, and the rest of the big four
 * storing arbitrary type of keys
 * storing arbitrary type of values
 * walk methods
